@@ -15,7 +15,7 @@ import {
 
 const MNEMONIC_12 = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
-test('row path mismatch triggers path-mismatch modal', async ({ page }) => {
+test('row checksum mismatch triggers recovery failed modal', async ({ page }) => {
   await openApp(page);
   await navigateToCreateShares(page);
   await select12Words(page);
@@ -26,7 +26,7 @@ test('row path mismatch triggers path-mismatch modal', async ({ page }) => {
   const share1 = await extractShareData(page, 0);
   const share2 = await extractShareData(page, 1);
 
-  // Tamper a single row checksum (Path B) to disagree with recomputed Path A
+  // Tamper a single row checksum to create per-share inconsistency
   share1.checksums[0] = modifyShareValue(share1.checksums[0]);
 
   await navigateToRecover(page);
@@ -36,13 +36,13 @@ test('row path mismatch triggers path-mismatch modal', async ({ page }) => {
 
   await page.click('#btn-recover-wallet');
 
-  const modal = page.locator('#custom-modal:has-text("Recovery Failed - Path Mismatch")');
+  const modal = page.locator('#custom-modal:has-text("Recovery Failed")');
   await expect(modal).toBeVisible();
   await page.click('#modal-confirm');
   await expect(modal).not.toBeVisible();
 });
 
-test('global path mismatch triggers path-mismatch modal', async ({ page }) => {
+test('GIC binding mismatch triggers recovery failed modal', async ({ page }) => {
   await openApp(page);
   await navigateToCreateShares(page);
   await select12Words(page);
@@ -53,7 +53,7 @@ test('global path mismatch triggers path-mismatch modal', async ({ page }) => {
   const share1 = await extractShareData(page, 0);
   const share2 = await extractShareData(page, 1);
 
-  // Tamper only the Global Integrity Check (GIC) share to create a global Path A/B mismatch
+  // Tamper only the Global Integrity Check (GIC) share to create a binding mismatch
   share1.globalIntegrityCheck = modifyShareValue(share1.globalIntegrityCheck);
 
   await navigateToRecover(page);
@@ -63,7 +63,7 @@ test('global path mismatch triggers path-mismatch modal', async ({ page }) => {
 
   await page.click('#btn-recover-wallet');
 
-  const modal = page.locator('#custom-modal:has-text("Recovery Failed - Path Mismatch")');
+  const modal = page.locator('#custom-modal:has-text("Recovery Failed")');
   await expect(modal).toBeVisible();
   await page.click('#modal-confirm');
   await expect(modal).not.toBeVisible();

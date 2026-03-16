@@ -3,6 +3,7 @@ import {
   openApp,
   navigateToCreateShares,
   select24Words,
+  select12Words,
   fillMnemonic,
   selectScheme,
   generateShares,
@@ -126,5 +127,126 @@ test('recovery with modified data shows BIP39 warning', async ({ page }) => {
   console.log('✅ Recovered mnemonic differs from original (as expected)');
   console.log('Original:', originalMnemonic);
   console.log('Recovered:', recoveredMnemonic);
+});
+
+test('mismatched word-number format is rejected', async ({ page }) => {
+  const originalMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+  await openApp(page);
+  await navigateToCreateShares(page);
+  await select12Words(page);
+  await fillMnemonic(page, originalMnemonic);
+  await selectScheme(page, '2of3');
+  await generateShares(page);
+
+  const share1 = await extractShareData(page, 0);
+  const share2 = await extractShareData(page, 1);
+
+  await navigateToRecover(page);
+  await setupRecovery(page, 12, 2);
+  await fillRecoveryShare(page, 1, share1);
+  await fillRecoveryShare(page, 2, share2);
+
+  await page.fill('#recover-share-1-row-0-word-0', '0001-zoo');
+  await page.click('#btn-recover-wallet');
+
+  const modal = await page.locator('#custom-modal:has-text("Input Error")');
+  await expect(modal).toBeVisible();
+
+  const invalidField = page.locator('#recover-share-1-row-0-word-0.invalid');
+  await expect(invalidField).toBeVisible();
+});
+
+test('inline GIC validation uses entered share numbers', async ({ page }) => {
+  const originalMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+  await openApp(page);
+  await navigateToCreateShares(page);
+  await select12Words(page);
+  await fillMnemonic(page, originalMnemonic);
+  await selectScheme(page, '2of4');
+  await generateShares(page);
+
+  const share3 = await extractShareData(page, 2);
+  const share4 = await extractShareData(page, 3);
+
+  await navigateToRecover(page);
+  await setupRecovery(page, 12, 2);
+  await fillRecoveryShare(page, 1, share3);
+  await fillRecoveryShare(page, 2, share4);
+
+  await page.click('#recover-x-1');
+  await page.click('#recover-global-integrity-check-2');
+
+  await expect(page.locator('#recover-global-integrity-check-1')).not.toHaveClass(/invalid/);
+  await expect(page.locator('#recover-global-integrity-check-2')).not.toHaveClass(/invalid/);
+});
+
+test('pre-flight row checksum failure highlights specific share row', async ({ page }) => {
+  const originalMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+  await openApp(page);
+  await navigateToCreateShares(page);
+  await select12Words(page);
+  await fillMnemonic(page, originalMnemonic);
+  await selectScheme(page, '2of3');
+  await generateShares(page);
+
+  const share1 = await extractShareData(page, 0);
+  const share2 = await extractShareData(page, 1);
+
+  share1.checksums[0] = modifyShareValue(share1.checksums[0]);
+
+  await navigateToRecover(page);
+  await setupRecovery(page, 12, 2);
+  await fillRecoveryShare(page, 1, share1);
+  await fillRecoveryShare(page, 2, share2);
+
+  await page.click('#btn-recover-wallet');
+
+  const modal = await page.locator('#custom-modal:has-text("Recovery Failed")');
+  await expect(modal).toBeVisible();
+
+  const share1Row = page.locator('#share-container-1 input[data-row-index="0"].invalid');
+  const share2Row = page.locator('#share-container-2 input[data-row-index="0"].invalid');
+  await expect(share1Row.first()).toBeVisible();
+  await expect(share2Row).toHaveCount(0);
+});
+
+test('share generation rejects zero-only randomness for highest coefficient', async ({ page }) => {
+  const originalMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+  await openApp(page);
+  await navigateToCreateShares(page);
+  await select12Words(page);
+  await fillMnemonic(page, originalMnemonic);
+  await selectScheme(page, '2of3');
+
+  await page.evaluate(() => {
+    // In the HTML tool, `SchiavinatoSharing` is a top-level `const`, so it is not a `window.*` property.
+    const api =
+      globalThis.SchiavinatoSharing ??
+      globalThis.Function(
+        'return (typeof SchiavinatoSharing !== "undefined") ? SchiavinatoSharing : undefined;'
+      )();
+
+    if (!api?.configureEnvironment) {
+      throw new Error('SchiavinatoSharing.configureEnvironment not available in page context');
+    }
+
+    api.configureEnvironment({
+      randomSource: {
+        getRandomValues: (arr) => {
+          arr.fill(0);
+        }
+      }
+    });
+  });
+
+  await page.click('#btn-generate-shares');
+
+  const modal = await page.locator('#custom-modal:has-text("Generation Failed")');
+  await expect(modal).toBeVisible();
+  await expect(page.locator('#modal-text')).toContainText('non-zero field element');
 });
 

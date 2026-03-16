@@ -218,6 +218,30 @@ TERMS OF USE
             box-shadow: 0 4px 20px var(--shadow-color);
             margin-bottom: 20px;
         }
+
+        .word-count-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .word-count-extra {
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link-button {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--cyber-gold);
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
         
         /* --- 7. FORMS (INPUT FIELDS) --- */
         .form-group { margin-bottom: 1rem; }
@@ -853,9 +877,17 @@ TERMS OF USE
                 <div class="component-card">
                     <h2>3. Seed Phrase</h2>
                     <!-- Word Count Toggle -->
-                    <div class="form-group" style="text-align: center;">
-                        <button id="btn-12-words" class="btn btn-secondary">12 Words</button>
-                        <button id="btn-24-words" class="btn btn-primary">24 Words</button>
+                    <div class="form-group" style="text-align: left;">
+                        <div class="word-count-toggle" id="create-word-count-toggle">
+                            <button id="btn-12-words" class="btn btn-secondary" type="button">12 Words</button>
+                            <button id="btn-24-words" class="btn btn-primary" type="button">24 Words</button>
+                            <button id="btn-wordcount-toggle-create" class="link-button" type="button">More</button>
+                            <div id="extra-wordcount-create" class="word-count-extra">
+                                <button id="btn-15-words" class="btn btn-secondary" type="button">15</button>
+                                <button id="btn-18-words" class="btn btn-secondary" type="button">18</button>
+                                <button id="btn-21-words" class="btn btn-secondary" type="button">21</button>
+                            </div>
+                        </div>
                     </div>
                     <!-- Container for dynamic seed word inputs -->
                     <div id="seed-word-inputs" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
@@ -901,7 +933,7 @@ TERMS OF USE
                             <p><strong>Share Number (X):</strong> 1</p>
                             <p><strong>Scheme Threshold (K):</strong> 2</p>
                             <p><strong>Original Seed Phrase Length:</strong> 24</p>
-                            <p><strong>Global Integrity Check (GIC):</strong> <code class="mono">abandon - 0001</code></p>
+                            <p><strong>Global Integrity Check (GIC):</strong> <code class="mono">0001-abandon</code></p>
                         </div>
                         <h4 style="margin-top: 25px; margin-bottom: 10px; color: var(--text-muted); font-weight: 600;">Encrypted Seed Phrase (Y) - Not a real BIP39 seed phrase</h4>
                         <div class="share-word-container">
@@ -1013,7 +1045,7 @@ TERMS OF USE
                 <!-- Section 3.1: Recovery Parameters -->
                 <div class="component-card">
                     <h2>1. Enter Recovery Parameters</h2>
-                    <div style="display: flex; gap: 30px; align-items: flex-end;">
+                    <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
                         <!-- Scheme Threshold Selection -->
                         <div class="form-group" style="flex: 1;">
                             <label>Scheme Threshold (K)</label>
@@ -1029,11 +1061,17 @@ TERMS OF USE
                             </div>
                         </div>
                         <!-- Word Count Toggle -->
-                        <div class="form-group" style="flex: 2;">
+                        <div class="form-group" style="flex: 1;">
                             <label>Original Seed Phrase Length</label>
-                            <div>
-                                <button id="recover-btn-12-words" class="btn btn-secondary">12 Words</button>
-                                <button id="recover-btn-24-words" class="btn btn-primary">24 Words</button>
+                            <div class="word-count-toggle" id="recover-word-count-toggle">
+                                <button id="recover-btn-12-words" class="btn btn-secondary" type="button">12 Words</button>
+                                <button id="recover-btn-24-words" class="btn btn-primary" type="button">24 Words</button>
+                                <button id="btn-wordcount-toggle-recover" class="link-button" type="button">More</button>
+                                <div id="extra-wordcount-recover" class="word-count-extra">
+                                    <button id="recover-btn-15-words" class="btn btn-secondary" type="button">15</button>
+                                    <button id="recover-btn-18-words" class="btn btn-secondary" type="button">18</button>
+                                    <button id="recover-btn-21-words" class="btn btn-secondary" type="button">21</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1240,7 +1278,7 @@ TERMS OF USE
 
         /**
          * Parses a recovery field entry into a GF(2053) value.
-         * Accepts: BIP39 word, raw number, or "word +/- number" combos (digits at the end).
+         * Accepts: BIP39 word, raw number, or "0001-word"/"word-0001" combos.
          */
         function parseShareValue(raw, { allowNumeric = true } = {}) {
             if (raw === undefined || raw === null) {
@@ -1250,12 +1288,21 @@ TERMS OF USE
             if (trimmed === '') {
                 return { ok: false, reason: 'empty' };
             }
-            const numericMatch = trimmed.match(/(\d+)\s*$/);
-            if (numericMatch) {
+            const normalized = trimmed.toLowerCase();
+            const compact = normalized.replace(/\s+/g, '');
+
+            const wordIndex = BIP39_WORDLIST.indexOf(normalized);
+            if (wordIndex !== -1) {
+                // Convert from 0-based array index to 1-based BIP39 index
+                return { ok: true, value: wordIndex + 1, source: 'word' };
+            }
+
+            const hasDigits = /\d/.test(compact);
+            if (/^\d+$/.test(compact)) {
                 if (!allowNumeric) {
                     return { ok: false, reason: 'numeric-not-allowed' };
                 }
-                const numeric = parseInt(numericMatch[1], 10);
+                const numeric = parseInt(compact, 10);
                 if (Number.isNaN(numeric)) {
                     return { ok: false, reason: 'nan' };
                 }
@@ -1264,12 +1311,79 @@ TERMS OF USE
                 }
                 return { ok: false, reason: 'range', value: numeric };
             }
-            const normalizedWord = trimmed.toLowerCase();
-            const wordIndex = BIP39_WORDLIST.indexOf(normalizedWord);
-            if (wordIndex !== -1) {
-                // Convert from 0-based array index to 1-based BIP39 index
-                return { ok: true, value: wordIndex + 1, source: 'word' };
+
+            if (!allowNumeric) {
+                return { ok: false, reason: hasDigits ? 'numeric-not-allowed' : 'unknown' };
             }
+
+            const parseToken = (token) => {
+                if (!token) return null;
+                if (/^\d+$/.test(token)) {
+                    return { type: 'number', value: parseInt(token, 10) };
+                }
+                const index = BIP39_WORDLIST.indexOf(token);
+                if (index !== -1) {
+                    return { type: 'word', value: index + 1 };
+                }
+                return null;
+            };
+
+            let partA = null;
+            let partB = null;
+            if (compact.includes('-')) {
+                const parts = compact.split('-').filter(Boolean);
+                if (parts.length !== 2) {
+                    return { ok: false, reason: 'unknown' };
+                }
+                [partA, partB] = parts;
+            } else {
+                const wordMatch = compact.match(/[a-z]+/i);
+                const numberMatch = compact.match(/\d+/);
+                if (wordMatch && numberMatch) {
+                    partA = wordMatch[0];
+                    partB = numberMatch[0];
+                } else {
+                    return { ok: false, reason: 'unknown' };
+                }
+            }
+
+            const tokenA = parseToken(partA);
+            const tokenB = parseToken(partB);
+            if (!tokenA || !tokenB) {
+                return { ok: false, reason: 'unknown' };
+            }
+
+            const inRange = (value) => value >= 0 && value < FIELD_PRIME;
+            if (tokenA.type === 'number' && tokenB.type === 'number') {
+                if (!inRange(tokenA.value) || !inRange(tokenB.value)) {
+                    return { ok: false, reason: 'range', value: Math.max(tokenA.value, tokenB.value) };
+                }
+                if (tokenA.value !== tokenB.value) {
+                    return { ok: false, reason: 'mismatch' };
+                }
+                return { ok: true, value: tokenA.value, source: 'number' };
+            }
+
+            if (tokenA.type === 'word' && tokenB.type === 'number') {
+                if (!inRange(tokenB.value)) {
+                    return { ok: false, reason: 'range', value: tokenB.value };
+                }
+                if (tokenA.value !== tokenB.value) {
+                    return { ok: false, reason: 'mismatch' };
+                }
+                return { ok: true, value: tokenB.value, source: 'word-number' };
+            }
+
+            if (tokenA.type === 'number' && tokenB.type === 'word') {
+                if (!inRange(tokenA.value)) {
+                    return { ok: false, reason: 'range', value: tokenA.value };
+                }
+                if (tokenA.value !== tokenB.value) {
+                    return { ok: false, reason: 'mismatch' };
+                }
+                return { ok: true, value: tokenA.value, source: 'number-word' };
+            }
+
             return { ok: false, reason: 'unknown' };
         }
 
@@ -1288,8 +1402,10 @@ TERMS OF USE
                     return `${label} must be between 0 and ${FIELD_PRIME - 1}.`;
                 case 'numeric-not-allowed':
                     return `${label} must be a BIP39 word.`;
+                case 'mismatch':
+                    return `${label} must have matching word and number.`;
                 case 'unknown':
-                    return `${label} must be a BIP39 word or a number (formats like "olive - 1234" are accepted).`;
+                    return `${label} must be a BIP39 word or a number (formats like "0001-abandon" are accepted).`;
                 default:
                     return `${label} contains an invalid value.`;
             }
@@ -1349,12 +1465,22 @@ TERMS OF USE
         const schemeExplanation = document.getElementById('scheme-explanation');
         const btn12Words = document.getElementById('btn-12-words');
         const btn24Words = document.getElementById('btn-24-words');
+        const btn15Words = document.getElementById('btn-15-words');
+        const btn18Words = document.getElementById('btn-18-words');
+        const btn21Words = document.getElementById('btn-21-words');
+        const btnWordcountToggleCreate = document.getElementById('btn-wordcount-toggle-create');
+        const extraWordcountCreate = document.getElementById('extra-wordcount-create');
         const seedWordInputsContainer = document.getElementById('seed-word-inputs');
 
         const recoverKRadios = document.querySelectorAll('input[name="recover-k"]');
         const recoverSharesContainer = document.getElementById('recover-shares-container');
         const recoverBtn12Words = document.getElementById('recover-btn-12-words');
         const recoverBtn24Words = document.getElementById('recover-btn-24-words');
+        const recoverBtn15Words = document.getElementById('recover-btn-15-words');
+        const recoverBtn18Words = document.getElementById('recover-btn-18-words');
+        const recoverBtn21Words = document.getElementById('recover-btn-21-words');
+        const btnWordcountToggleRecover = document.getElementById('btn-wordcount-toggle-recover');
+        const extraWordcountRecover = document.getElementById('extra-wordcount-recover');
         
         const sharedSchemeSelector = document.getElementById('shared-scheme-selector');
         const createSchemePlaceholder = document.getElementById('create-scheme-placeholder');
@@ -1650,6 +1776,24 @@ TERMS OF USE
             
             // Clear any previous error highlights
             clearAllErrorHighlights();
+
+            // CASE 0: Per-share validation errors (with attribution)
+            if (errors.shareValidation) {
+                const rowErrors = errors.shareValidation.rowErrors || [];
+                const globalErrors = errors.shareValidation.globalErrors || [];
+                rowErrors.forEach(({ shareIndex, rowIndex }) => {
+                    if (Number.isInteger(shareIndex) && Number.isInteger(rowIndex)) {
+                        highlightShareRow(shareIndex, rowIndex);
+                    }
+                });
+                globalErrors.forEach(({ shareIndex }) => {
+                    if (Number.isInteger(shareIndex)) {
+                        highlightShareGlobal(shareIndex);
+                    }
+                });
+                await showErrorModal('Recovery Failed', errors.shareValidation.message || 'Share validation failed.');
+                return;
+            }
 
             // CASE 1: Generic/structural errors (highest priority)
             if (errors.generic) {
@@ -2202,7 +2346,11 @@ TERMS OF USE
             const placeholder = '<strong class="mono" style="color: var(--cyber-gold);">&lt;BIP39 word indices&gt;</strong>';
             try {
                 for (let i = 0; i < degree; i++) {
-                    coefficients.push(SchiavinatoSharing.getRandomFieldElement());
+                    const isHighestPower = i === degree - 1;
+                    const coefficient = isHighestPower
+                        ? SchiavinatoSharing.getRandomNonZeroFieldElement()
+                        : SchiavinatoSharing.getRandomFieldElement();
+                    coefficients.push(coefficient);
                 }
                 let equation = `f(X) = ${placeholder}`;
                 coefficients.forEach((coef, index) => {
@@ -2317,7 +2465,7 @@ TERMS OF USE
             inputGlobalIntegrityCheck.type = 'text';
             inputGlobalIntegrityCheck.id = `recover-global-integrity-check-${shareIndex}`;
             inputGlobalIntegrityCheck.className = 'mono';
-            inputGlobalIntegrityCheck.placeholder = 'E.g., abandon - 0001';
+            inputGlobalIntegrityCheck.placeholder = 'E.g., 0001-abandon';
             inputGlobalIntegrityCheck.value = shareCache.globalIntegrityCheckShare || '';
             inputGlobalIntegrityCheck.dataset.allowNumeric = 'true';
             inputGlobalIntegrityCheck.dataset.fieldLabel = `Share ${shareIndex} Global Integrity Check (GIC) verification`;
@@ -2845,6 +2993,7 @@ TERMS OF USE
             const globalInput = container.querySelector(`#recover-global-integrity-check-${shareIndex}`);
             const allWordInputs = container.querySelectorAll(`input[data-slot^="word-"]`);
             const allChecksumInputs = container.querySelectorAll(`input[data-slot="checksum"]`);
+            const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
 
             // Check if any field has parse error
             const anyGlobalParseError = parseErrors.has(globalInput) || 
@@ -2854,17 +3003,28 @@ TERMS OF USE
             // Check if any field is empty
             const globalEmpty = (globalInput?.value || '').trim() === '';
             const anyWordEmpty = Array.from(allWordInputs).some(inp => (inp?.value || '').trim() === '');
+            const anyChecksumEmpty = Array.from(allChecksumInputs).some(inp => (inp?.value || '').trim() === '');
             
-            if (!anyGlobalParseError && !anyRowFail && !globalEmpty && !anyWordEmpty) {
+            if (!anyGlobalParseError && !anyRowFail && !globalEmpty && !anyWordEmpty && !anyChecksumEmpty) {
                 // All parseable, no row errors, compute Global Integrity Check (GIC)
                 const parsedWords = Array.from(allWordInputs).map(inp => parseShareValue(inp.value, { allowNumeric: true }));
+                const parsedChecksums = Array.from(allChecksumInputs).map(inp => parseShareValue(inp.value, { allowNumeric: true }));
                 const parsedGlobal = parseShareValue(globalInput.value, { allowNumeric: true });
+                const parsedShareNumber = shareNumberInput
+                    ? parseShareValue(shareNumberInput.value, { allowNumeric: true })
+                    : { ok: false };
 
-                const globalSum = parsedWords.reduce((acc, p) => (acc + p.value) % FIELD_PRIME, 0);
-                // v0.4.0 Fix: Validate bound GIC (Sum + x)
-                if ((globalSum + shareIndex) % FIELD_PRIME !== parsedGlobal.value) {
-                    // Global wrong: highlight ONLY the global field
-                    markInputInvalid(globalInput, 'Global Integrity Check (GIC) mismatch', { rowHighlight: true });
+                if (parsedGlobal.ok && parsedShareNumber.ok) {
+                    const wordSum = parsedWords.reduce((acc, p) => (acc + p.value) % FIELD_PRIME, 0);
+                    const checksumSum = parsedChecksums.reduce((acc, p) => (acc + p.value) % FIELD_PRIME, 0);
+                    const expectedFromWords = (wordSum + parsedShareNumber.value) % FIELD_PRIME;
+                    const expectedFromChecksums = (checksumSum + parsedShareNumber.value) % FIELD_PRIME;
+                    const matchWords = expectedFromWords === parsedGlobal.value;
+                    const matchChecks = expectedFromChecksums === parsedGlobal.value;
+                    if (!matchWords || !matchChecks) {
+                        // Global wrong: highlight ONLY the global field
+                        markInputInvalid(globalInput, 'Global Integrity Check (GIC) mismatch', { rowHighlight: true });
+                    }
                 }
             }
         }
@@ -2980,10 +3140,10 @@ TERMS OF USE
                             <strong>Recover and Verify Each Row:</strong> Repeat step 2 for all three word values and the checksum value in a single row. Then, verify your math: add your three recovered word numbers together (modulo 2053). The result MUST equal your recovered checksum number for that row. If it doesn't, you have made a calculation error in that row.
                         </li>
                         <li style="margin-bottom: 0.5em;">
-                            <strong>Final Global Integrity Check (GIC) Verification:</strong> After all rows are recovered and verified, use the same method from step 2 to recover the "Global Integrity Check (GIC) Verification Number" from the share headers. Then, add all 24 of your recovered word numbers together (modulo 2053). The result MUST equal the recovered Global Integrity Check (GIC) Verification Number. If it doesn't, an error exists in one or more rows.
+                            <strong>Final Global Integrity Check (GIC) Verification:</strong> After all rows are recovered and verified, use the same method from step 2 to recover the "Global Integrity Check (GIC) Verification Number" from the share headers. Then, add all ${metadata.wordCount} of your recovered word numbers together (modulo 2053). The result MUST equal the recovered Global Integrity Check (GIC) Verification Number. If it doesn't, an error exists in one or more rows.
                         </li>
                         <li style="margin-bottom: 0.5em;">
-                            <strong>Convert to Words:</strong> Once all checks pass, use the standard BIP39 wordlist to look up the word for each of your 12-24 recovered numbers. The resulting sequence of 12-24 words is your wallet's original recovery phrase.
+                            <strong>Convert to Words:</strong> Once all checks pass, use the standard BIP39 wordlist to look up the word for each of your ${metadata.wordCount} recovered numbers. The resulting sequence of ${metadata.wordCount} words is your wallet's original recovery phrase.
                         </li>
                     </ol>
                 </div>
@@ -3000,7 +3160,7 @@ TERMS OF USE
                     globalIntegrityCheckShareDisplay = '0000-0000';
                 } else if (globalIntegrityCheckValue >= 1 && globalIntegrityCheckValue <= 2048) {
                     const word = BIP39_WORDLIST[globalIntegrityCheckValue - 1];
-                    globalIntegrityCheckShareDisplay = `${word}-${String(globalIntegrityCheckValue).padStart(4, '0')}`;
+                    globalIntegrityCheckShareDisplay = `${String(globalIntegrityCheckValue).padStart(4, '0')}-${word}`;
                 } else {
                     globalIntegrityCheckShareDisplay = `${String(globalIntegrityCheckValue).padStart(4, '0')}-${String(globalIntegrityCheckValue).padStart(4, '0')}`;
                 }
@@ -3016,7 +3176,7 @@ TERMS OF USE
                             display = '0000-0000';
                         } else if (value >= 1 && value <= 2048) {
                             const word = BIP39_WORDLIST[value - 1];
-                            display = `${word}-${String(value).padStart(4, '0')}`;
+                            display = `${String(value).padStart(4, '0')}-${word}`;
                         } else {
                             display = `${String(value).padStart(4, '0')}-${String(value).padStart(4, '0')}`;
                         }
@@ -3030,7 +3190,7 @@ TERMS OF USE
                         checksumDisplay = '0000-0000';
                     } else if (checksumValue >= 1 && checksumValue <= 2048) {
                         const word = BIP39_WORDLIST[checksumValue - 1];
-                        checksumDisplay = `${word}-${String(checksumValue).padStart(4, '0')}`;
+                        checksumDisplay = `${String(checksumValue).padStart(4, '0')}-${word}`;
                     } else {
                         checksumDisplay = `${String(checksumValue).padStart(4, '0')}-${String(checksumValue).padStart(4, '0')}`;
                     }
@@ -3129,29 +3289,68 @@ TERMS OF USE
         }
         
         /**
-         * Sets up the event listeners and class toggling for a pair of 12/24 word buttons.
-         * @param {HTMLButtonElement} btn12 - The 12-words button.
-         * @param {HTMLButtonElement} btn24 - The 24-words button.
-         * @param {function(number): void} wordCountCallback - A function to call with the new word count.
-         * @param {function(): void} updateFn - The function to call to regenerate the inputs.
+         * Sets up word-count buttons with optional More/Less expander.
+         * @param {Object} options
+         * @param {Object<number, HTMLButtonElement>} options.buttonsByCount
+         * @param {HTMLButtonElement|null} options.toggleButton
+         * @param {HTMLElement|null} options.extraContainer
+         * @param {function(number): void} options.wordCountCallback
+         * @param {function(): void} options.updateFn
+         * @param {number} options.initialCount
          */
-        function setupWordToggle(btn12, btn24, wordCountCallback, updateFn) {
-            btn12.addEventListener('click', () => {
-                wordCountCallback(12);
-                btn12.classList.add('btn-primary');
-                btn12.classList.remove('btn-secondary');
-                btn24.classList.add('btn-secondary');
-                btn24.classList.remove('btn-primary');
+        function setupWordCountSelector({
+            buttonsByCount,
+            toggleButton,
+            extraContainer,
+            wordCountCallback,
+            updateFn,
+            initialCount
+        }) {
+            const extraCounts = [15, 18, 21];
+
+            const setExtraVisible = (visible) => {
+                if (!extraContainer || !toggleButton) return;
+                extraContainer.style.display = visible ? 'flex' : 'none';
+                toggleButton.textContent = visible ? 'Less' : 'More';
+            };
+
+            const setActiveButton = (count) => {
+                Object.entries(buttonsByCount).forEach(([key, button]) => {
+                    if (!button) return;
+                    const isActive = Number(key) === count;
+                    button.classList.toggle('btn-primary', isActive);
+                    button.classList.toggle('btn-secondary', !isActive);
+                });
+            };
+
+            const selectCount = (count) => {
+                const button = buttonsByCount[count];
+                if (!button) return;
+                wordCountCallback(count);
+                setActiveButton(count);
+                if (extraCounts.includes(count)) {
+                    setExtraVisible(true);
+                }
                 updateFn();
+            };
+
+            Object.entries(buttonsByCount).forEach(([key, button]) => {
+                if (!button) return;
+                const count = Number(key);
+                button.addEventListener('click', () => selectCount(count));
             });
-            btn24.addEventListener('click', () => {
-                wordCountCallback(24);
-                btn24.classList.add('btn-primary');
-                btn24.classList.remove('btn-secondary');
-                btn12.classList.add('btn-secondary');
-                btn12.classList.remove('btn-primary');
-                updateFn();
-            });
+
+            if (toggleButton && extraContainer) {
+                toggleButton.addEventListener('click', () => {
+                    const isVisible = window.getComputedStyle(extraContainer).display !== 'none';
+                    setExtraVisible(!isVisible);
+                });
+            }
+
+            setActiveButton(initialCount);
+            if (extraCounts.includes(initialCount)) {
+                setExtraVisible(true);
+            }
         }
         
         /**
@@ -3209,8 +3408,35 @@ TERMS OF USE
             }
         }
         
-        setupWordToggle(btn12Words, btn24Words, (count) => { createWordCount = count; }, updateSeedWordInputs);
-        setupWordToggle(recoverBtn12Words, recoverBtn24Words, (count) => { recoverWordCount = count; }, updateRecoverSharesInputs);
+        setupWordCountSelector({
+            buttonsByCount: {
+                12: btn12Words,
+                15: btn15Words,
+                18: btn18Words,
+                21: btn21Words,
+                24: btn24Words
+            },
+            toggleButton: btnWordcountToggleCreate,
+            extraContainer: extraWordcountCreate,
+            wordCountCallback: (count) => { createWordCount = count; },
+            updateFn: updateSeedWordInputs,
+            initialCount: createWordCount
+        });
+
+        setupWordCountSelector({
+            buttonsByCount: {
+                12: recoverBtn12Words,
+                15: recoverBtn15Words,
+                18: recoverBtn18Words,
+                21: recoverBtn21Words,
+                24: recoverBtn24Words
+            },
+            toggleButton: btnWordcountToggleRecover,
+            extraContainer: extraWordcountRecover,
+            wordCountCallback: (count) => { recoverWordCount = count; },
+            updateFn: updateRecoverSharesInputs,
+            initialCount: recoverWordCount
+        });
         
         setupStartOverButton(
             btnStartOverCreate,
@@ -3485,6 +3711,17 @@ TERMS OF USE
             function getRandomFieldElement() {
                 return getRandomIntInclusive(FIELD_PRIME - 1);
             }
+
+            /**
+             * Draws a non-zero random element from GF(2053).
+             */
+            function getRandomNonZeroFieldElement() {
+                for (let attempt = 0; attempt < 256; attempt++) {
+                    const value = getRandomFieldElement();
+                    if (value !== 0) return value;
+                }
+                throw new Error('Failed to draw a non-zero field element (entropy source may be faulty).');
+            }
             
             // ==========================================================================
             // POLYNOMIAL & INTERPOLATION LOGIC
@@ -3495,7 +3732,11 @@ TERMS OF USE
             function randomPolynomial(secret, degree) {
                 const coefficients = [mod(secret)];
                 for (let i = 0; i < degree; i++) {
-                    coefficients.push(getRandomFieldElement());
+                    const isHighestPower = i === degree - 1;
+                    const coefficient = isHighestPower
+                        ? getRandomNonZeroFieldElement()
+                        : getRandomFieldElement();
+                    coefficients.push(coefficient);
                 }
                 return coefficients;
             }
@@ -3665,8 +3906,9 @@ TERMS OF USE
              * Ensures the mnemonic word count is one of the supported lengths.
              */
             function ensureSupportedWordCount(wordCount) {
-                if (wordCount !== 12 && wordCount !== 24) {
-                    throw new Error('This tool currently supports only 12- or 24-word mnemonics.');
+                const allowedCounts = [12, 15, 18, 21, 24];
+                if (!allowedCounts.includes(wordCount)) {
+                    throw new Error('This tool currently supports only 12, 15, 18, 21, or 24-word mnemonics.');
                 }
             }
 
@@ -3897,6 +4139,7 @@ TERMS OF USE
                         global: false,
                         bip39: false,
                         generic: null,
+                        shareValidation: null,
                         rowPathMismatch: [],    // v0.4.0: Path A vs Path B row disagreement
                         globalPathMismatch: false, // v0.4.0: Path A vs Path B global disagreement
                         // Derived (UI helpers) - populated later
@@ -3928,6 +4171,81 @@ TERMS OF USE
                     ensureShareNumbersDistinct(shares);
 
                     const rowCount = wordCount / WORDS_PER_ROW;
+
+                    // 1b. Pre-flight per-share validation (STOP on mismatch)
+                    const shareValidation = {
+                        rowErrors: [],
+                        globalErrors: []
+                    };
+
+                    shares.forEach((share, index) => {
+                        const shareIndex = Number.isInteger(share.shareIndex) ? share.shareIndex : index + 1;
+                        const shareNumber = normalizeShareValue(share.shareNumber, `Share #${shareIndex} number`);
+                        if (shareNumber === 0) {
+                            throw new Error(`Share #${shareIndex} has an invalid share number (0).`);
+                        }
+
+                        let wordSum = 0;
+                        let checksumSum = 0;
+                        let hasRowError = false;
+
+                        for (let row = 0; row < rowCount; row++) {
+                            const base = row * WORDS_PER_ROW;
+                            const wordA = normalizeShareValue(share.wordShares[base], `Share #${shareIndex} word ${base + 1}`);
+                            const wordB = normalizeShareValue(share.wordShares[base + 1], `Share #${shareIndex} word ${base + 2}`);
+                            const wordC = normalizeShareValue(share.wordShares[base + 2], `Share #${shareIndex} word ${base + 3}`);
+                            const checksum = normalizeShareValue(share.checksumShares[row], `Share #${shareIndex} checksum C${row + 1}`);
+
+                            wordSum = modAdd(modAdd(wordSum, wordA), modAdd(wordB, wordC));
+                            checksumSum = modAdd(checksumSum, checksum);
+
+                            const rowSum = modAdd(modAdd(wordA, wordB), wordC);
+                            if (rowSum !== checksum) {
+                                shareValidation.rowErrors.push({ shareIndex, rowIndex: row });
+                                hasRowError = true;
+                            }
+                        }
+
+                        if (!hasRowError) {
+                            const gicValue = normalizeShareValue(
+                                share.globalIntegrityCheckShare,
+                                `Share #${shareIndex} Global Integrity Check (GIC)`
+                            );
+                            const expectedFromWords = modAdd(wordSum, shareNumber);
+                            const expectedFromChecksums = modAdd(checksumSum, shareNumber);
+                            if (gicValue !== expectedFromWords || gicValue !== expectedFromChecksums) {
+                                shareValidation.globalErrors.push({ shareIndex });
+                            }
+                        }
+                    });
+
+                    if (shareValidation.rowErrors.length > 0 || shareValidation.globalErrors.length > 0) {
+                        const messages = [];
+                        if (shareValidation.rowErrors.length > 0) {
+                            messages.push('Row checksum mismatch detected. Fix the highlighted rows and retry.');
+                        }
+                        if (shareValidation.globalErrors.length > 0) {
+                            messages.push('Printed Global Integrity Check (GIC) binding mismatch detected. Fix the highlighted GIC fields and retry.');
+                        }
+                        report.errors.shareValidation = {
+                            rowErrors: shareValidation.rowErrors,
+                            globalErrors: shareValidation.globalErrors,
+                            message: messages.join('\n')
+                        };
+                        report.errors.generic = report.errors.shareValidation.message;
+                        return report;
+                    }
+
+                    // 1c. Lagrange sanity check for share numbers
+                    const shareNumbers = shares.map(share => share.shareNumber);
+                    const multipliers = computeLagrangeMultipliers(shareNumbers);
+                    const sanityCheck = multipliers.reduce((acc, coef, idx) => {
+                        return modAdd(acc, modMul(coef, shareNumbers[idx]));
+                    }, 0);
+                    if (sanityCheck !== 0) {
+                        report.errors.generic = 'Lagrange coefficient sanity check failed. Verify share numbers and coefficients.';
+                        return report;
+                    }
 
                     // 2. Recover all secret numbers via Lagrange Interpolation
                     recoveredWords = [];
@@ -4052,6 +4370,7 @@ TERMS OF USE
                 computeGlobalIntegrityCheckPolynomial,
                 configureEnvironment,
                 getRandomFieldElement, // Expose for the manual helper tool
+                getRandomNonZeroFieldElement,
                 computeLagrangeMultipliers,
                 wipeString, // Expose for UI-side cleanup of sensitive strings
                 secureWipeArray // Expose for UI-side cleanup of sensitive arrays

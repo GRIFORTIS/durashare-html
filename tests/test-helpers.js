@@ -1,16 +1,58 @@
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const HTML_PATH = resolve(__dirname, '..', 'schiavinato_sharing.html');
+
+let cachedWordlist = null;
+
+function getWordlist() {
+  if (cachedWordlist) return cachedWordlist;
+  const html = fs.readFileSync(HTML_PATH, 'utf8');
+  const match = html.match(/const BIP39_WORDLIST = \[([\s\S]*?)\];/);
+  if (!match) {
+    throw new Error('Could not locate BIP39_WORDLIST in schiavinato_sharing.html');
+  }
+  cachedWordlist = JSON.parse(`[${match[1]}]`);
+  return cachedWordlist;
+}
+
+export function getDeterministicMnemonic(wordCount) {
+  const allowedCounts = [12, 15, 18, 21, 24];
+  if (!allowedCounts.includes(wordCount)) {
+    throw new Error(`Unsupported word count for test mnemonic: ${wordCount}`);
+  }
+  const entropyBits = (wordCount / 3) * 32;
+  const checksumBits = entropyBits / 32;
+  const entropyBytes = Buffer.alloc(entropyBits / 8, 0);
+  const hash = crypto.createHash('sha256').update(entropyBytes).digest();
+  const bits = Array.from(entropyBytes)
+    .map(byte => byte.toString(2).padStart(8, '0'))
+    .join('') +
+    Array.from(hash)
+      .map(byte => byte.toString(2).padStart(8, '0'))
+      .join('')
+      .slice(0, checksumBits);
+
+  const wordlist = getWordlist();
+  const words = [];
+  for (let i = 0; i < wordCount; i++) {
+    const start = i * 11;
+    const index = parseInt(bits.slice(start, start + 11), 2);
+    words.push(wordlist[index]);
+  }
+  return words.join(' ');
+}
 
 /**
  * Open the app and accept the disclaimer
  */
 export async function openApp(page) {
   // Construct file:// URL to schiavinato_sharing.html
-  const htmlPath = resolve(__dirname, '..', 'schiavinato_sharing.html');
-  const fileUrl = `file://${htmlPath}`;
+  const fileUrl = `file://${HTML_PATH}`;
   
   await page.goto(fileUrl);
   
@@ -41,23 +83,42 @@ export async function navigateToCreateShares(page) {
 }
 
 /**
+ * Navigate to Recover Wallet page from the home screen
+ */
+export async function navigateToRecoverFromHome(page) {
+  await page.click('#btn-go-to-recover');
+  await page.waitForSelector('#pageRecover1', { state: 'visible' });
+}
+
+/**
  * Select 12 words option
  */
 export async function select12Words(page) {
-  await page.click('#btn-12-words');
-  
-  // Wait for word-12 to exist (dynamic input generation fix)
-  await page.waitForSelector('#word-12', { state: 'visible' });
+  await selectCreateWordCount(page, 12);
 }
 
 /**
  * Select 24 words option
  */
 export async function select24Words(page) {
-  await page.click('#btn-24-words');
-  
-  // Wait for word-24 to exist (dynamic input generation fix)
-  await page.waitForSelector('#word-24', { state: 'visible' });
+  await selectCreateWordCount(page, 24);
+}
+
+async function ensureWordCountButtonVisible(page, buttonSelector, toggleSelector) {
+  const visible = await page.isVisible(buttonSelector).catch(() => false);
+  if (!visible) {
+    await page.click(toggleSelector);
+    await page.waitForSelector(buttonSelector, { state: 'visible' });
+  }
+}
+
+export async function selectCreateWordCount(page, wordCount) {
+  const buttonSelector = `#btn-${wordCount}-words`;
+  if ([15, 18, 21].includes(wordCount)) {
+    await ensureWordCountButtonVisible(page, buttonSelector, '#btn-wordcount-toggle-create');
+  }
+  await page.click(buttonSelector);
+  await page.waitForSelector(`#word-${wordCount}`, { state: 'visible' });
 }
 
 /**
@@ -67,8 +128,8 @@ export async function select24Words(page) {
 export async function fillMnemonic(page, mnemonic) {
   const words = mnemonic.split(' ');
   
-  if (words.length !== 12 && words.length !== 24) {
-    throw new Error(`Expected 12 or 24 words, got ${words.length}`);
+  if (![12, 15, 18, 21, 24].includes(words.length)) {
+    throw new Error(`Expected 12, 15, 18, 21, or 24 words, got ${words.length}`);
   }
   
   for (let i = 0; i < words.length; i++) {
@@ -98,9 +159,21 @@ export async function generateShares(page) {
   await page.waitForSelector('.share-card', { state: 'visible' });
 }
 
+function extractNumericFromShareText(text) {
+  if (!text) return '';
+  const normalized = text.trim();
+  const parts = normalized.split('-').map(part => part.trim());
+  if (parts.length === 2) {
+    if (/^\d+$/.test(parts[0])) return parts[0];
+    if (/^\d+$/.test(parts[1])) return parts[1];
+  }
+  const match = normalized.match(/(\d+)/);
+  return match ? match[1] : '';
+}
+
 /**
  * Extract share data from a share card
- * Handles the "word - ####" format
+ * Handles both "0001-word" and "word-0001" formats
  */
 export async function extractShareData(page, shareIndex) {
   const shareCards = await page.$$('.share-card');
@@ -121,8 +194,7 @@ export async function extractShareData(page, shareIndex) {
   
   // Extract Global Integrity Check (GIC) verification code
   const globalIntegrityCheckText = await shareCard.$eval('.share-metadata code', el => el.textContent);
-  // Parse "word-####" → "####" (note: format changed from "word - ####" to "word-####")
-  const globalIntegrityCheck = globalIntegrityCheckText ? globalIntegrityCheckText.split('-')[1] : undefined;
+  const globalIntegrityCheck = extractNumericFromShareText(globalIntegrityCheckText);
   
   // Extract words and checksums
   const wordItems = await shareCard.$$('.share-word-item');
@@ -133,8 +205,7 @@ export async function extractShareData(page, shareIndex) {
     const label = await item.$eval('label', el => el.textContent);
     const codeText = await item.$eval('code', el => el.textContent);
     
-    // Parse "word-####" → "####" (note: format changed from "word - ####" to "word-####")
-    const code = codeText.split('-')[1];
+    const code = extractNumericFromShareText(codeText);
     
     if (label.startsWith('C')) {
       // Checksum
@@ -180,7 +251,11 @@ export async function navigateToRecover(page) {
  * Setup recovery parameters (word count and k value)
  */
 export async function setupRecovery(page, wordCount, k) {
-  await page.click(`#recover-btn-${wordCount}-words`);
+  const buttonSelector = `#recover-btn-${wordCount}-words`;
+  if ([15, 18, 21].includes(wordCount)) {
+    await ensureWordCountButtonVisible(page, buttonSelector, '#btn-wordcount-toggle-recover');
+  }
+  await page.click(buttonSelector);
   
   // Click label for custom styled radio button
   await page.click(`label[for="recover-k-${k}"]`);

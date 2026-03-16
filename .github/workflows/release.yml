@@ -38,6 +38,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout canonical spec vectors
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: GRIFORTIS/schiavinato-sharing
+          ref: main
+          path: schiavinato-sharing
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -61,6 +68,7 @@ jobs:
         env:
           CI: 'true'
           GITHUB_ACTIONS: 'true'
+          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
 
       - name: Resolve version metadata
         id: meta
@@ -148,6 +156,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout canonical spec vectors
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: GRIFORTIS/schiavinato-sharing
+          ref: main
+          path: schiavinato-sharing
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -171,6 +186,7 @@ jobs:
         env:
           CI: 'true'
           GITHUB_ACTIONS: 'true'
+          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
 
       - name: Resolve version metadata (and verify tag matches)
         id: meta
@@ -300,6 +316,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Checkout canonical spec vectors
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: GRIFORTIS/schiavinato-sharing
+          ref: main
+          path: schiavinato-sharing
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -323,6 +346,7 @@ jobs:
         env:
           CI: 'true'
           GITHUB_ACTIONS: 'true'
+          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
 
       - name: Verify tag matches package.json
         shell: bash

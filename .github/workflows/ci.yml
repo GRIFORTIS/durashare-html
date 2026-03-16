@@ -47,6 +47,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
+      - name: Checkout canonical spec vectors
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: GRIFORTIS/schiavinato-sharing
+          ref: main
+          path: schiavinato-sharing
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -68,6 +75,8 @@ jobs:
 
       - name: Run tests
         run: npm run test:ci
+        env:
+          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
 
       - name: Upload Playwright report
         if: always()

@@ -1,6 +1,6 @@
 # Schiavinato Sharing (HTML)
 
-[![Security: Experimental](https://img.shields.io/badge/Security-⚠️%20EXPERIMENTAL%20⚠️-red)](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/.github/SECURITY.md)
+[![Security: Experimental](https://img.shields.io/badge/Security-⚠️%20EXPERIMENTAL%20⚠️-red)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 [![CI](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/codeql.yml)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
@@ -10,9 +10,9 @@
 > 
 >DO NOT USE IT FOR REAL FUNDS!
 >
-> Schiavinato Sharing specification and implementations have NOT been audited. Use for testing, learning, and experimentation only. See [SECURITY](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/.github/SECURITY.md) for details.
+> Schiavinato Sharing specification and implementations have NOT been audited. Use for testing, learning, and experimentation only. See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md) for details.
 >
->We invite **cryptographers** and **developers** to review the spec and software. See [CONTRIBUTING](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/.github/CONTRIBUTING.md) to know more.
+>We invite **cryptographers** and **developers** to review the spec and software. See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
 
 **Single-file, air-gapped HTML implementation of Schiavinato Sharing**
 
@@ -55,7 +55,7 @@ This tool implements well-established cryptographic principles but has **NOT** b
 
 **Use only for**: testing, learning, experimentation.
 
-**Canonical security posture**: [schiavinato-sharing/SECURITY](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/.github/SECURITY.md)
+**Canonical security posture**: [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 
 ---
 
@@ -131,9 +131,10 @@ Tests run automatically in CI on every push/PR.
 
 ## Compatibility
 
-- **Spec version**: v0.4.0
-- **BIP39 word counts**: 12, 24
+- **Spec version**: v0.4.1 (non-digital-payload subset)
+- **BIP39 word counts**: 12, 15, 18, 21, 24
 - **Threshold schemes**: 2-of-3, 2-of-4, 3-of-5
+- **Digital payload (Bech32m/QR/Identity+Transport locks)**: not implemented in the HTML tool
 - **Browser requirements**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 
 ---
@@ -145,7 +146,7 @@ When contributing:
 - Add/update tests for any behavioral changes
 - Run full test suite before submitting PR
 
-See [CONTRIBUTING](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/.github/CONTRIBUTING.md) to know more.
+See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
 
 ---
 

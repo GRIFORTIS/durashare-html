@@ -33,6 +33,20 @@ const MNEMONIC_24_ABANDON = 'abandon abandon abandon abandon abandon abandon aba
 const MNEMONIC_12_ZOO = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo abstract';
 const MNEMONIC_24_ZOO = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo buddy';
 
+function buildUniformShare(shareNumber, wordCount, wordValue) {
+  const rowCount = wordCount / 3;
+  const rowChecksum = (wordValue * 3) % 2053;
+  const checksums = new Array(rowCount).fill(rowChecksum);
+  const globalSum = (wordValue * wordCount) % 2053;
+  const gic = (globalSum + shareNumber) % 2053;
+  return createSyntheticShare(
+    shareNumber,
+    gic,
+    new Array(wordCount).fill(wordValue),
+    checksums
+  );
+}
+
 test.describe('Edge Cases - Share Creation with Extreme Mnemonics', () => {
   
   test('create 2-of-3 shares with 12-word all-abandon mnemonic', async ({ page }) => {
@@ -240,29 +254,9 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     await setupRecovery(page, 24, 3);
     
     // Create synthetic shares with high field values (within BIP39 range 1-2048)
-    // Share 1: Words=2045, Checksums=2033, GlobalIntegrityCheck=1907
-    const share1 = createSyntheticShare(
-      1,
-      1907,                                 // globalIntegrityCheck = 1907
-      new Array(24).fill(2045),            // all words = 2045
-      new Array(8).fill(2033)              // all checksums = 2033
-    );
-    
-    // Share 2: Words=2041, Checksums=2029, GlobalIntegrityCheck=1903
-    const share2 = createSyntheticShare(
-      2,
-      1903,                                 // globalIntegrityCheck = 1903
-      new Array(24).fill(2041),            // all words = 2041
-      new Array(8).fill(2029)              // all checksums = 2029
-    );
-    
-    // Share 4: Words=2027, Checksums=2015, GlobalIntegrityCheck=1889
-    const share4 = createSyntheticShare(
-      4,
-      1889,                                 // globalIntegrityCheck = 1889
-      new Array(24).fill(2027),            // all words = 2027
-      new Array(8).fill(2015)              // all checksums = 2015
-    );
+    const share1 = buildUniformShare(1, 24, 2045);
+    const share2 = buildUniformShare(2, 24, 2041);
+    const share4 = buildUniformShare(4, 24, 2027);
     
     // Fill recovery form
     await fillRecoveryShare(page, 1, share1);
@@ -309,29 +303,9 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     await setupRecovery(page, 12, 3);
     
     // Create synthetic shares with high field values (within BIP39 range 1-2048)
-    // Share 1: Words=2045, Checksums=2033, GlobalIntegrityCheck=1979
-    const share1 = createSyntheticShare(
-      1,
-      1979,                                 // globalIntegrityCheck = 1979
-      new Array(12).fill(2045),            // all words = 2045
-      new Array(4).fill(2033)              // all checksums = 2033
-    );
-    
-    // Share 2: Words=2041, Checksums=2029, GlobalIntegrityCheck=1975
-    const share2 = createSyntheticShare(
-      2,
-      1975,                                 // globalIntegrityCheck = 1975
-      new Array(12).fill(2041),            // all words = 2041
-      new Array(4).fill(2029)              // all checksums = 2029
-    );
-    
-    // Share 4: Words=2027, Checksums=2015, GlobalIntegrityCheck=1961
-    const share4 = createSyntheticShare(
-      4,
-      1961,                                 // globalIntegrityCheck = 1961
-      new Array(12).fill(2027),            // all words = 2027
-      new Array(4).fill(2015)              // all checksums = 2015
-    );
+    const share1 = buildUniformShare(1, 12, 2045);
+    const share2 = buildUniformShare(2, 12, 2041);
+    const share4 = buildUniformShare(4, 12, 2027);
     
     // Fill recovery form
     await fillRecoveryShare(page, 1, share1);
@@ -381,29 +355,9 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     // Scheme 3-of-5 with shares {1,2,4} has coefficients (687, 2051, 1369)
     // This combination produces the largest coefficients for our supported schemes
     
-    // Share 1: Words=1000, Checksums=947, GlobalIntegrityCheck=1417
-    const share1 = createSyntheticShare(
-      1,
-      1417,                                 // globalIntegrityCheck
-      new Array(24).fill(1000),            // all words = 1000
-      new Array(8).fill(947)               // all checksums = 947
-    );
-    
-    // Share 2: Words=2052 (FIELD MAXIMUM!), Checksums=2050, GlobalIntegrityCheck=2029
-    const share2 = createSyntheticShare(
-      2,
-      2029,                                 // globalIntegrityCheck
-      new Array(24).fill(2052),            // all words = 2052 (p-1 in GF(2053))
-      new Array(8).fill(2050)              // all checksums = 2050
-    );
-    
-    // Share 4: Words=1500, Checksums=394, GlobalIntegrityCheck=1099
-    const share4 = createSyntheticShare(
-      4,
-      1099,                                 // globalIntegrityCheck
-      new Array(24).fill(1500),            // all words = 1500
-      new Array(8).fill(394)               // all checksums = 394
-    );
+    const share1 = buildUniformShare(1, 24, 1000);
+    const share2 = buildUniformShare(2, 24, 2052);
+    const share4 = buildUniformShare(4, 24, 1500);
     
     // Fill recovery form
     await fillRecoveryShare(page, 1, share1);

@@ -2,8 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   openApp,
   navigateToCreateShares,
-  select12Words,
-  select24Words,
+  selectCreateWordCount,
   fillMnemonic,
   selectScheme,
   generateShares,
@@ -12,12 +11,24 @@ import {
   setupRecovery,
   fillRecoveryShare,
   recoverWallet,
-  getRecoveredMnemonic
+  getRecoveredMnemonic,
+  getDeterministicMnemonic
 } from './test-helpers.js';
 
 // Test mnemonics
 const MNEMONIC_12 = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 const MNEMONIC_24 = 'abandon zoo enhance young join maximum fancy call minimum code spider olive alcohol system also share birth profit horn bargain beauty media rapid tattoo';
+const MNEMONIC_15 = getDeterministicMnemonic(15);
+const MNEMONIC_18 = getDeterministicMnemonic(18);
+const MNEMONIC_21 = getDeterministicMnemonic(21);
+
+const MNEMONICS_BY_COUNT = {
+  12: MNEMONIC_12,
+  15: MNEMONIC_15,
+  18: MNEMONIC_18,
+  21: MNEMONIC_21,
+  24: MNEMONIC_24
+};
 
 /**
  * Comprehensive test suite for all share combinations
@@ -51,6 +62,21 @@ const testCases = [
   [12, '3of5', [1, 2, 4], '12 words E2E 3-of-5 share 2,3,5'],
   [12, '3of5', [1, 3, 4], '12 words E2E 3-of-5 share 2,4,5'],
   [12, '3of5', [2, 3, 4], '12 words E2E 3-of-5 share 3,4,5'],
+
+  // 15 words - one representative per scheme
+  [15, '2of3', [0, 1], '15 words E2E 2-of-3 share 1,2'],
+  [15, '2of4', [0, 2], '15 words E2E 2-of-4 share 1,3'],
+  [15, '3of5', [0, 2, 4], '15 words E2E 3-of-5 share 1,3,5'],
+
+  // 18 words - one representative per scheme
+  [18, '2of3', [0, 2], '18 words E2E 2-of-3 share 1,3'],
+  [18, '2of4', [1, 3], '18 words E2E 2-of-4 share 2,4'],
+  [18, '3of5', [1, 2, 4], '18 words E2E 3-of-5 share 2,3,5'],
+
+  // 21 words - one representative per scheme
+  [21, '2of3', [1, 2], '21 words E2E 2-of-3 share 2,3'],
+  [21, '2of4', [0, 3], '21 words E2E 2-of-4 share 1,4'],
+  [21, '3of5', [0, 1, 3], '21 words E2E 3-of-5 share 1,2,4'],
   
   // 24 words - 2-of-3
   [24, '2of3', [0, 1], '24 words E2E 2-of-3 share 1,2'],
@@ -88,7 +114,7 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
       
       for (const [wordCount, scheme, shareIndices, description] of cases) {
         test(description, async ({ page }) => {
-          await runE2ETest(page, wordCount, scheme, shareIndices, MNEMONIC_12);
+          await runE2ETest(page, wordCount, scheme, shareIndices);
         });
       }
     });
@@ -98,7 +124,7 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
       
       for (const [wordCount, scheme, shareIndices, description] of cases) {
         test(description, async ({ page }) => {
-          await runE2ETest(page, wordCount, scheme, shareIndices, MNEMONIC_12);
+          await runE2ETest(page, wordCount, scheme, shareIndices);
         });
       }
     });
@@ -108,7 +134,94 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
       
       for (const [wordCount, scheme, shareIndices, description] of cases) {
         test(description, async ({ page }) => {
-          await runE2ETest(page, wordCount, scheme, shareIndices, MNEMONIC_12);
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+  });
+
+  test.describe('15-word mnemonics', () => {
+    test.describe('2-of-3 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 15 && tc[1] === '2of3');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+
+    test.describe('2-of-4 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 15 && tc[1] === '2of4');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+
+    test.describe('3-of-5 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 15 && tc[1] === '3of5');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+  });
+
+  test.describe('18-word mnemonics', () => {
+    test.describe('2-of-3 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 18 && tc[1] === '2of3');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+
+    test.describe('2-of-4 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 18 && tc[1] === '2of4');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+
+    test.describe('3-of-5 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 18 && tc[1] === '3of5');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+  });
+
+  test.describe('21-word mnemonics', () => {
+    test.describe('2-of-3 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 21 && tc[1] === '2of3');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+
+    test.describe('2-of-4 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 21 && tc[1] === '2of4');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
+        });
+      }
+    });
+
+    test.describe('3-of-5 schemes', () => {
+      const cases = testCases.filter(tc => tc[0] === 21 && tc[1] === '3of5');
+      for (const [wordCount, scheme, shareIndices, description] of cases) {
+        test(description, async ({ page }) => {
+          await runE2ETest(page, wordCount, scheme, shareIndices);
         });
       }
     });
@@ -121,7 +234,7 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
       
       for (const [wordCount, scheme, shareIndices, description] of cases) {
         test(description, async ({ page }) => {
-          await runE2ETest(page, wordCount, scheme, shareIndices, MNEMONIC_24);
+          await runE2ETest(page, wordCount, scheme, shareIndices);
         });
       }
     });
@@ -131,7 +244,7 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
       
       for (const [wordCount, scheme, shareIndices, description] of cases) {
         test(description, async ({ page }) => {
-          await runE2ETest(page, wordCount, scheme, shareIndices, MNEMONIC_24);
+          await runE2ETest(page, wordCount, scheme, shareIndices);
         });
       }
     });
@@ -141,7 +254,7 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
       
       for (const [wordCount, scheme, shareIndices, description] of cases) {
         test(description, async ({ page }) => {
-          await runE2ETest(page, wordCount, scheme, shareIndices, MNEMONIC_24);
+          await runE2ETest(page, wordCount, scheme, shareIndices);
         });
       }
     });
@@ -151,22 +264,21 @@ test.describe('Comprehensive Happy Path Tests - All Share Combinations', () => {
 /**
  * Reusable E2E test function
  * @param {Page} page - Playwright page object
- * @param {number} wordCount - 12 or 24
+ * @param {number} wordCount - 12, 15, 18, 21, or 24
  * @param {string} scheme - '2of3', '2of4', or '3of5'
  * @param {number[]} shareIndices - Array of share indices to use for recovery (0-indexed)
- * @param {string} mnemonic - The mnemonic to test with
  */
-async function runE2ETest(page, wordCount, scheme, shareIndices, mnemonic) {
+async function runE2ETest(page, wordCount, scheme, shareIndices) {
+  const mnemonic = MNEMONICS_BY_COUNT[wordCount];
+  if (!mnemonic) {
+    throw new Error(`Missing test mnemonic for word count ${wordCount}`);
+  }
   // PHASE 1: Create Shares
   await openApp(page);
   await navigateToCreateShares(page);
   
   // Select word count
-  if (wordCount === 12) {
-    await select12Words(page);
-  } else {
-    await select24Words(page);
-  }
+  await selectCreateWordCount(page, wordCount);
   
   await fillMnemonic(page, mnemonic);
   await selectScheme(page, scheme);
@@ -179,7 +291,8 @@ async function runE2ETest(page, wordCount, scheme, shareIndices, mnemonic) {
   }
   
   // Validate share data structure
-  const expectedChecksums = wordCount === 12 ? 4 : 8;
+  // 3 words per row, one checksum per row
+  const expectedChecksums = wordCount / 3;
   for (const share of shares) {
     expect(share.words).toHaveLength(wordCount);
     expect(share.checksums).toHaveLength(expectedChecksums);
