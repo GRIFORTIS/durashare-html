@@ -4,6 +4,7 @@ set -euo pipefail
 
 TAG="${TAG:?TAG is required (e.g. v0.4.1)}"
 REPO="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
+RELEASE_ROOT="${RELEASE_ROOT:-$GITHUB_WORKSPACE}"
 WORKDIR="${VERIFY_WORKDIR:-$RUNNER_TEMP/release-verify}"
 EXPECTED_FP="7921FD5694508DA4020E671F4CFE6248C57F15DF"
 
@@ -84,7 +85,7 @@ for f in "${EXPECTED_FILES[@]}"; do
 done
 
 echo "==> Importing GRIFORTIS public key"
-gpg --batch --import "${GITHUB_WORKSPACE}/GRIFORTIS-PGP-PUBLIC-KEY.asc"
+gpg --batch --import "${RELEASE_ROOT}/GRIFORTIS-PGP-PUBLIC-KEY.asc"
 actual_fp="$(gpg --with-colons --fingerprint security@grifortis.com 2>/dev/null | awk -F: '$1=="fpr" {print $10; exit}')"
 if [[ "$actual_fp" != "$EXPECTED_FP" ]]; then
   echo "Unexpected GPG fingerprint: ${actual_fp:-missing} (expected ${EXPECTED_FP})" >&2
@@ -121,7 +122,7 @@ print("CHECKSUMS.json OK")
 PY
 
 echo "==> Verifying release HTML matches tagged repository tree"
-repo_html="${GITHUB_WORKSPACE}/schiavinato_sharing.html"
+repo_html="${RELEASE_ROOT}/schiavinato_sharing.html"
 if [[ ! -f "$repo_html" ]]; then
   echo "Missing schiavinato_sharing.html in tagged checkout" >&2
   exit 1

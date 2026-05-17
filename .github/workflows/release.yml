@@ -48,8 +48,17 @@ jobs:
         with:
           ref: ${{ steps.tag.outputs.tag }}
           fetch-depth: 0
+          path: release-tree
+
+      - name: Checkout verify tooling from main
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: main
+          sparse-checkout: .github/scripts
+          path: verify-tools
 
       - name: Verify version alignment (strict)
+        working-directory: release-tree
         shell: bash
         env:
           TAG_NAME: ${{ steps.tag.outputs.tag }}
@@ -68,9 +77,11 @@ jobs:
           echo "OK: ${TAG_NAME}"
 
       - name: Import GRIFORTIS public key
+        working-directory: release-tree
         run: gpg --batch --import GRIFORTIS-PGP-PUBLIC-KEY.asc
 
       - name: Verify signed git tag (OpenPGP only)
+        working-directory: release-tree
         shell: bash
         env:
           TAG_NAME: ${{ steps.tag.outputs.tag }}
@@ -89,7 +100,8 @@ jobs:
           TAG: ${{ steps.tag.outputs.tag }}
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: bash .github/scripts/verify-published-release.sh
+          RELEASE_ROOT: ${{ github.workspace }}/release-tree
+        run: bash verify-tools/.github/scripts/verify-published-release.sh
 
       - name: Checkout canonical spec vectors
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -103,15 +115,18 @@ jobs:
         with:
           node-version: '20.x'
           cache: npm
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: release-tree/package-lock.json
 
       - name: Install dependencies
+        working-directory: release-tree
         run: npm ci
 
       - name: Install Playwright browsers
+        working-directory: release-tree
         run: npx playwright install --with-deps chromium
 
       - name: Re-run conformance tests on release tag
+        working-directory: release-tree
         run: npm run test:ci
         env:
           SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
