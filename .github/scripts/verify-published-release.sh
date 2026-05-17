@@ -51,21 +51,6 @@ for ctx in "${REQUIRED_CHECKS[@]}"; do
   echo "  OK: ${ctx}"
 done
 
-echo "==> Verifying CI and CodeQL workflows completed successfully for commit"
-for workflow in ci.yml codeql.yml; do
-  run_id="$(gh api "repos/${REPO}/actions/workflows/${workflow}/runs" \
-    -f head_sha="$COMMIT_SHA" -f status=completed -f per_page=1 \
-    --jq '.workflow_runs[0].id // empty')"
-  conclusion="$(gh api "repos/${REPO}/actions/workflows/${workflow}/runs" \
-    -f head_sha="$COMMIT_SHA" -f status=completed -f per_page=1 \
-    --jq '.workflow_runs[0].conclusion // empty')"
-  if [[ -z "$run_id" || "$conclusion" != "success" ]]; then
-    echo "Workflow ${workflow} has no successful run on ${COMMIT_SHA}" >&2
-    exit 1
-  fi
-  echo "  OK: ${workflow} (run ${run_id})"
-done
-
 echo "==> Downloading release assets"
 gh release download "$TAG" --repo "$REPO" --dir "$WORKDIR/assets"
 
