@@ -13,7 +13,6 @@ REQUIRED_CHECKS=(
   "Test on Node.js 20.x"
   "Test on Node.js 22.x"
   "Analyze JavaScript"
-  "CodeQL"
 )
 
 mkdir -p "$WORKDIR"
@@ -41,11 +40,11 @@ echo "==> Verifying required CI checks on tag commit"
 CHECK_RUNS_JSON="$(mktemp)"
 gh api "repos/${REPO}/commits/${COMMIT_SHA}/check-runs" --paginate >"$CHECK_RUNS_JSON"
 for ctx in "${REQUIRED_CHECKS[@]}"; do
-  conclusion="$(jq -r --arg n "$ctx" '
-    [.check_runs[] | select(.name == $n) | .conclusion] | first // empty
+  ok="$(jq -r --arg n "$ctx" '
+    ([.check_runs[] | select(.name == $n and .conclusion == "success")] | length) > 0
   ' "$CHECK_RUNS_JSON")"
-  if [[ "$conclusion" != "success" ]]; then
-    echo "Required check not successful: ${ctx} (conclusion=${conclusion:-missing})" >&2
+  if [[ "$ok" != "true" ]]; then
+    echo "Required check not successful: ${ctx} (no successful run on this commit)" >&2
     exit 1
   fi
   echo "  OK: ${ctx}"

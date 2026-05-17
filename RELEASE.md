@@ -93,8 +93,9 @@ cd ..
 Only after preflight and local asset verification:
 
 ```bash
-git tag -s "${VERSION}" -m "Release ${VERSION}"
-git tag -v "${VERSION}"
+# Force OpenPGP (GRIFORTIS key). Do not use SSH-signed tags.
+git -c gpg.format=openpgp -c user.signingkey=4CFE6248C57F15DF tag -s "${VERSION}" -m "Release ${VERSION}"
+git -c gpg.ssh.allowedSignersFile=/dev/null tag -v "${VERSION}"
 git push origin "${VERSION}"
 ```
 
