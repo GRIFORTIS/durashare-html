@@ -70,14 +70,18 @@ jobs:
       - name: Import GRIFORTIS public key
         run: gpg --batch --import GRIFORTIS-PGP-PUBLIC-KEY.asc
 
-      - name: Verify signed git tag
+      - name: Verify signed git tag (OpenPGP only)
         shell: bash
         env:
           TAG_NAME: ${{ steps.tag.outputs.tag }}
         run: |
           set -euo pipefail
           git fetch --tags --force
-          git tag -v "$TAG_NAME"
+          if git cat-file tag "$TAG_NAME" | grep -q 'BEGIN SSH SIGNATURE'; then
+            echo "Tag is SSH-signed. Releases require an OpenPGP tag from GRIFORTIS <security@grifortis.com>." >&2
+            exit 1
+          fi
+          git -c gpg.ssh.allowedSignersFile=/dev/null tag -v "$TAG_NAME"
 
       - name: Verify release assets, signatures, and CI gates
         shell: bash
