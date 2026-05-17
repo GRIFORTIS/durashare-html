@@ -12,7 +12,8 @@ import {
 } from './test-helpers.js';
 
 const SPEC_VERSION = 'v0.4.1';
-const VECTORS_REL_PATH = join('test_vectors', SPEC_VERSION, 'vectors.json');
+/** Frozen v0.4.1 machine-readable vectors (see schiavinato-sharing `previous_versions/README.md` and CHANGELOG). */
+const VECTORS_REL_PATH = join('previous_versions', SPEC_VERSION, 'test_vectors', 'vectors.json');
 const SUPPORTED_WORD_COUNTS = new Set([12, 15, 18, 21, 24]);
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,7 +36,11 @@ function loadVectors() {
   const specRoot = resolveSpecRepoRoot();
   const vectorsPath = join(specRoot, VECTORS_REL_PATH);
   if (!fs.existsSync(vectorsPath)) {
-    throw new Error(`Missing vectors file at ${vectorsPath}.`);
+    throw new Error(
+      `Missing frozen v0.4.1 vectors at ${vectorsPath}. Use an up-to-date ` +
+        'schiavinato-sharing tree (see `previous_versions/v0.4.1/test_vectors/`) and set ' +
+        'SCHIAVINATO_SHARING_SPEC_REPO_PATH if the spec repo is not a sibling of this repo.'
+    );
   }
 
   const raw = fs.readFileSync(vectorsPath, 'utf8');

@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
     paths:
       - '**'
       - '.github/workflows/ci.yml'
@@ -15,6 +16,9 @@ on:
 permissions:
   contents: read
   actions: read
+
+env:
+  SPEC_REPO_REF: v0.4.1
 
 jobs:
   secret-scan:
@@ -51,7 +55,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: GRIFORTIS/schiavinato-sharing
-          ref: main
+          ref: ${{ env.SPEC_REPO_REF }}
           path: schiavinato-sharing
 
       - name: Setup Node.js ${{ matrix.node-version }}
@@ -111,4 +115,3 @@ jobs:
           name: test-results-${{ matrix.node-version }}
           path: test-results/
           retention-days: 7
-

@@ -1,166 +1,97 @@
-name: Release HTML (signed)
+name: Release Verify
 
 on:
   release:
     types: [published]
   workflow_dispatch:
     inputs:
-      reason:
-        description: 'Why are you running a dry-run? (for audit trail)'
-        required: true
-        type: string
-      mode:
-        description: 'Mode: dry-run (no publish) or upload-to-release (attach signed assets to an existing tag)'
-        required: true
-        type: choice
-        options:
-          - dry-run
-          - upload-to-release
       tag:
-        description: 'Required only for upload-to-release (e.g., v0.4.0)'
-        required: false
+        description: 'Release tag to verify (e.g., v0.4.1)'
+        required: true
         type: string
 
 permissions:
   contents: read
+  actions: read
+
+env:
+  SPEC_REPO_REF: v0.4.1
 
 jobs:
-  dry-run:
-    name: Dry-run (no publish)
+  verify:
+    name: Verify published release
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
-    if: github.event_name != 'release' && inputs.mode == 'dry-run'
+      actions: read
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          fetch-depth: 0
-
-      - name: Checkout canonical spec vectors
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          repository: GRIFORTIS/schiavinato-sharing
-          ref: main
-          path: schiavinato-sharing
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '20.x'
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Dependency audit (high/critical)
-        run: npm audit --audit-level=high
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run tests (CI mode)
-        run: npm run test:ci
-        env:
-          CI: 'true'
-          GITHUB_ACTIONS: 'true'
-          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
-
-      - name: Resolve version metadata
-        id: meta
+      - name: Resolve tag
+        id: tag
         shell: bash
         run: |
           set -euo pipefail
-          PKG_VERSION="$(node -p "require('./package.json').version")"
-          TAG="v${PKG_VERSION}"
-          echo "pkg_version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${{ inputs.tag }}"
+          fi
+          if [ -z "$TAG" ]; then
+            echo "Missing tag" >&2
+            exit 1
+          fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Generate checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${{ steps.meta.outputs.tag }}"
-          GENERATED_UTC="$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-
-          FILES=(
-            "schiavinato_sharing.html"
-          )
-
-          {
-            echo "# SHA256 Checksums - Schiavinato Sharing (HTML)"
-            echo ""
-            echo "Version: ${TAG}"
-            echo "Generated: ${GENERATED_UTC}"
-            echo ""
-            sha256sum "${FILES[@]}"
-            echo ""
-            echo "## Verification"
-            echo ""
-            echo "sha256sum -c CHECKSUMS.txt"
-          } > CHECKSUMS.txt
-
-          python3 - <<'PY'
-          import hashlib, json, os
-          from datetime import datetime, timezone
-
-          files = ["schiavinato_sharing.html"]
-          tag = os.environ.get("TAG", "")
-          generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          def sha256(path: str) -> str:
-              h = hashlib.sha256()
-              with open(path, "rb") as f:
-                  for chunk in iter(lambda: f.read(1024 * 1024), b""):
-                      h.update(chunk)
-              return h.hexdigest()
-
-          payload = {
-              "version": tag,
-              "generated": generated,
-              "checksums": {p: sha256(p) for p in files},
-          }
-
-          with open("CHECKSUMS.json", "w", encoding="utf-8") as f:
-              json.dump(payload, f, indent=2, sort_keys=True)
-              f.write("\n")
-          PY
-        env:
-          TAG: ${{ steps.meta.outputs.tag }}
-
-      - name: Upload artifacts (dry-run)
-        uses: actions/upload-artifact@4c0ff1c489dca52fedb26375d7d8fe7bd9233f19 # v4.4.0
-        with:
-          name: release-dry-run-${{ steps.meta.outputs.tag }}
-          path: |
-            schiavinato_sharing.html
-            CHECKSUMS.txt
-            CHECKSUMS.json
-          retention-days: 14
-
-  release:
-    name: Release (upload signed assets)
-    runs-on: ubuntu-latest
-    # Needs write permission to attach assets to the GitHub Release.
-    permissions:
-      contents: write
-    if: github.event_name == 'release'
-
-    steps:
-      - name: Checkout code
+      - name: Checkout release tag
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
+          ref: ${{ steps.tag.outputs.tag }}
           fetch-depth: 0
+
+      - name: Verify version alignment (strict)
+        shell: bash
+        env:
+          TAG_NAME: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          TAG_NORM="v${PKG_VERSION}"
+          if [ "$TAG_NAME" != "$TAG_NORM" ]; then
+            echo "Tag/package.json mismatch: tag=$TAG_NAME package=$TAG_NORM" >&2
+            exit 1
+          fi
+          if ! grep -Fq "$TAG_NORM" schiavinato_sharing.html; then
+            echo "schiavinato_sharing.html missing user-facing version ${TAG_NORM}" >&2
+            exit 1
+          fi
+          echo "OK: ${TAG_NAME}"
+
+      - name: Import GRIFORTIS public key
+        run: gpg --batch --import GRIFORTIS-PGP-PUBLIC-KEY.asc
+
+      - name: Verify signed git tag
+        shell: bash
+        env:
+          TAG_NAME: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          git tag -v "$TAG_NAME"
+
+      - name: Verify release assets, signatures, and CI gates
+        shell: bash
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: bash .github/scripts/verify-published-release.sh
 
       - name: Checkout canonical spec vectors
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: GRIFORTIS/schiavinato-sharing
-          ref: main
+          ref: ${{ env.SPEC_REPO_REF }}
           path: schiavinato-sharing
 
       - name: Setup Node.js
@@ -168,287 +99,15 @@ jobs:
         with:
           node-version: '20.x'
           cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Dependency audit (high/critical)
-        run: npm audit --audit-level=high
-
-      - name: Run linter
-        run: npm run lint
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run tests (CI mode)
+      - name: Re-run conformance tests on release tag
         run: npm run test:ci
         env:
-          CI: 'true'
-          GITHUB_ACTIONS: 'true'
           SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
-
-      - name: Resolve version metadata (and verify tag matches)
-        id: meta
-        shell: bash
-        run: |
-          set -euo pipefail
-          PKG_VERSION="$(node -p "require('./package.json').version")"
-          TAG_FROM_EVENT="${{ github.event.release.tag_name }}"
-          TAG_NORM="v${PKG_VERSION}"
-          if [ "$TAG_FROM_EVENT" != "$TAG_NORM" ] && [ "$TAG_FROM_EVENT" != "$PKG_VERSION" ]; then
-            echo "Tag/version mismatch: tag=$TAG_FROM_EVENT pkg=$PKG_VERSION (expected $TAG_NORM)" >&2
-            exit 1
-          fi
-          echo "pkg_version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG_FROM_EVENT" >> "$GITHUB_OUTPUT"
-
-      - name: Generate checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${{ steps.meta.outputs.tag }}"
-          GENERATED_UTC="$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          FILES=("schiavinato_sharing.html")
-
-          {
-            echo "# SHA256 Checksums - Schiavinato Sharing (HTML)"
-            echo ""
-            echo "Version: ${TAG}"
-            echo "Generated: ${GENERATED_UTC}"
-            echo ""
-            sha256sum "${FILES[@]}"
-            echo ""
-            echo "## Verification"
-            echo ""
-            echo "sha256sum -c CHECKSUMS.txt"
-          } > CHECKSUMS.txt
-
-          python3 - <<'PY'
-          import hashlib, json, os
-          from datetime import datetime, timezone
-          files = ["schiavinato_sharing.html"]
-          tag = os.environ.get("TAG", "")
-          generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          def sha256(path: str) -> str:
-              h = hashlib.sha256()
-              with open(path, "rb") as f:
-                  for chunk in iter(lambda: f.read(1024 * 1024), b""):
-                      h.update(chunk)
-              return h.hexdigest()
-
-          payload = {"version": tag, "generated": generated, "checksums": {p: sha256(p) for p in files}}
-          with open("CHECKSUMS.json", "w", encoding="utf-8") as f:
-              json.dump(payload, f, indent=2, sort_keys=True)
-              f.write("\n")
-          PY
-        env:
-          TAG: ${{ steps.meta.outputs.tag }}
-
-      - name: Check signing secrets configured
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ] || [ -z "${{ secrets.GPG_PASSPHRASE }}" ]; then
-            echo "Missing GPG secrets. Configure GPG_PRIVATE_KEY and GPG_PASSPHRASE to produce signed release artifacts." >&2
-            exit 1
-          fi
-
-      - name: Import GPG key
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-
-      - name: Sign artifacts
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes \
-            --passphrase-fd 0 --pinentry-mode loopback \
-            --armor --detach-sign schiavinato_sharing.html
-          gpg --verify schiavinato_sharing.html.asc schiavinato_sharing.html
-
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes \
-            --passphrase-fd 0 --pinentry-mode loopback \
-            --armor --detach-sign CHECKSUMS.txt
-          gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
-
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes \
-            --passphrase-fd 0 --pinentry-mode loopback \
-            --armor --detach-sign CHECKSUMS.json
-          gpg --verify CHECKSUMS.json.asc CHECKSUMS.json
-
-      - name: Upload signed artifacts to release
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
-        with:
-          files: |
-            schiavinato_sharing.html
-            schiavinato_sharing.html.asc
-            CHECKSUMS.txt
-            CHECKSUMS.txt.asc
-            CHECKSUMS.json
-            CHECKSUMS.json.asc
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  upload-to-release:
-    name: Upload signed assets to existing release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    if: github.event_name != 'release' && inputs.mode == 'upload-to-release'
-
-    steps:
-      - name: Validate tag input
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -z "${{ inputs.tag }}" ]; then
-            echo "Missing required input: tag (e.g., v0.4.0)" >&2
-            exit 1
-          fi
-
-      - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          fetch-depth: 0
-
-      - name: Checkout canonical spec vectors
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-        with:
-          repository: GRIFORTIS/schiavinato-sharing
-          ref: main
-          path: schiavinato-sharing
-
-      - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '20.x'
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Dependency audit (high/critical)
-        run: npm audit --audit-level=high
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run tests (CI mode)
-        run: npm run test:ci
-        env:
-          CI: 'true'
-          GITHUB_ACTIONS: 'true'
-          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
-
-      - name: Verify tag matches package.json
-        shell: bash
-        run: |
-          set -euo pipefail
-          PKG_VERSION="$(node -p "require('./package.json').version")"
-          TAG_FROM_INPUT="${{ inputs.tag }}"
-          TAG_NORM="v${PKG_VERSION}"
-          if [ "$TAG_FROM_INPUT" != "$TAG_NORM" ] && [ "$TAG_FROM_INPUT" != "$PKG_VERSION" ]; then
-            echo "Tag/version mismatch: tag=$TAG_FROM_INPUT pkg=$PKG_VERSION (expected $TAG_NORM)" >&2
-            exit 1
-          fi
-
-      - name: Generate checksums
-        shell: bash
-        run: |
-          set -euo pipefail
-          TAG="${{ inputs.tag }}"
-          GENERATED_UTC="$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-          FILES=("schiavinato_sharing.html")
-
-          {
-            echo "# SHA256 Checksums - Schiavinato Sharing (HTML)"
-            echo ""
-            echo "Version: ${TAG}"
-            echo "Generated: ${GENERATED_UTC}"
-            echo ""
-            sha256sum "${FILES[@]}"
-            echo ""
-            echo "## Verification"
-            echo ""
-            echo "sha256sum -c CHECKSUMS.txt"
-          } > CHECKSUMS.txt
-
-          python3 - <<'PY'
-          import hashlib, json, os
-          from datetime import datetime, timezone
-          files = ["schiavinato_sharing.html"]
-          tag = os.environ.get("TAG", "")
-          generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-          def sha256(path: str) -> str:
-              h = hashlib.sha256()
-              with open(path, "rb") as f:
-                  for chunk in iter(lambda: f.read(1024 * 1024), b""):
-                      h.update(chunk)
-              return h.hexdigest()
-
-          payload = {"version": tag, "generated": generated, "checksums": {p: sha256(p) for p in files}}
-          with open("CHECKSUMS.json", "w", encoding="utf-8") as f:
-              json.dump(payload, f, indent=2, sort_keys=True)
-              f.write("\n")
-          PY
-        env:
-          TAG: ${{ inputs.tag }}
-
-      - name: Check signing secrets configured
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -z "${{ secrets.GPG_PRIVATE_KEY }}" ] || [ -z "${{ secrets.GPG_PASSPHRASE }}" ]; then
-            echo "Missing GPG secrets. Configure GPG_PRIVATE_KEY and GPG_PASSPHRASE to produce signed release artifacts." >&2
-            exit 1
-          fi
-
-      - name: Import GPG key
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
-          gpg --list-secret-keys --keyid-format LONG
-
-      - name: Sign artifacts
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes \
-            --passphrase-fd 0 --pinentry-mode loopback \
-            --armor --detach-sign schiavinato_sharing.html
-          gpg --verify schiavinato_sharing.html.asc schiavinato_sharing.html
-
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes \
-            --passphrase-fd 0 --pinentry-mode loopback \
-            --armor --detach-sign CHECKSUMS.txt
-          gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
-
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes \
-            --passphrase-fd 0 --pinentry-mode loopback \
-            --armor --detach-sign CHECKSUMS.json
-          gpg --verify CHECKSUMS.json.asc CHECKSUMS.json
-
-      - name: Upload signed artifacts to release
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
-        with:
-          tag_name: ${{ inputs.tag }}
-          files: |
-            schiavinato_sharing.html
-            schiavinato_sharing.html.asc
-            CHECKSUMS.txt
-            CHECKSUMS.txt.asc
-            CHECKSUMS.json
-            CHECKSUMS.json.asc
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-

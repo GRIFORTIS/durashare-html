@@ -37,7 +37,7 @@ npm run test:ui
 Conformance is defined by the canonical vectors in the specification repo:
 - [TEST_VECTORS](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/test_vectors/README.md)
 
-The Playwright suite loads `test_vectors/v0.4.1/vectors.json` from the spec repo at runtime.
+The Playwright suite loads exactly one file: the frozen v0.4.1 machine-readable vectors at `previous_versions/v0.4.1/test_vectors/vectors.json` in the [specification repo](https://github.com/GRIFORTIS/schiavinato-sharing) (same path as in that repo’s `CHANGELOG` and `test_vectors/README.md`). CI pins `GRIFORTIS/schiavinato-sharing@v0.4.1`; locally, clone that tag or set `SCHIAVINATO_SHARING_SPEC_REPO_PATH`.
 Local options:
 - Clone `schiavinato-sharing` next to `schiavinato-sharing-html`, or
 - Set `SCHIAVINATO_SHARING_SPEC_REPO_PATH=/abs/path/to/schiavinato-sharing`.

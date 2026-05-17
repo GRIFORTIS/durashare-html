@@ -79,8 +79,8 @@ gpg --fingerprint security@grifortis.com
 ### 2. Download Release Files
 
 ```bash
-# Replace VERSION with actual release (e.g., v0.4.0)
-VERSION="v0.4.0"
+# Replace VERSION with actual release (e.g., v0.4.1)
+VERSION="v0.4.1"
 curl -fsSL -O "https://github.com/GRIFORTIS/schiavinato-sharing-html/releases/download/${VERSION}/schiavinato_sharing.html"
 curl -fsSL -O "https://github.com/GRIFORTIS/schiavinato-sharing-html/releases/download/${VERSION}/schiavinato_sharing.html.asc"
 ```
@@ -117,6 +117,8 @@ sha256sum --check CHECKSUMS.txt --ignore-missing
 ## For Developers
 
 See [`TESTING`](./TESTING.md) for local test commands (CI parity), including Playwright installation and optional UI mode.
+
+Maintainers: see [`RELEASE.md`](./RELEASE.md) for the signed-tag release process and automated verify gate.
 
 ---
 
