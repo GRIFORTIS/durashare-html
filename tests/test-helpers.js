@@ -7,7 +7,61 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const HTML_PATH = resolve(__dirname, '..', 'schiavinato_sharing.html');
 
+const FIELD_PRIME = 2053;
+const COLUMN_TAGS = [10, 20, 30];
+const COLUMN_TOTAL = 60;
+
 let cachedWordlist = null;
+
+function mod(n) {
+  return ((n % FIELD_PRIME) + FIELD_PRIME) % FIELD_PRIME;
+}
+
+function computeRowTotal(rowCount) {
+  return (rowCount * (rowCount + 1)) / 2;
+}
+
+/**
+ * v0.5.0 position-bound row checksums: (w1 + w2 + w3 + rowNumber) mod 2053.
+ */
+export function computeRowChecksums(wordValues) {
+  const rowCount = wordValues.length / 3;
+  const checksums = [];
+  for (let row = 0; row < rowCount; row++) {
+    let sum = 0;
+    for (let w = 0; w < 3; w++) {
+      sum = mod(sum + Number(wordValues[row * 3 + w]));
+    }
+    checksums.push(mod(sum + (row + 1)));
+  }
+  return checksums;
+}
+
+/**
+ * v0.5.0 column checksums: sum(column words) + tag (10/20/30) mod 2053.
+ */
+export function computeColumnChecksums(wordValues) {
+  const rowCount = wordValues.length / 3;
+  const checksums = [];
+  for (let col = 0; col < 3; col++) {
+    let sum = 0;
+    for (let row = 0; row < rowCount; row++) {
+      sum = mod(sum + Number(wordValues[row * 3 + col]));
+    }
+    checksums.push(mod(sum + COLUMN_TAGS[col]));
+  }
+  return checksums;
+}
+
+/**
+ * v0.5.0 printed GIC: (sum(words) + rowTotal + columnTotal + shareNumber) mod 2053.
+ */
+export function computePrintedGic(wordValues, shareNumber) {
+  const rowCount = wordValues.length / 3;
+  const wordSum = wordValues.reduce((acc, v) => mod(acc + Number(v)), 0);
+  const unbound = mod(wordSum + computeRowTotal(rowCount) + COLUMN_TOTAL);
+  return mod(unbound + Number(shareNumber));
+}
 
 function getWordlist() {
   if (cachedWordlist) return cachedWordlist;
@@ -51,55 +105,30 @@ export function getDeterministicMnemonic(wordCount) {
  * Open the app and accept the disclaimer
  */
 export async function openApp(page) {
-  // Construct file:// URL to schiavinato_sharing.html
   const fileUrl = `file://${HTML_PATH}`;
-  
+
   await page.goto(fileUrl);
-  
-  // Wait for landing page to be visible
   await page.waitForSelector('#pageLanding', { state: 'visible' });
-  
-  // Click label for custom styled checkbox (fix for custom checkbox)
   await page.click('label[for="disclaimer-checkbox"]');
-  
-  // Wait for button to enable
   await page.waitForTimeout(100);
-  
-  // Click continue button
   await page.click('#btn-continue-to-home');
-  
-  // Wait for home page to be visible
   await page.waitForSelector('#pageHome', { state: 'visible' });
 }
 
-/**
- * Navigate to Create Shares page
- */
 export async function navigateToCreateShares(page) {
   await page.click('#btn-go-to-create');
-  
-  // Wait for create page to be visible (page transition fix)
   await page.waitForSelector('#pageCreate1', { state: 'visible' });
 }
 
-/**
- * Navigate to Recover Wallet page from the home screen
- */
 export async function navigateToRecoverFromHome(page) {
   await page.click('#btn-go-to-recover');
   await page.waitForSelector('#pageRecover1', { state: 'visible' });
 }
 
-/**
- * Select 12 words option
- */
 export async function select12Words(page) {
   await selectCreateWordCount(page, 12);
 }
 
-/**
- * Select 24 words option
- */
 export async function select24Words(page) {
   await selectCreateWordCount(page, 24);
 }
@@ -121,17 +150,13 @@ export async function selectCreateWordCount(page, wordCount) {
   await page.waitForSelector(`#word-${wordCount}`, { state: 'visible' });
 }
 
-/**
- * Fill mnemonic words into input fields
- * Supports both 12 and 24 word mnemonics
- */
 export async function fillMnemonic(page, mnemonic) {
   const words = mnemonic.split(' ');
-  
+
   if (![12, 15, 18, 21, 24].includes(words.length)) {
     throw new Error(`Expected 12, 15, 18, 21, or 24 words, got ${words.length}`);
   }
-  
+
   for (let i = 0; i < words.length; i++) {
     const inputId = `#word-${i + 1}`;
     await page.waitForSelector(inputId, { state: 'visible' });
@@ -139,24 +164,37 @@ export async function fillMnemonic(page, mnemonic) {
   }
 }
 
-/**
- * Select share scheme (e.g., '2of3', '3of5')
- */
 export async function selectScheme(page, scheme) {
   await page.click(`label[for="scheme-${scheme}"]`);
 }
 
-/**
- * Generate shares and wait for result page
- */
 export async function generateShares(page) {
   await page.click('#btn-generate-shares');
-  
-  // Wait for result page to be visible
   await page.waitForSelector('#pageCreate2', { state: 'visible' });
-  
-  // Wait for share cards to appear
   await page.waitForSelector('.share-card', { state: 'visible' });
+}
+
+/**
+ * Pin the HTML tool's random source. Pass the body of getRandomValues, e.g. `arr.fill(0);`.
+ */
+export async function configureMockRandomSource(page, fillStatement) {
+  await page.evaluate((statement) => {
+    const api =
+      globalThis.SchiavinatoSharing ??
+      globalThis.Function(
+        'return (typeof SchiavinatoSharing !== "undefined") ? SchiavinatoSharing : undefined;'
+      )();
+
+    if (!api?.configureEnvironment) {
+      throw new Error('SchiavinatoSharing.configureEnvironment not available in page context');
+    }
+
+    api.configureEnvironment({
+      randomSource: {
+        getRandomValues: new Function('arr', statement)
+      }
+    });
+  }, fillStatement);
 }
 
 function extractNumericFromShareText(text) {
@@ -172,184 +210,164 @@ function extractNumericFromShareText(text) {
 }
 
 /**
- * Extract share data from a share card
- * Handles both "0001-word" and "word-0001" formats
+ * Extract share data from a share card (v0.5.0 table: words, row checksums, Col1–3, GIC).
  */
 export async function extractShareData(page, shareIndex) {
   const shareCards = await page.$$('.share-card');
   const shareCard = shareCards[shareIndex];
-  
+
   if (!shareCard) {
     throw new Error(`Share card ${shareIndex} not found`);
   }
-  
-  // Extract share number from metadata paragraph
-  const metadataTexts = await shareCard.$$eval('.share-metadata p', elements => 
+
+  const metadataTexts = await shareCard.$$eval('.share-metadata p', elements =>
     elements.map(el => el.textContent)
   );
-  
-  // Find the "Share Number (X):" line and extract the number
+
   const shareNumberLine = metadataTexts.find(text => text.includes('Share Number (X):'));
   const shareNumber = shareNumberLine.match(/:\s*(\d+)/)[1];
-  
-  // Extract Global Integrity Check (GIC) verification code
-  const globalIntegrityCheckText = await shareCard.$eval('.share-metadata code', el => el.textContent);
-  const globalIntegrityCheck = extractNumericFromShareText(globalIntegrityCheckText);
-  
-  // Extract words and checksums
+
   const wordItems = await shareCard.$$('.share-word-item');
   const words = [];
   const checksums = [];
-  
+  const columnChecksums = [];
+  let globalIntegrityCheck = null;
+
   for (const item of wordItems) {
     const label = await item.$eval('label', el => el.textContent);
     const codeText = await item.$eval('code', el => el.textContent);
-    
     const code = extractNumericFromShareText(codeText);
-    
-    if (label.startsWith('C')) {
-      // Checksum
+
+    if (label.startsWith('GIC')) {
+      globalIntegrityCheck = code;
+    } else if (label.startsWith('Col')) {
+      columnChecksums.push(code);
+    } else if (label.startsWith('C')) {
       checksums.push(code);
     } else {
-      // Word
       words.push(code);
     }
   }
-  
+
+  if (globalIntegrityCheck === null) {
+    throw new Error(`Share card ${shareIndex} is missing a GIC table cell`);
+  }
+  if (columnChecksums.length !== 3) {
+    throw new Error(`Share card ${shareIndex} expected 3 column checksums, got ${columnChecksums.length}`);
+  }
+
   return {
     shareNumber,
     globalIntegrityCheck,
     words,
-    checksums
+    checksums,
+    columnChecksums
   };
 }
 
-/**
- * Navigate to Recover Wallet page
- */
 export async function navigateToRecover(page) {
-  // Click "Clear All & Start Over" button to return to home
   await page.click('#btn-start-over-create');
-  
-  // Confirm the dialog
   await page.click('#modal-confirm');
-  
-  // Wait for page to reload and land on home page
   await page.waitForSelector('#pageLanding', { state: 'visible' });
-  
-  // Accept disclaimer again
   await page.click('label[for="disclaimer-checkbox"]');
   await page.waitForTimeout(100);
   await page.click('#btn-continue-to-home');
   await page.waitForSelector('#pageHome', { state: 'visible' });
-  
   await page.click('#btn-go-to-recover');
   await page.waitForSelector('#pageRecover1', { state: 'visible' });
 }
 
-/**
- * Setup recovery parameters (word count and k value)
- */
 export async function setupRecovery(page, wordCount, k) {
   const buttonSelector = `#recover-btn-${wordCount}-words`;
   if ([15, 18, 21].includes(wordCount)) {
     await ensureWordCountButtonVisible(page, buttonSelector, '#btn-wordcount-toggle-recover');
   }
   await page.click(buttonSelector);
-  
-  // Click label for custom styled radio button
   await page.click(`label[for="recover-k-${k}"]`);
-  
-  // Wait for recovery form to regenerate
   await page.waitForTimeout(200);
-  
-  // Wait for first share input to exist (1-indexed)
   await page.waitForSelector('#recover-x-1', { state: 'visible' });
 }
 
 /**
- * Fill recovery share data
- * Handles both 12-word (4 rows) and 24-word (8 rows) shares
- * Note: shareIndex is 1-indexed (1, 2, 3, ...)
+ * Fill recovery share data (words, row checksums, column checksums, GIC footer cell).
  */
 export async function fillRecoveryShare(page, shareIndex, shareData) {
-  // Fill share number (1-indexed)
   await page.fill(`#recover-x-${shareIndex}`, shareData.shareNumber);
-  
-  // Fill Global Integrity Check (GIC) verification code
-  await page.fill(`#recover-global-integrity-check-${shareIndex}`, shareData.globalIntegrityCheck);
-  
-  // Determine number of rows based on word count
-  // 12 words = 4 rows, 24 words = 8 rows (3 words per row)
+  await page.fill(`#recover-share-${shareIndex}-gic`, shareData.globalIntegrityCheck);
+
   const numRows = shareData.words.length / 3;
-  
-  // Fill words and checksums
+
   for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
-    // Fill 3 words in this row
     for (let wordIdx = 0; wordIdx < 3; wordIdx++) {
       const wordPosition = rowIndex * 3 + wordIdx;
       const inputId = `#recover-share-${shareIndex}-row-${rowIndex}-word-${wordIdx}`;
       await page.fill(inputId, shareData.words[wordPosition]);
     }
-    
-    // Fill checksum for this row
+
     const checksumId = `#recover-share-${shareIndex}-row-${rowIndex}-checksum`;
     await page.fill(checksumId, shareData.checksums[rowIndex]);
   }
+
+  for (let col = 0; col < 3; col++) {
+    const columnId = `#recover-share-${shareIndex}-column-${col}`;
+    const columnValue = shareData.columnChecksums?.[col];
+    if (columnValue === undefined) {
+      throw new Error(`Share ${shareIndex} is missing column checksum Col${col + 1}`);
+    }
+    await page.fill(columnId, columnValue);
+  }
 }
 
-/**
- * Recover wallet and wait for result page
- */
 export async function recoverWallet(page) {
   await page.click('#btn-recover-wallet');
-  
-  // Wait for result page to be visible
   await page.waitForSelector('#pageRecover2', { state: 'visible' });
 }
 
-/**
- * Get recovered mnemonic from result page
- */
 export async function getRecoveredMnemonic(page) {
-  // Get all word code elements
   const codeElements = await page.$$('#pageRecover2 .share-word-item code');
-  
+
   const words = [];
   for (const element of codeElements) {
     const text = await element.textContent();
     words.push(text.trim());
   }
-  
+
   return words.join(' ');
 }
 
-/**
- * Modify a 4-digit share value by adding 1 mod 2053
- * Used to break BIP39 checksum while keeping Schiavinato checksums valid
- */
 export function modifyShareValue(value) {
   const num = parseInt(value, 10);
-  const modified = (num + 1) % 2053;
+  const modified = (num + 1) % FIELD_PRIME;
   return modified.toString().padStart(4, '0');
 }
 
 /**
- * Create a synthetic share object with specified values
- * Used for testing edge cases with extreme field values
- * 
- * @param {number} shareNumber - Share number (1, 2, 3, etc.)
- * @param {number} globalIntegrityCheck - Global Integrity Check (GIC) verification code (0-2052)
- * @param {number[]} wordValues - Array of word values (0-2052)
- * @param {number[]} checksumValues - Array of checksum values (0-2052)
- * @returns {Object} Share object compatible with fillRecoveryShare
+ * Build a share object for recovery tests. When checksums/GIC are omitted, v0.5.0 values are derived.
  */
-export function createSyntheticShare(shareNumber, globalIntegrityCheck, wordValues, checksumValues) {
+export function createSyntheticShare(
+  shareNumber,
+  globalIntegrityCheck,
+  wordValues,
+  checksumValues = null,
+  columnChecksumValues = null
+) {
+  const numericWords = wordValues.map(v => Number(v));
+  const checksums = (checksumValues ?? computeRowChecksums(numericWords)).map(v =>
+    String(v).padStart(4, '0')
+  );
+  const columnChecksums = (columnChecksumValues ?? computeColumnChecksums(numericWords)).map(v =>
+    String(v).padStart(4, '0')
+  );
+  const gic =
+    globalIntegrityCheck === null || globalIntegrityCheck === undefined
+      ? String(computePrintedGic(numericWords, shareNumber)).padStart(4, '0')
+      : String(globalIntegrityCheck).padStart(4, '0');
+
   return {
     shareNumber: String(shareNumber),
-    globalIntegrityCheck: String(globalIntegrityCheck).padStart(4, '0'),
-    words: wordValues.map(v => String(v).padStart(4, '0')),
-    checksums: checksumValues.map(v => String(v).padStart(4, '0'))
+    globalIntegrityCheck: gic,
+    words: numericWords.map(v => String(v).padStart(4, '0')),
+    checksums,
+    columnChecksums
   };
 }
-

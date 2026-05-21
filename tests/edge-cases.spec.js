@@ -34,16 +34,10 @@ const MNEMONIC_12_ZOO = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo abstract';
 const MNEMONIC_24_ZOO = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo buddy';
 
 function buildUniformShare(shareNumber, wordCount, wordValue) {
-  const rowCount = wordCount / 3;
-  const rowChecksum = (wordValue * 3) % 2053;
-  const checksums = new Array(rowCount).fill(rowChecksum);
-  const globalSum = (wordValue * wordCount) % 2053;
-  const gic = (globalSum + shareNumber) % 2053;
   return createSyntheticShare(
     shareNumber,
-    gic,
-    new Array(wordCount).fill(wordValue),
-    checksums
+    null,
+    new Array(wordCount).fill(wordValue)
   );
 }
 
@@ -149,21 +143,8 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     
     await setupRecovery(page, 12, 2);
     
-    // Create synthetic shares with all zeros
-    // Note: With GIC binding, globalIntegrityCheck = (sum of words + share number) mod 2053
-    const share1 = createSyntheticShare(
-      1,                                    // share number
-      1,                                    // globalIntegrityCheck = (0 + 1) mod 2053 = 1
-      new Array(12).fill(0),               // all words = 0
-      new Array(4).fill(0)                 // all checksums = 0
-    );
-    
-    const share2 = createSyntheticShare(
-      2,                                    // share number
-      2,                                    // globalIntegrityCheck = (0 + 2) mod 2053 = 2
-      new Array(12).fill(0),               // all words = 0
-      new Array(4).fill(0)                 // all checksums = 0
-    );
+    const share1 = createSyntheticShare(1, null, new Array(12).fill(0));
+    const share2 = createSyntheticShare(2, null, new Array(12).fill(0));
     
     // Fill recovery form
     await fillRecoveryShare(page, 1, share1);
@@ -201,21 +182,8 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     
     await setupRecovery(page, 24, 2);
     
-    // Create synthetic shares with all zeros
-    // Note: With GIC binding, globalIntegrityCheck = (sum of words + share number) mod 2053
-    const share1 = createSyntheticShare(
-      1,
-      1,                                    // globalIntegrityCheck = (0 + 1) mod 2053 = 1
-      new Array(24).fill(0),
-      new Array(8).fill(0)
-    );
-    
-    const share2 = createSyntheticShare(
-      2,
-      2,                                    // globalIntegrityCheck = (0 + 2) mod 2053 = 2
-      new Array(24).fill(0),
-      new Array(8).fill(0)
-    );
+    const share1 = createSyntheticShare(1, null, new Array(24).fill(0));
+    const share2 = createSyntheticShare(2, null, new Array(24).fill(0));
     
     // Fill recovery form
     await fillRecoveryShare(page, 1, share1);

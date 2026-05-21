@@ -11,8 +11,8 @@ import {
   navigateToRecoverFromHome
 } from './test-helpers.js';
 
-const SPEC_VERSION = 'v0.4.1';
-/** Frozen v0.4.1 machine-readable vectors (see schiavinato-sharing `previous_versions/README.md` and CHANGELOG). */
+const SPEC_VERSION = 'v0.5.0';
+/** Frozen v0.5.0 machine-readable vectors (see schiavinato-sharing `previous_versions/README.md`). */
 const VECTORS_REL_PATH = join('previous_versions', SPEC_VERSION, 'test_vectors', 'vectors.json');
 const SUPPORTED_WORD_COUNTS = new Set([12, 15, 18, 21, 24]);
 
@@ -37,8 +37,8 @@ function loadVectors() {
   const vectorsPath = join(specRoot, VECTORS_REL_PATH);
   if (!fs.existsSync(vectorsPath)) {
     throw new Error(
-      `Missing frozen v0.4.1 vectors at ${vectorsPath}. Use an up-to-date ` +
-        'schiavinato-sharing tree (see `previous_versions/v0.4.1/test_vectors/`) and set ' +
+      `Missing frozen v0.5.0 vectors at ${vectorsPath}. Use an up-to-date ` +
+        'schiavinato-sharing tree (see `previous_versions/v0.5.0/test_vectors/`) and set ' +
         'SCHIAVINATO_SHARING_SPEC_REPO_PATH if the spec repo is not a sibling of this repo.'
     );
   }
@@ -70,7 +70,7 @@ if (compatibleVectors.length === 0) {
   throw new Error('No compatible vectors found for the HTML implementation.');
 }
 
-test.describe('Canonical vectors v0.4.1 (recovery-only)', () => {
+test.describe('Canonical vectors v0.5.0 (recovery-only)', () => {
   for (const vector of compatibleVectors) {
     const wordCount = vector.params.word_count;
     const shareMap = new Map(vector.shares.map((share) => [share.x, share]));
@@ -97,9 +97,10 @@ test.describe('Canonical vectors v0.4.1 (recovery-only)', () => {
 
             const shareData = {
               shareNumber: String(share.x),
-              globalIntegrityCheck: formatValue(share.gic_share),
+              globalIntegrityCheck: formatValue(share.printed_gic),
               words: share.words.map(formatValue),
-              checksums: share.row_checksums.map(formatValue)
+              checksums: share.row_checksums.map(formatValue),
+              columnChecksums: share.column_checksums.map(formatValue)
             };
 
             await fillRecoveryShare(page, i + 1, shareData);

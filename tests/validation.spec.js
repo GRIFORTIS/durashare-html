@@ -11,8 +11,10 @@ import {
   navigateToRecover,
   setupRecovery,
   fillRecoveryShare,
+  recoverWallet,
   getRecoveredMnemonic,
-  modifyShareValue
+  modifyShareValue,
+  configureMockRandomSource
 } from './test-helpers.js';
 
 test('create shares with invalid BIP39 checksum shows error modal', async ({ page }) => {
@@ -75,15 +77,17 @@ test('recovery with modified data shows BIP39 warning', async ({ page }) => {
   const share1 = await extractShareData(page, 0);
   const share2 = await extractShareData(page, 1);
   
-  // MODIFY: Add 1 mod(2053) to GlobalIntegrityCheck, Word1, and Checksum1
-  share1.globalIntegrityCheck = modifyShareValue(share1.globalIntegrityCheck);
+  // MODIFY: +1 mod 2053 on share 1 row 1 (word col 0), matching row/col/GIC deltas for v0.5.0 checks
   share1.words[0] = modifyShareValue(share1.words[0]);
   share1.checksums[0] = modifyShareValue(share1.checksums[0]);
-  
+  share1.columnChecksums[0] = modifyShareValue(share1.columnChecksums[0]);
+  share1.globalIntegrityCheck = modifyShareValue(share1.globalIntegrityCheck);
+
   console.log('Modified share 1:', {
     globalIntegrityCheck: share1.globalIntegrityCheck,
     word1: share1.words[0],
-    checksum1: share1.checksums[0]
+    checksum1: share1.checksums[0],
+    column1: share1.columnChecksums[0]
   });
   
   // PHASE 2: Navigate to Recovery
@@ -176,10 +180,10 @@ test('inline GIC validation uses entered share numbers', async ({ page }) => {
   await fillRecoveryShare(page, 2, share4);
 
   await page.click('#recover-x-1');
-  await page.click('#recover-global-integrity-check-2');
+  await page.click('#recover-share-2-gic');
 
-  await expect(page.locator('#recover-global-integrity-check-1')).not.toHaveClass(/invalid/);
-  await expect(page.locator('#recover-global-integrity-check-2')).not.toHaveClass(/invalid/);
+  await expect(page.locator('#recover-share-1-gic')).not.toHaveClass(/invalid/);
+  await expect(page.locator('#recover-share-2-gic')).not.toHaveClass(/invalid/);
 });
 
 test('pre-flight row checksum failure highlights specific share row', async ({ page }) => {
@@ -213,8 +217,9 @@ test('pre-flight row checksum failure highlights specific share row', async ({ p
   await expect(share2Row).toHaveCount(0);
 });
 
-test('share generation rejects zero-only randomness for highest coefficient', async ({ page }) => {
-  const originalMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+test('2-of-3: all-zero random coefficients still split and recover', async ({ page }) => {
+  const originalMnemonic =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
   await openApp(page);
   await navigateToCreateShares(page);
@@ -222,31 +227,20 @@ test('share generation rejects zero-only randomness for highest coefficient', as
   await fillMnemonic(page, originalMnemonic);
   await selectScheme(page, '2of3');
 
-  await page.evaluate(() => {
-    // In the HTML tool, `SchiavinatoSharing` is a top-level `const`, so it is not a `window.*` property.
-    const api =
-      globalThis.SchiavinatoSharing ??
-      globalThis.Function(
-        'return (typeof SchiavinatoSharing !== "undefined") ? SchiavinatoSharing : undefined;'
-      )();
+  await configureMockRandomSource(page, 'arr.fill(0);');
 
-    if (!api?.configureEnvironment) {
-      throw new Error('SchiavinatoSharing.configureEnvironment not available in page context');
-    }
+  await generateShares(page);
 
-    api.configureEnvironment({
-      randomSource: {
-        getRandomValues: (arr) => {
-          arr.fill(0);
-        }
-      }
-    });
-  });
+  const share1 = await extractShareData(page, 0);
+  const share2 = await extractShareData(page, 1);
 
-  await page.click('#btn-generate-shares');
+  await navigateToRecover(page);
+  await setupRecovery(page, 12, 2);
+  await fillRecoveryShare(page, 1, share1);
+  await fillRecoveryShare(page, 2, share2);
+  await recoverWallet(page);
 
-  const modal = await page.locator('#custom-modal:has-text("Generation Failed")');
-  await expect(modal).toBeVisible();
-  await expect(page.locator('#modal-text')).toContainText('non-zero field element');
+  const recoveredMnemonic = await getRecoveredMnemonic(page);
+  expect(recoveredMnemonic.trim()).toBe(originalMnemonic);
 });
 

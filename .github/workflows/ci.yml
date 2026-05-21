@@ -18,7 +18,7 @@ permissions:
   actions: read
 
 env:
-  # Frozen v0.4.1 vectors live under previous_versions/ (added in spec v0.5.0+).
+  # Frozen v0.5.0 vectors live under previous_versions/ in the spec repo.
   SPEC_REPO_REF: v0.5.0
 
 jobs:

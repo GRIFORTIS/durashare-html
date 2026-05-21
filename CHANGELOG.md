@@ -8,7 +8,9 @@ Protocol/spec changes belong in the canonical repo:
 ## Unreleased
 
 ### Changed
-- Docs: conformance tests pin `GRIFORTIS/schiavinato-sharing@v0.5.0` to load frozen `previous_versions/v0.4.1/` vectors (not the `v0.4.1` spec tag).
+- Conformance tests use frozen `previous_versions/v0.5.0/test_vectors/vectors.json` (position-bound row checksums, column checksums, printed GIC in table footer).
+- Recovery helpers fill and extract Col1–Col3 and GIC table cells; GIC binding tests cover all three cross-check paths.
+- Share generation allows zero highest polynomial coefficients (mocked RNG tests verify split/recover still works).
 - Ignore `release-assets/` in git (local signing staging only; published files live on GitHub Releases).
 
 ## 0.4.1 - 2026-05-16

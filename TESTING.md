@@ -8,6 +8,14 @@ This document explains how to run the HTML implementation test suite locally and
 
 ```bash
 npm ci
+npm test
+```
+
+On **macOS**, tests use your installed **Google Chrome** (`channel: 'chrome'`). You do not need `npx playwright install` unless you run on Linux/Windows or in CI.
+
+On Linux/Windows (or if Chrome is not installed), use bundled Chromium:
+
+```bash
 npx playwright install chromium
 npm test
 ```
@@ -18,10 +26,11 @@ npm test
 
 ```bash
 npm ci
-npx playwright install chromium
 npm test
 npm run lint
 ```
+
+On macOS, `npm test` uses Google Chrome. On Linux CI, workflows run `npx playwright install chromium` before tests.
 
 Optional:
 
@@ -37,7 +46,7 @@ npm run test:ui
 Conformance is defined by the canonical vectors in the specification repo:
 - [TEST_VECTORS](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/test_vectors/README.md)
 
-The Playwright suite loads exactly one file: the frozen v0.4.1 machine-readable vectors at `previous_versions/v0.4.1/test_vectors/vectors.json` in the [specification repo](https://github.com/GRIFORTIS/schiavinato-sharing) (same path as in that repo’s `CHANGELOG` and `test_vectors/README.md`). CI pins `GRIFORTIS/schiavinato-sharing@v0.5.0` for the frozen `previous_versions/v0.4.1/` vectors; locally, clone that tag or set `SCHIAVINATO_SHARING_SPEC_REPO_PATH`.
+The Playwright suite loads the frozen v0.5.0 machine-readable vectors at `previous_versions/v0.5.0/test_vectors/vectors.json` in the [specification repo](https://github.com/GRIFORTIS/schiavinato-sharing). CI pins `GRIFORTIS/schiavinato-sharing@v0.5.0` for that path; locally, clone that tag or set `SCHIAVINATO_SHARING_SPEC_REPO_PATH`.
 Local options:
 - Clone `schiavinato-sharing` next to `schiavinato-sharing-html`, or
 - Set `SCHIAVINATO_SHARING_SPEC_REPO_PATH=/abs/path/to/schiavinato-sharing`.

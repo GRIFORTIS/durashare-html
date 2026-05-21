@@ -133,7 +133,7 @@ Tests run automatically in CI on every push/PR.
 
 ## Compatibility
 
-- **Spec version**: v0.4.1 (non-digital-payload subset)
+- **Spec version**: v0.5.0 (frozen vectors under `previous_versions/v0.5.0/`)
 - **BIP39 word counts**: 12, 15, 18, 21, 24
 - **Threshold schemes**: 2-of-3, 2-of-4, 3-of-5
 - **Digital payload (Bech32m/QR/Identity+Transport locks)**: not implemented in the HTML tool
