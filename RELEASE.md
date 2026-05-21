@@ -17,7 +17,7 @@ On the target commit (normally `main` after merge):
 1. **CI must be green** on GitHub (`ci.yml` + `codeql.yml`). Branch ruleset enforces this for merges.
 2. `CHANGELOG.md` has the dated release section for this version.
 3. `package.json` `version`, user-facing strings in `schiavinato_sharing.html`, and the git tag all match (e.g. `0.4.1` / `v0.4.1`).
-4. Conformance tests pass locally (`npm ci`, Playwright, vectors at `GRIFORTIS/schiavinato-sharing@v0.4.1`).
+4. Conformance tests pass locally (`npm ci`, Playwright). Spec checkout: `GRIFORTIS/schiavinato-sharing@v0.5.0` (frozen v0.4.1 vectors at `previous_versions/v0.4.1/test_vectors/vectors.json`).
 
 Signing identity:
 
@@ -25,6 +25,8 @@ Signing identity:
 - UID: `GRIFORTIS <security@grifortis.com>`
 
 ## Local release asset build
+
+Build into `release-assets/` at the repository root. That directory is **gitignored** (maintainer staging only). Do not commit signed artifacts; upload them to the GitHub Release after signing.
 
 From a clean checkout at the release commit:
 

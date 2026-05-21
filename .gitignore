@@ -24,6 +24,9 @@ coverage/
 *.temp
 .cache/
 
+# Local maintainer release staging (signed files are published via GitHub Releases only)
+release-assets/
+
 # ESLint
 .eslintcache
 

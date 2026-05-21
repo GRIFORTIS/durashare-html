@@ -7,12 +7,16 @@ Protocol/spec changes belong in the canonical repo:
 
 ## Unreleased
 
+### Changed
+- Docs: conformance tests pin `GRIFORTIS/schiavinato-sharing@v0.5.0` to load frozen `previous_versions/v0.4.1/` vectors (not the `v0.4.1` spec tag).
+- Ignore `release-assets/` in git (local signing staging only; published files live on GitHub Releases).
+
 ## 0.4.1 - 2026-05-16
 
 ### Added
 - Word-count support: 12/15/18/21/24, with an expandable word-count selector (More/Less) in both Create and Recover flows.
 - Canonical conformance coverage: `tests/canonical-vectors.v0.4.1.spec.js` (recovery-only) against the spec repo vectors.
-- CI pins canonical vectors to `GRIFORTIS/schiavinato-sharing@v0.4.1`; `SCHIAVINATO_SHARING_SPEC_REPO_PATH` set in workflows.
+- CI pins `GRIFORTIS/schiavinato-sharing@v0.5.0` for frozen v0.4.1 vectors under `previous_versions/v0.4.1/`; `SCHIAVINATO_SHARING_SPEC_REPO_PATH` set in workflows.
 - Per-share pre-flight validation (row checksum + GIC) and a Lagrange sanity check for share numbers, with targeted UI highlighting.
 - `RELEASE.md`, `docs/release-verification.md`, and fail-closed **Release Verify** workflow (no CI signing keys).
 - Published `GRIFORTIS-PGP-PUBLIC-KEY.asc` for offline signature verification.
