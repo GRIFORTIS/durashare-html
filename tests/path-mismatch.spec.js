@@ -90,7 +90,7 @@ test('inline row checksum mismatch highlights the specific row before recover', 
 
   // Trigger auto-validation (blur a known field)
   await page.click('#recover-x-1');
-  await page.click('#recover-global-integrity-check-2');
+  await page.click('#recover-share-2-gic');
 
   // Expect the row 0 inputs in share 1 to be marked invalid
   const rowInputs = page.locator('#share-container-1 input[data-row-index="0"].invalid');

@@ -18,8 +18,9 @@ permissions:
   actions: read
 
 env:
-  # Frozen v0.4.1 vectors live under previous_versions/ (added in spec v0.5.0+).
-  SPEC_REPO_REF: v0.5.0
+  # Frozen v0.5.0 vectors are under previous_versions/ starting at spec tag v0.6.0
+  # (tag v0.5.0 still has them at root test_vectors/ only).
+  SPEC_REPO_REF: v0.6.0
 
 jobs:
   secret-scan:
@@ -55,9 +56,9 @@ jobs:
       - name: Checkout canonical spec vectors
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          repository: GRIFORTIS/schiavinato-sharing
+          repository: GRIFORTIS/durashare
           ref: ${{ env.SPEC_REPO_REF }}
-          path: schiavinato-sharing
+          path: durashare
 
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -69,7 +70,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linter
+      - name: Ensure CodeQL workflow is active
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state="$(gh api "repos/${{ github.repository }}/actions/workflows/codeql.yml" --jq .state)"
+          echo "CodeQL workflow state: ${state}"
+          if [ "${state}" != "active" ]; then
+            echo "::error::CodeQL workflow is '${state}' (expected active). Re-enable with: gh workflow enable codeql.yml"
+            exit 1
+          fi
+
+      - name: Run linter (tests + extracted durashare.html scripts)
         run: npm run lint
 
       - name: Dependency audit (high/critical)
@@ -81,7 +93,7 @@ jobs:
       - name: Run tests
         run: npm run test:ci
         env:
-          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
+          DURASHARE_SPEC_REPO_PATH: ${{ github.workspace }}/durashare
 
       - name: Upload Playwright report
         if: always()

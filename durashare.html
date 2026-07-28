@@ -29,7 +29,7 @@ SOFTWARE.
 
 DO NOT USE IT FOR REAL FUNDS!
 
-Schiavinato Sharing specification and implementations have NOT been audited. Use 
+DuraShare specification and implementations have NOT been audited. Use 
 for testing, learning, and experimentation only.
 
 We invite cryptographers and developers to review the spec and contribute.
@@ -37,10 +37,10 @@ We invite cryptographers and developers to review the spec and contribute.
 TERMS OF USE
 
 1) VERIFY AUTHENTICITY & INTEGRITY (REQUIRED)
-   Download ONLY from official GRIFORTIS GitHub Releases for "schiavinato-sharing-html".
+   Download ONLY from official GRIFORTIS GitHub Releases for "durashare-html".
    For a given version, you should have:
-     - schiavinato_sharing.html
-     - schiavinato_sharing.html.asc   (GPG signature)
+     - durashare.html
+     - durashare.html.asc   (GPG signature)
      - CHECKSUMS.txt + CHECKSUMS.txt.asc (optional but recommended)
 
    Verification (offline):
@@ -49,7 +49,7 @@ TERMS OF USE
         7921 FD56 9450 8DA4 020E  671F 4CFE 6248 C57F 15DF
         If it does not match, DO NOT proceed.
      c) Verify the HTML file signature:
-        gpg --verify schiavinato_sharing.html.asc schiavinato_sharing.html
+        gpg --verify durashare.html.asc durashare.html
      d) (Optional) Verify checksums:
         gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
         sha256sum -c CHECKSUMS.txt --ignore-missing
@@ -60,7 +60,10 @@ TERMS OF USE
 
 3) SECURE ENVIRONMENT (RECOMMENDED)
    For maximum security, use a temporary trusted OS (e.g., Tails) or a fresh
-   OS install on a secure computer.
+   OS install on a secure computer. When finished: clear on-screen fields /
+   close the page. On Tails, also shut down the machine — OS memory wipe on
+   shutdown is the real amnesia control. Browser JavaScript cannot reliably
+   erase secrets from RAM.
 
 4) LIABILITY DISCLAIMER
    GRIFORTIS and its contributors are not responsible for any loss of funds,
@@ -70,13 +73,14 @@ TERMS OF USE
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRIFORTIS · Schiavinato Sharing (Air-Gapped)</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'">
+    <title>GRIFORTIS · DuraShare (Air-Gapped)</title>
     
     <!-- FONTS: use only local system fonts, no external references -->
 
     <style>
         /* ==========================================================================
-        GRIFORTIS - DESIGN SYSTEM (v0.4.1)
+        GRIFORTIS - DESIGN SYSTEM (v0.5.0)
         ==========================================================================
         */
 
@@ -492,6 +496,12 @@ TERMS OF USE
             border-color: var(--error-red) !important;
             box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.3) !important;
         }
+        .recover-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0 0 1rem;
+            line-height: 1.4;
+        }
 
         /* Sub-header Styles */
         .flow-subheader {
@@ -741,7 +751,7 @@ TERMS OF USE
         ========================================================================== -->
         <header class="header">
             <div style="display: flex; align-items: center;">
-                <h1>Schiavinato Sharing</h1>
+                <h1>DuraShare</h1>
             </div>
             <button id="theme-toggle-btn" class="theme-toggle">
                 <span id="toggle-icon">☀️</span> <span id="toggle-text">Light Mode</span>
@@ -770,6 +780,7 @@ TERMS OF USE
                         <li><strong>You must verify this file's authenticity.</strong> Before using this tool with real crypto seeds, verify the GPG signature to ensure the file hasn't been tampered with. Instructions are in the GitHub repository README under "Verify Before Use (Required)".</li>
                         <li><strong>You must be offline.</strong> This tool is designed for air-gapped environments only. Disconnect from all networks before proceeding.</li>
                         <li><strong>You must use a secure environment.</strong> For maximum security, use a temporary, trusted operating system (e.g., Tails) or a fresh OS install on a secure computer.</li>
+                        <li><strong>Finish the session cleanly.</strong> When done, use Clear All &amp; Start Over (or close the page) so secrets are not left on screen. On Tails, also shut down the laptop — that is the OS memory wipe. This page cannot guarantee erasure of secrets from browser RAM.</li>
                         <li><strong>You are 100% responsible.</strong> GRIFORTIS and its contributors are not responsible for any loss of funds, data corruption, or any other damages that may result from using this software. Use at your own risk.</li>
                     </ul>
                     <hr>
@@ -914,7 +925,7 @@ TERMS OF USE
                     <h2>Shares Generated</h2>
                     <p>Your shares are ready. Transcribe or print them and store them in a safe place. <strong>All data shown below must be transcribed onto each corresponding share.</strong></p>
                     <div class="alert alert-error">
-                        <strong>ATTENTION:</strong> This data will not be saved. After closing this page, it will be gone forever. Double-check everything before you leave.
+                        <strong>ATTENTION:</strong> This data will not be saved. After closing this page, it will be gone forever. Double-check everything before you leave. When finished, clear or close this page; on Tails, shut down the machine after you finish transcribing.
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
                         <button id="btn-print-shares" class="btn btn-primary" type="button" disabled title="Printing will be available soon">🖨️ Print Shares</button>
@@ -933,7 +944,6 @@ TERMS OF USE
                             <p><strong>Share Number (X):</strong> 1</p>
                             <p><strong>Scheme Threshold (K):</strong> 2</p>
                             <p><strong>Original Seed Phrase Length:</strong> 24</p>
-                            <p><strong>Global Integrity Check (GIC):</strong> <code class="mono">0001-abandon</code></p>
                         </div>
                         <h4 style="margin-top: 25px; margin-bottom: 10px; color: var(--text-muted); font-weight: 600;">Encrypted Seed Phrase (Y) - Not a real BIP39 seed phrase</h4>
                         <div class="share-word-container">
@@ -946,6 +956,10 @@ TERMS OF USE
                                 <div class="share-word-item"><label>5.</label><code class="mono">forward - 0721</code></div>
                                 <div class="share-word-item"><label>6.</label><code class="mono">vehicle - 1959</code></div>
                                 <div class="share-word-item"><label>C2.</label><code class="mono">glass - 0789</code></div>
+                                <div class="share-word-item"><label>Col1.</label><code class="mono">0100-0100</code></div>
+                                <div class="share-word-item"><label>Col2.</label><code class="mono">0120-0120</code></div>
+                                <div class="share-word-item"><label>Col3.</label><code class="mono">0130-0130</code></div>
+                                <div class="share-word-item"><label>GIC.</label><code class="mono">0001-abandon</code></div>
                             </div>
                         </div>
                     </div>
@@ -972,7 +986,7 @@ TERMS OF USE
                         <li style="margin-bottom: 0.75em;">Use the multipliers to compute <code>Recovered = Σ(Y × λ) mod 2053</code> for each word and checksum row.</li>
                         <li style="margin-bottom: 0.75em;">Repeat for every row and finally verify the Global Integrity Check (GIC) to confirm the recovery.</li>
                     </ol>
-                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">After every row, add the three recovered word numbers together and confirm they match the recovered checksum for that row. When you finish all rows, sum every recovered word and verify that it equals the recovered Global Integrity Check (GIC) verification value before rebuilding the mnemonic.</p>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">After every row, add the three recovered word numbers plus the row number (1 for the first row, 2 for the second, and so on), modulo 2053, and confirm the result matches that row's checksum. Verify the three column checksums (Col1, Col2, Col3) by summing each column's words plus 10, 20, or 30 respectively. Finally, verify the GIC value in the bottom-right table cell before rebuilding the mnemonic.</p>
                 </div>
 
                 <div class="component-card">
@@ -1006,10 +1020,10 @@ TERMS OF USE
                 
                 <div class="component-card">
                     <h2>How to Use This Tool</h2>
-                    <p>This tool helps you perform Schiavinato Sharing manually with pencil and paper by providing the necessary secure random numbers.</p>
+                    <p>This tool helps you perform DuraShare manually with pencil and paper by providing the necessary secure random numbers.</p>
                     <ol style="padding-left: 20px; margin-top: 1rem;">
                         <li style="margin-bottom: 1em;">
-                            <strong>Get your BIP39 word indices:</strong> Find your 12 or 24 secret words on the official BIP39 English wordlist. You need the number (index) for each word. Our tool uses a <strong>zero-indexed</strong> list (the first word, "abandon", is 0). Be careful, as some lists online (like the one on GitHub) show line numbers starting from 1, which will produce incorrect results if used directly. Pro tip: paste the wordlist into a spreadsheet and number it starting from 0.
+                            <strong>Get your BIP39 word indices:</strong> Find your 12 or 24 secret words on the official BIP39 English wordlist. You need the number (index) for each word. Our tool uses a <strong>one-indexed</strong> list (the first word, "abandon", is 1; the last word is 2048). Be careful: some lists and programming APIs are zero-indexed (abandon = 0); if you use those, add 1 before plugging the value into the polynomial. Pro tip: paste the wordlist into a spreadsheet and number it starting from 1.
                         </li>
                         <li style="margin-bottom: 1em;">
                             <strong>Calculate Point Coordinates:</strong> For each of your secret word indices, use the polynomial equation shown above to calculate a "share" value (Y). The 'X' in the equation is the share number (e.g., 1 for the first share, 2 for the second, and so on).
@@ -1077,6 +1091,8 @@ TERMS OF USE
                     </div>
                 </div>
 
+                <p class="recover-hint">Enter each share number (X) and all word values. Row (C), column (Col), and GIC checks are optional—leave blank if missing from your sheet; filled values are verified.</p>
+
                 <!-- Section 3.2: Dynamic Share Inputs -->
                 <div id="recover-shares-container">
                     <!-- Share input blocks are dynamically inserted here by JS -->
@@ -1100,6 +1116,9 @@ TERMS OF USE
                     <h2>Wallet Recovered</h2>
                     <div class="alert alert-success">
                         <strong>SUCCESS:</strong> The original seed phrase has been recovered.
+                    </div>
+                    <div class="alert alert-error" style="margin-top: 12px;">
+                        <strong>ATTENTION:</strong> Transcribe the seed if needed, then use Clear All &amp; Start Over (or close the page). On Tails, also shut down the machine when the ceremony is finished.
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
                         <button id="btn-print-recovered" class="btn btn-primary" type="button" disabled title="Printing will be available soon">🖨️ Print Recovered Seed</button>
@@ -1151,7 +1170,7 @@ TERMS OF USE
             ========================================================================== -->
             <footer class="disclaimer">
                 <p style="text-align: center; font-weight: 600; margin: 0;">
-                    © 2025 GRIFORTIS. Released under the MIT License. v0.4.1
+                    © 2025 GRIFORTIS. Released under the MIT License. v0.5.0
                 </p>
             </footer>
         </main>
@@ -1212,19 +1231,45 @@ TERMS OF USE
             }
         }
         
-        // Note: These constants are also defined in SchiavinatoSharing module below.
+        // Note: These constants are also defined in DuraShare module below.
         // Both definitions are needed because they exist in different closure contexts
         // (UI script scope vs. library module scope) for proper encapsulation.
         const WORDS_PER_ROW = 3;
         const FIELD_PRIME = 2053;
-        
+        const COLUMN_TAGS = [10, 20, 30];
+        const COLUMN_TOTAL = 60;
+
+        function computeRowTotal(rowCount) {
+            return (rowCount * (rowCount + 1)) / 2;
+        }
+
+        function modAddUi(a, b) {
+            return (a + b) % FIELD_PRIME;
+        }
+
+        function formatShareFieldValue(value) {
+            if (value === 0) {
+                return '0000-0000';
+            }
+            if (value >= 1 && value <= 2048) {
+                const word = BIP39_WORDLIST[value - 1];
+                return `${String(value).padStart(4, '0')}-${word}`;
+            }
+            return `${String(value).padStart(4, '0')}-${String(value).padStart(4, '0')}`;
+        }
+
         let createFlowWordCache = Array(24).fill('');
         let createWordCount = 24;
 
         let recoverFlowCache = [];
         const MAX_SHARES = 5;
         for (let i = 0; i < MAX_SHARES; i++) {
-            recoverFlowCache.push({ shareNumber: '', words: Array(32).fill('') });
+            recoverFlowCache.push({
+                shareNumber: '',
+                words: Array(32).fill(''),
+                columnChecksums: ['', '', ''],
+                globalIntegrityCheckShare: ''
+            });
         }
         let recoverWordCount = 24;
         const manualRecoveryShareCache = {};
@@ -1247,6 +1292,12 @@ TERMS OF USE
             const rowNumber = rowIndex + 1;
             if (slot === 'checksum') {
                 return `Share ${shareIndex} · Row ${rowNumber} checksum`;
+            }
+            if (slot === 'column-checksum') {
+                return `Share ${shareIndex} · Column ${rowNumber} checksum`;
+            }
+            if (slot === 'gic') {
+                return `Share ${shareIndex} · Global integrity (GIC)`;
             }
             const slotParts = slot.split('-');
             const wordNumber = parseInt(slotParts[1], 10) + 1;
@@ -1579,13 +1630,21 @@ TERMS OF USE
                     }
                     words.push(input.value.trim().toLowerCase());
                 }
-                const mnemonic = words.join(' ');
+                let mnemonic = words.join(' ');
 
                 // 2. Call the core logic function
                 // Note: BIP39_WORDLIST must be globally available for this to work.
-                const { shares } = await SchiavinatoSharing.splitBip39(mnemonic, k, n, BIP39_WORDLIST);
-                
-                // 3. Populate the next page and display it
+                const { shares } = await DuraShare.splitBip39(mnemonic, k, n, BIP39_WORDLIST);
+
+                // 3. Drop seed copies we no longer need (shares stay on the next page).
+                // JS strings are immutable — this only drops references / clears DOM inputs.
+                for (let i = 0; i < words.length; i++) {
+                    words[i] = '';
+                }
+                mnemonic = '';
+                clearCreateFlowSeedInputs();
+
+                // 4. Populate the next page and display it
                 displayShares(shares, { identifier, date, scheme, wordCount: createWordCount });
 
                 showPage('create2', 'Create Shares');
@@ -1604,7 +1663,10 @@ TERMS OF USE
                 showPage('create1', 'Create Shares');
             }
         });
-        btnBackToRecover1.addEventListener('click', () => showPage('recover1', 'Recover Wallet'));
+        btnBackToRecover1.addEventListener('click', () => {
+            renderRecoverShareInputsFromCache();
+            showPage('recover1', 'Recover Wallet');
+        });
 
         btnRecoverWallet.addEventListener('click', async () => {
             const k = parseInt(document.querySelector('input[name="recover-k"]:checked').value, 10);
@@ -1626,7 +1688,7 @@ TERMS OF USE
                 container.dataset.shareIndex = String(shareIndex);
 
                 const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
-                const globalIntegrityCheckShareInput = container.querySelector(`#recover-global-integrity-check-${shareIndex}`);
+                const globalIntegrityCheckShareInput = container.querySelector(`#recover-share-${shareIndex}-gic`);
 
                 if (!shareNumberInput || !globalIntegrityCheckShareInput) {
                     uiErrors.add('A share input block is missing required fields.');
@@ -1662,22 +1724,15 @@ TERMS OF USE
                 }
                 seenShareNumbers.set(shareNumber, shareIndex);
 
-                const globalIntegrityCheckParse = parseShareValue(globalIntegrityCheckShareInput.value, { allowNumeric: true });
-                if (!globalIntegrityCheckParse.ok) {
-                    markInputInvalid(globalIntegrityCheckShareInput, formatParseError(globalIntegrityCheckShareInput.dataset.fieldLabel, globalIntegrityCheckParse));
-                    uiErrors.add('Fix the highlighted Global Integrity Check (GIC) verification fields.');
-                    parsingError = true;
-                    continue;
-                }
-
                 const wordsPerChecksum = WORDS_PER_ROW;
                 const numRows = recoverWordCount / wordsPerChecksum;
                 const share = {
                     shareNumber,
                     shareIndex,
                     wordShares: [],
-                    checksumShares: [],
-                    globalIntegrityCheckShare: globalIntegrityCheckParse.value
+                    checksumShares: new Array(numRows),
+                    columnChecksumShares: [undefined, undefined, undefined],
+                    globalIntegrityCheckShare: undefined
                 };
 
                 let rowHadError = false;
@@ -1689,7 +1744,7 @@ TERMS OF USE
                         if (!parseResult.ok) {
                             const message = formatParseError(input.dataset.fieldLabel, parseResult);
                             markInputInvalid(input, message, { rowHighlight: true });
-                            uiErrors.add('Fix the highlighted share rows before continuing.');
+                            uiErrors.add('Fix the highlighted word fields before continuing.');
                             rowHadError = true;
                         } else {
                             clearInputErrorState(input);
@@ -1698,17 +1753,61 @@ TERMS OF USE
                     }
                     const checksumInput = container.querySelector(`input[data-row-index="${rowIndex}"][data-slot="checksum"]`);
                     if (checksumInput) {
-                        const checksumParse = parseShareValue(checksumInput.value, { allowNumeric: true });
-                        if (!checksumParse.ok) {
-                            const message = formatParseError(checksumInput.dataset.fieldLabel, checksumParse);
-                            markInputInvalid(checksumInput, message, { rowHighlight: true });
-                            uiErrors.add('Fix the highlighted share rows before continuing.');
-                            rowHadError = true;
+                        const raw = (checksumInput.value || '').trim();
+                        if (raw !== '') {
+                            const checksumParse = parseShareValue(raw, { allowNumeric: true });
+                            if (!checksumParse.ok) {
+                                markInputInvalid(checksumInput, formatParseError(checksumInput.dataset.fieldLabel, checksumParse), { rowHighlight: true });
+                                uiErrors.add('Fix the highlighted optional checksum fields before continuing.');
+                                rowHadError = true;
+                            } else {
+                                clearInputErrorState(checksumInput);
+                                share.checksumShares[rowIndex] = checksumParse.value;
+                            }
                         } else {
                             clearInputErrorState(checksumInput);
-                            share.checksumShares.push(checksumParse.value);
                         }
                     }
+                }
+
+                if (share.wordShares.length !== recoverWordCount) {
+                    uiErrors.add('Every word field is required for recovery.');
+                    parsingError = true;
+                    continue;
+                }
+
+                for (let col = 0; col < 3; col++) {
+                    const columnInput = container.querySelector(`input[data-slot="column-checksum"][data-column-index="${col}"]`);
+                    if (!columnInput) continue;
+                    const raw = (columnInput.value || '').trim();
+                    if (raw === '') {
+                        clearInputErrorState(columnInput);
+                        continue;
+                    }
+                    const columnParse = parseShareValue(raw, { allowNumeric: true });
+                    if (!columnParse.ok) {
+                        markInputInvalid(columnInput, formatParseError(columnInput.dataset.fieldLabel, columnParse), { rowHighlight: true });
+                        uiErrors.add('Fix the highlighted optional checksum fields before continuing.');
+                        rowHadError = true;
+                    } else {
+                        clearInputErrorState(columnInput);
+                        share.columnChecksumShares[col] = columnParse.value;
+                    }
+                }
+
+                const gicRaw = (globalIntegrityCheckShareInput.value || '').trim();
+                if (gicRaw !== '') {
+                    const globalIntegrityCheckParse = parseShareValue(gicRaw, { allowNumeric: true });
+                    if (!globalIntegrityCheckParse.ok) {
+                        markInputInvalid(globalIntegrityCheckShareInput, formatParseError(globalIntegrityCheckShareInput.dataset.fieldLabel, globalIntegrityCheckParse), { rowHighlight: true });
+                        uiErrors.add('Fix the highlighted optional checksum fields before continuing.');
+                        rowHadError = true;
+                    } else {
+                        clearInputErrorState(globalIntegrityCheckShareInput);
+                        share.globalIntegrityCheckShare = globalIntegrityCheckParse.value;
+                    }
+                } else {
+                    clearInputErrorState(globalIntegrityCheckShareInput);
                 }
 
                 if (rowHadError) {
@@ -1731,7 +1830,7 @@ TERMS OF USE
 
             // 2. CALL UNIFIED RECOVERY & VALIDATION
             try {
-                const report = await SchiavinatoSharing.recoverAndValidate(shares, recoverWordCount, BIP39_WORDLIST);
+                const report = await DuraShare.recoverAndValidate(shares, recoverWordCount, BIP39_WORDLIST);
                 
                 // 3. DISPLAY RESULTS
                 await displayValidationResults(report, shares);
@@ -1751,7 +1850,7 @@ TERMS OF USE
                     return;
                 }
                 try {
-                    const multipliers = SchiavinatoSharing.computeLagrangeMultipliers(values);
+                    const multipliers = DuraShare.computeLagrangeMultipliers(values);
                     clearManualRecoveryError();
                     displayManualRecoveryResults(values, multipliers);
                 } catch (error) {
@@ -1780,10 +1879,16 @@ TERMS OF USE
             // CASE 0: Per-share validation errors (with attribution)
             if (errors.shareValidation) {
                 const rowErrors = errors.shareValidation.rowErrors || [];
+                const columnErrors = errors.shareValidation.columnErrors || [];
                 const globalErrors = errors.shareValidation.globalErrors || [];
                 rowErrors.forEach(({ shareIndex, rowIndex }) => {
                     if (Number.isInteger(shareIndex) && Number.isInteger(rowIndex)) {
                         highlightShareRow(shareIndex, rowIndex);
+                    }
+                });
+                columnErrors.forEach(({ shareIndex, columnIndex }) => {
+                    if (Number.isInteger(shareIndex) && Number.isInteger(columnIndex)) {
+                        highlightShareColumn(shareIndex, columnIndex);
                     }
                 });
                 globalErrors.forEach(({ shareIndex }) => {
@@ -1805,56 +1910,42 @@ TERMS OF USE
             const hasRowErrors = Array.isArray(rowErrors) && rowErrors.length > 0;
             const hasGlobalError = errors.global || (errors.globalIntegrityCheckError && errors.globalIntegrityCheckError.failed);
 
-            // CASE 2: Path mismatch detected (hardware/bit-flip suspicion)
+            // CASE 2: Path mismatch (recovered secrets inconsistent — no per-share attribution)
             if ((errors.rowPathMismatch && errors.rowPathMismatch.length > 0) || errors.globalPathMismatch) {
-                if (errors.rowPathMismatch) {
-                    errors.rowPathMismatch.forEach((rowIdx) => {
-                        highlightErrorRow(rowIdx);
-                    });
-                }
-                if (errors.globalPathMismatch) {
-                    highlightGlobalIntegrityCheckError();
-                }
                 await showErrorModal(
                     'Recovery Failed - Path Mismatch',
-                    'Dual-path checksum validation failed (Path A vs Path B). This can indicate hardware faults, memory corruption, or tampered shares. Re-enter the shares carefully or regenerate from a trusted environment.'
+                    'Recovered checksums do not match the recovered words. Re-check every entered value on your share sheets, or leave optional checksum fields blank.'
                 );
                 return;
             }
 
-            // CASE 3: Row errors exist
+            // CASE 3: Row errors after interpolation (no per-share attribution)
             if (hasRowErrors) {
-                if (errors.row && errors.row.length > 0) {
-                    errors.row.forEach((rowIdx) => highlightErrorRow(rowIdx));
-                } else if (errors.failedRows && errors.failedRows.length > 0) {
-                    errors.failedRows.forEach(rowError => {
-                        const rowIndex = rowError.rowNumber - 1;  // Convert to 0-based index
-                        highlightErrorRow(rowIndex);
-                    });
-                }
-                
-                await showErrorModal('Recovery Failed', 'Recovery failed. Check the highlighted fields and try again.');
+                await showErrorModal(
+                    'Recovery Failed',
+                    'Recovered row checksums do not match the recovered words. Re-check word and row (C) values on your sheets.'
+                );
                 return;
             }
 
-            // CASE 4: Global Integrity Check error but all rows passed (nightmare scenario)
+            if (errors.column && errors.column.length > 0) {
+                await showErrorModal(
+                    'Recovery Failed',
+                    'Recovered column checksums do not match the recovered words. Re-check column (Col) values on your sheets.'
+                );
+                return;
+            }
+
+            // CASE 4: Global integrity after interpolation
             if (hasGlobalError) {
-                if (errors.globalIntegrityCheckError && errors.globalIntegrityCheckError.isNightmare) {
-                    // Highlight all Global Integrity Check (GIC) verification fields
-                    highlightGlobalIntegrityCheckError();
-                    
-                    let errorMessage = 'Global Integrity Check (GIC) verification failed.\n\n';
-                    errorMessage += 'Step 1: Check the highlighted Global Integrity Check (GIC) fields.\n';
-                    errorMessage += 'Step 2: If Global Integrity Check (GIC) fields are correct, carefully check all other fields.';
-                    
-                    await showErrorModal('Recovery Failed', errorMessage);
-                } else {
-                    await showErrorModal('Recovery Failed', 'Global Integrity Check (GIC) failed unexpectedly.');
-                }
+                await showErrorModal(
+                    'Recovery Failed',
+                    'Recovered GIC does not match the recovered words. Re-check GIC and word values, or leave GIC blank if not on your sheet.'
+                );
                 return;
             }
 
-            // CASE 5: BIP39 failed but Schiavinato checks passed (show seed anyway)
+            // CASE 5: BIP39 failed but DuraShare checks passed (show seed anyway)
             if (errors.bip39) {
                 let errorMessage = 'BIP39 checksum invalid.\n\n';
                 errorMessage += 'The recovered words may have errors in the final word, or the shares were created from a manually-calculated seed.\n\n';
@@ -1866,7 +1957,11 @@ TERMS OF USE
                 );
                 if (confirmed && recoveredMnemonic) {
                     snapshotShareInputs();
+                    persistRecoverShareInputsToCache();
                     displayRecoveredMnemonic(recoveredMnemonic, true);
+                    clearRecoverFlowShareInputs();
+                    report.recoveredMnemonic = null;
+                    report.recoveredIndices = null;
                     showPage('recover2', 'Recover Wallet');
                 }
                 return;
@@ -1875,7 +1970,11 @@ TERMS OF USE
             // CASE 6: SUCCESS - All checks passed
             if (recoveredMnemonic) {
                 snapshotShareInputs();
+                persistRecoverShareInputsToCache();
                 displayRecoveredMnemonic(recoveredMnemonic, false);
+                clearRecoverFlowShareInputs();
+                report.recoveredMnemonic = null;
+                report.recoveredIndices = null;
                 showPage('recover2', 'Recover Wallet');
                 return;
             }
@@ -1884,181 +1983,6 @@ TERMS OF USE
             await showErrorModal('Unknown Error', 'An unexpected error occurred during recovery.');
         }
 
-        /**
-         * Attempts automatic validation when all fields are filled.
-         * Runs silently - only highlights errors, no modal popups.
-         */
-        async function attemptAutoValidation() {
-            try {
-                const k = parseInt(document.querySelector('input[name="recover-k"]:checked')?.value, 10);
-                if (!k) return;
-
-                const shareContainers = document.querySelectorAll('#recover-shares-container .share-input-container');
-                if (shareContainers.length !== k) return;
-
-                // Check if all fields are filled
-                let allFilled = true;
-                shareContainers.forEach(container => {
-                    const inputs = container.querySelectorAll('input');
-                    inputs.forEach(input => {
-                        if (!input.value || !input.value.trim()) {
-                            allFilled = false;
-                        }
-                    });
-                });
-
-                if (!allFilled) return;
-
-                // Parse shares (reuse parsing logic from main recovery)
-                const shares = [];
-                const seenShareNumbers = new Map();
-                let hasParseError = false;
-
-                for (let i = 0; i < k; i++) {
-                    const container = shareContainers[i];
-                    const shareIndex = i + 1;
-
-                    const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
-                    const globalIntegrityCheckShareInput = container.querySelector(`#recover-global-integrity-check-${shareIndex}`);
-
-                    if (!shareNumberInput || !globalIntegrityCheckShareInput) {
-                        hasParseError = true;
-                        continue;
-                    }
-
-                    const shareNumber = Number(shareNumberInput.value.trim());
-                    if (!Number.isInteger(shareNumber) || shareNumber <= 0 || shareNumber >= FIELD_PRIME) {
-                        hasParseError = true;
-                        continue;
-                    }
-
-                    if (seenShareNumbers.has(shareNumber)) {
-                        hasParseError = true;
-                        continue;
-                    }
-                    seenShareNumbers.set(shareNumber, shareIndex);
-
-                    const globalIntegrityCheckParse = parseShareValue(globalIntegrityCheckShareInput.value, { allowNumeric: true });
-                    if (!globalIntegrityCheckParse.ok) {
-                        hasParseError = true;
-                        continue;
-                    }
-
-                    const wordsPerChecksum = WORDS_PER_ROW;
-                    const numRows = recoverWordCount / wordsPerChecksum;
-                    const share = {
-                        shareNumber,
-                        shareIndex,
-                        wordShares: [],
-                        checksumShares: [],
-                        globalIntegrityCheckShare: globalIntegrityCheckParse.value
-                    };
-
-                    for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
-                        for (let wordSlot = 0; wordSlot < wordsPerChecksum; wordSlot++) {
-                            const input = container.querySelector(`input[data-row-index="${rowIndex}"][data-slot="word-${wordSlot}"]`);
-                            if (!input) continue;
-                            const parseResult = parseShareValue(input.value, { allowNumeric: true });
-                            if (!parseResult.ok) {
-                                hasParseError = true;
-                                break;
-                            }
-                            share.wordShares.push(parseResult.value);
-                        }
-                        if (hasParseError) break;
-
-                        const checksumInput = container.querySelector(`input[data-row-index="${rowIndex}"][data-slot="checksum"]`);
-                        if (checksumInput) {
-                            const checksumParse = parseShareValue(checksumInput.value, { allowNumeric: true });
-                            if (!checksumParse.ok) {
-                                hasParseError = true;
-                                break;
-                            }
-                            share.checksumShares.push(checksumParse.value);
-                        }
-                    }
-
-                    if (hasParseError) break;
-                    shares.push(share);
-                }
-
-                if (hasParseError || shares.length !== k) return;
-
-                // Clear previous inline highlights before fresh validation
-                clearAllRecoveryHighlights();
-
-                // Inline per-share row/global consistency check (pre-flight UX)
-                shares.forEach((share, idx) => {
-                    const shareIdx = idx + 1; // 1-based in DOM ids
-                    const rowCount = recoverWordCount / WORDS_PER_ROW;
-
-                    for (let row = 0; row < rowCount; row++) {
-                        const base = row * WORDS_PER_ROW;
-                        const hasWords =
-                            share.wordShares.length >= base + WORDS_PER_ROW &&
-                            share.wordShares[base] !== undefined &&
-                            share.wordShares[base + 1] !== undefined &&
-                            share.wordShares[base + 2] !== undefined;
-                        const hasChecksum = share.checksumShares.length > row && share.checksumShares[row] !== undefined;
-                        if (!hasWords || !hasChecksum) {
-                            continue;
-                        }
-                        const sum = (share.wordShares[base] + share.wordShares[base + 1] + share.wordShares[base + 2]) % FIELD_PRIME;
-                        if (sum !== share.checksumShares[row]) {
-                            highlightShareRow(shareIdx, row);
-                        }
-                    }
-
-                        // Global Integrity Check inline check
-                    if (share.globalIntegrityCheckShare !== undefined) {
-                        const globalSum = share.wordShares.reduce((acc, val) => (acc + val) % FIELD_PRIME, 0);
-                        // v0.4.0 Fix: Printed GIC is bound to share number (Sum + x)
-                        if ((globalSum + shareIdx) % FIELD_PRIME !== share.globalIntegrityCheckShare) {
-                            highlightShareGlobal(shareIdx);
-                        }
-                    }
-                });
-
-                // Run validation
-                const report = await SchiavinatoSharing.recoverAndValidate(shares, recoverWordCount, BIP39_WORDLIST);
-
-                // Clear all error highlights first
-                clearAllErrorHighlights();
-
-                // If all checks passed, we're done - no highlighting needed
-                if (report.recoveredMnemonic && 
-                    report.errors.row.length === 0 && 
-                    !report.errors.global &&
-                    report.errors.rowPathMismatch.length === 0 &&
-                    !report.errors.globalPathMismatch &&
-                    !report.errors.bip39 &&
-                    !report.errors.generic) {
-                    return;
-                }
-
-                // Show errors silently (no modal)
-                if (report.errors.rowPathMismatch && report.errors.rowPathMismatch.length > 0) {
-                    report.errors.rowPathMismatch.forEach((rowIdx) => {
-                        highlightErrorRow(rowIdx);
-                    });
-                } else if (report.errors.row && report.errors.row.length > 0) {
-                    report.errors.row.forEach((rowIdx) => highlightErrorRow(rowIdx));
-                } else if (report.errors.failedRows && report.errors.failedRows.length > 0) {
-                    // Highlight row errors
-                    report.errors.failedRows.forEach(rowError => {
-                        const rowIndex = rowError.rowNumber - 1;  // Convert to 0-based index
-                        highlightErrorRow(rowIndex);
-                    });
-                } else if (report.errors.globalPathMismatch || report.errors.global || (report.errors.globalIntegrityCheckError && report.errors.globalIntegrityCheckError.failed)) {
-                    // Only highlight Global Integrity Check (GIC) if NO row errors exist (nightmare scenario)
-                    highlightGlobalIntegrityCheckError();
-                }
-
-            } catch (error) {
-                // Silently ignore errors - user will see them when they click Recover
-            }
-        }
-        
         /**
          * Clears all error highlighting from input fields
          */
@@ -2132,7 +2056,17 @@ TERMS OF USE
             }
         };
 
-
+        /**
+         * Renders compile-time static HTML into a container (never use with user-controlled strings).
+         * @param {HTMLElement} container
+         * @param {string} html
+         */
+        function setTrustedStaticHtml(container, html) {
+            container.replaceChildren();
+            const template = document.createElement('template');
+            template.innerHTML = html;
+            container.appendChild(template.content.cloneNode(true));
+        }
 
 
 
@@ -2146,8 +2080,11 @@ TERMS OF USE
          */
         function updateSchemeDescription() {
             const selectedValue = document.querySelector('input[name="scheme"]:checked').value;
+            if (!Object.prototype.hasOwnProperty.call(explanations, selectedValue)) {
+                return;
+            }
             const content = explanations[selectedValue];
-            schemeExplanation.innerHTML = `${content.details}`;
+            setTrustedStaticHtml(schemeExplanation, content.details);
             if (pages.manualRecovery && pages.manualRecovery.style.display === 'block') {
                 updateManualRecoveryShareInputs();
             }
@@ -2209,7 +2146,7 @@ TERMS OF USE
             const { k } = getSchemeThresholds(schemeValue);
             const cache = ensureManualRecoveryCache(schemeValue, k);
 
-            manualRecoveryShareInputsContainer.innerHTML = '';
+            manualRecoveryShareInputsContainer.replaceChildren();
             for (let i = 0; i < k; i++) {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'form-group';
@@ -2306,7 +2243,14 @@ TERMS OF USE
          */
         function resetManualRecoveryResults() {
             if (!manualRecoveryOutputContainer) return;
-            manualRecoveryOutputContainer.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); margin: 0;">Enter the share numbers above to see the multipliers.</p>';
+            manualRecoveryOutputContainer.replaceChildren();
+            const placeholder = document.createElement('p');
+            placeholder.style.gridColumn = '1 / -1';
+            placeholder.style.textAlign = 'center';
+            placeholder.style.color = 'var(--text-muted)';
+            placeholder.style.margin = '0';
+            placeholder.textContent = 'Enter the share numbers above to see the multipliers.';
+            manualRecoveryOutputContainer.appendChild(placeholder);
         }
 
         /**
@@ -2314,12 +2258,14 @@ TERMS OF USE
          */
         function displayManualRecoveryResults(shareNumbers, multipliers) {
             if (!manualRecoveryOutputContainer) return;
-            manualRecoveryOutputContainer.innerHTML = '';
+            manualRecoveryOutputContainer.replaceChildren();
             multipliers.forEach((coef, index) => {
                 const item = document.createElement('div');
                 item.className = 'lagrange-result-item';
                 const label = document.createElement('p');
-                label.innerHTML = `<strong>Share X = ${shareNumbers[index]}</strong>`;
+                const labelStrong = document.createElement('strong');
+                labelStrong.textContent = `Share X = ${shareNumbers[index]}`;
+                label.appendChild(labelStrong);
                 const helper = document.createElement('p');
                 helper.textContent = `λ${index + 1}`;
                 const code = document.createElement('code');
@@ -2343,24 +2289,39 @@ TERMS OF USE
             const { k } = getSchemeThresholds(schemeValue);
             const degree = Math.max(1, k - 1);
             const coefficients = [];
-            const placeholder = '<strong class="mono" style="color: var(--cyber-gold);">&lt;BIP39 word indices&gt;</strong>';
+            polynomialDisplay.replaceChildren();
             try {
                 for (let i = 0; i < degree; i++) {
-                    const isHighestPower = i === degree - 1;
-                    const coefficient = isHighestPower
-                        ? SchiavinatoSharing.getRandomNonZeroFieldElement()
-                        : SchiavinatoSharing.getRandomFieldElement();
-                    coefficients.push(coefficient);
+                    coefficients.push(DuraShare.getRandomFieldElement());
                 }
-                let equation = `f(X) = ${placeholder}`;
+                const code = document.createElement('code');
+                code.className = 'mono';
+                code.style.fontSize = '1.1rem';
+                code.style.wordWrap = 'break-word';
+                code.appendChild(document.createTextNode('f(X) = '));
+                const placeholder = document.createElement('strong');
+                placeholder.className = 'mono';
+                placeholder.style.color = 'var(--cyber-gold)';
+                placeholder.textContent = '<BIP39 word indices>';
+                code.appendChild(placeholder);
                 coefficients.forEach((coef, index) => {
                     const exponent = index + 1;
-                    const power = exponent === 1 ? 'X' : `X<sup>${exponent}</sup>`;
-                    equation += ` + ${coef} * ${power}`;
+                    code.appendChild(document.createTextNode(` + ${coef} * `));
+                    if (exponent === 1) {
+                        code.appendChild(document.createTextNode('X'));
+                    } else {
+                        code.appendChild(document.createTextNode('X'));
+                        const sup = document.createElement('sup');
+                        sup.textContent = String(exponent);
+                        code.appendChild(sup);
+                    }
                 });
-                polynomialDisplay.innerHTML = `<code class="mono" style="font-size: 1.1rem; word-wrap: break-word;">${equation}</code>`;
+                polynomialDisplay.appendChild(code);
             } catch (error) {
-                polynomialDisplay.innerHTML = `<span style="color: var(--error-red);">Error: Could not generate secure random numbers.</span>`;
+                const errorSpan = document.createElement('span');
+                errorSpan.style.color = 'var(--error-red)';
+                errorSpan.textContent = 'Error: Could not generate secure random numbers.';
+                polynomialDisplay.appendChild(errorSpan);
             }
         }
 
@@ -2377,7 +2338,7 @@ TERMS OF USE
             });
 
             // 2. Clear and regenerate inputs.
-            seedWordInputsContainer.innerHTML = ''; 
+            seedWordInputsContainer.replaceChildren(); 
             for (let i = 1; i <= createWordCount; i++) {
                 const row = document.createElement('div');
                 row.className = 'seed-word-row';
@@ -2422,11 +2383,6 @@ TERMS OF USE
             mainHeader.textContent = `Share Input #${shareIndex}`;
             container.appendChild(mainHeader);
 
-            const twoColGrid = document.createElement('div');
-            twoColGrid.style.display = 'grid';
-            twoColGrid.style.gridTemplateColumns = '1fr 1fr';
-            twoColGrid.style.gap = '20px';
-
             const shareNumberGroup = document.createElement('div');
             shareNumberGroup.className = 'form-group';
             const labelX = document.createElement('label');
@@ -2454,35 +2410,7 @@ TERMS OF USE
             });
             shareNumberGroup.appendChild(labelX);
             shareNumberGroup.appendChild(inputX);
-            twoColGrid.appendChild(shareNumberGroup);
-
-            const globalIntegrityCheckShareGroup = document.createElement('div');
-            globalIntegrityCheckShareGroup.className = 'form-group';
-            const labelGlobalIntegrityCheck = document.createElement('label');
-            labelGlobalIntegrityCheck.htmlFor = `recover-global-integrity-check-${shareIndex}`;
-            labelGlobalIntegrityCheck.textContent = `Global Integrity Check (GIC)`;
-            const inputGlobalIntegrityCheck = document.createElement('input');
-            inputGlobalIntegrityCheck.type = 'text';
-            inputGlobalIntegrityCheck.id = `recover-global-integrity-check-${shareIndex}`;
-            inputGlobalIntegrityCheck.className = 'mono';
-            inputGlobalIntegrityCheck.placeholder = 'E.g., 0001-abandon';
-            inputGlobalIntegrityCheck.value = shareCache.globalIntegrityCheckShare || '';
-            inputGlobalIntegrityCheck.dataset.allowNumeric = 'true';
-            inputGlobalIntegrityCheck.dataset.fieldLabel = `Share ${shareIndex} Global Integrity Check (GIC) verification`;
-            initializeRecoveryInputTracking(inputGlobalIntegrityCheck);
-            attachAutocompleteListeners(inputGlobalIntegrityCheck);
-            inputGlobalIntegrityCheck.addEventListener('input', () => {
-                clearInputErrorState(inputGlobalIntegrityCheck);
-            });
-            inputGlobalIntegrityCheck.addEventListener('blur', () => {
-                validateInputOnBlur(inputGlobalIntegrityCheck);
-                validateShareInline(shareIndex);
-            });
-            globalIntegrityCheckShareGroup.appendChild(labelGlobalIntegrityCheck);
-            globalIntegrityCheckShareGroup.appendChild(inputGlobalIntegrityCheck);
-            twoColGrid.appendChild(globalIntegrityCheckShareGroup);
-            
-            container.appendChild(twoColGrid);
+            container.appendChild(shareNumberGroup);
 
             const seedGrid = document.createElement('div');
             seedGrid.style.display = 'grid';
@@ -2557,38 +2485,103 @@ TERMS OF USE
                 inputIndex++;
             }
 
+            for (let col = 0; col < 3; col++) {
+                const row = document.createElement('div');
+                row.className = 'seed-word-row';
+                const label = document.createElement('label');
+                label.textContent = `Col${col + 1}.`;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'mono';
+                input.id = `recover-share-${shareIndex}-column-${col}`;
+                input.dataset.shareIndex = String(shareIndex);
+                input.dataset.columnIndex = String(col);
+                input.dataset.slot = 'column-checksum';
+                input.dataset.allowNumeric = 'true';
+                input.dataset.fieldLabel = buildRecoveryFieldLabel(shareIndex, col, 'column-checksum');
+                input.value = (shareCache.columnChecksums && shareCache.columnChecksums[col]) || '';
+                initializeRecoveryInputTracking(input);
+                attachAutocompleteListeners(input);
+                input.addEventListener('input', () => clearInputErrorState(input));
+                input.addEventListener('blur', () => {
+                    validateInputOnBlur(input);
+                    validateShareInline(shareIndex);
+                });
+                row.appendChild(label);
+                row.appendChild(input);
+                seedGrid.appendChild(row);
+            }
+
+            const gicRow = document.createElement('div');
+            gicRow.className = 'seed-word-row';
+            const gicLabel = document.createElement('label');
+            gicLabel.textContent = 'GIC.';
+            const gicInput = document.createElement('input');
+            gicInput.type = 'text';
+            gicInput.className = 'mono';
+            gicInput.id = `recover-share-${shareIndex}-gic`;
+            gicInput.dataset.shareIndex = String(shareIndex);
+            gicInput.dataset.slot = 'gic';
+            gicInput.dataset.allowNumeric = 'true';
+            gicInput.dataset.fieldLabel = buildRecoveryFieldLabel(shareIndex, 0, 'gic');
+            gicInput.value = shareCache.globalIntegrityCheckShare || '';
+            initializeRecoveryInputTracking(gicInput);
+            attachAutocompleteListeners(gicInput);
+            gicInput.addEventListener('input', () => clearInputErrorState(gicInput));
+            gicInput.addEventListener('blur', () => {
+                validateInputOnBlur(gicInput);
+                validateShareInline(shareIndex);
+            });
+            gicRow.appendChild(gicLabel);
+            gicRow.appendChild(gicInput);
+            seedGrid.appendChild(gicRow);
+
             container.appendChild(seedGrid);
             return container;
         }
 
         /**
-         * Clears and regenerates all share input blocks based on the selected K value.
+         * Persists current recover-flow share inputs into recoverFlowCache.
          */
-        function updateRecoverSharesInputs() {
-            // 1. Take a "snapshot" of the current UI state and save it to the cache.
+        function persistRecoverShareInputsToCache() {
             const existingContainers = recoverSharesContainer.querySelectorAll('.share-input-container');
             existingContainers.forEach((container) => {
                 const shareNumberInput = container.querySelector('[id^="recover-x-"]');
-                const globalIntegrityCheckShareInput = container.querySelector('[id^="recover-global-integrity-check-"]');
+                const globalIntegrityCheckShareInput = container.querySelector('[data-slot="gic"]');
                 if (!shareNumberInput) return;
-                
+
                 const shareIndex = parseInt(shareNumberInput.id.split('-').pop(), 10) - 1;
                 const cacheEntry = recoverFlowCache[shareIndex];
-                
+
                 if (cacheEntry) {
                     cacheEntry.shareNumber = shareNumberInput.value;
-                    cacheEntry.globalIntegrityCheckShare = globalIntegrityCheckShareInput.value;
-                    const wordInputs = container.querySelectorAll('.seed-word-row input');
+                    cacheEntry.globalIntegrityCheckShare = globalIntegrityCheckShareInput
+                        ? globalIntegrityCheckShareInput.value
+                        : '';
+                    if (!cacheEntry.columnChecksums) {
+                        cacheEntry.columnChecksums = ['', '', ''];
+                    }
+                    const wordInputs = container.querySelectorAll('.seed-word-row input:not([data-slot="column-checksum"])');
                     wordInputs.forEach((input, wordIndex) => {
                         if (wordIndex < cacheEntry.words.length) {
                             cacheEntry.words[wordIndex] = input.value;
                         }
                     });
+                    for (let col = 0; col < 3; col++) {
+                        const columnInput = container.querySelector(`input[data-slot="column-checksum"][data-column-index="${col}"]`);
+                        if (columnInput) {
+                            cacheEntry.columnChecksums[col] = columnInput.value;
+                        }
+                    }
                 }
             });
+        }
 
-            // 2. Clear and regenerate the UI.
-            recoverSharesContainer.innerHTML = '';
+        /**
+         * Rebuilds recover-flow share inputs from recoverFlowCache (does not read the DOM first).
+         */
+        function renderRecoverShareInputsFromCache() {
+            recoverSharesContainer.replaceChildren();
             const kValue = document.querySelector('input[name="recover-k"]:checked').value;
             const numShares = parseInt(kValue, 10);
             for (let i = 1; i <= numShares; i++) {
@@ -2601,6 +2594,14 @@ TERMS OF USE
                 const lastRecoverWordInput = recoverWordInputs[recoverWordInputs.length - 1];
                 attachTabAdvance(lastRecoverWordInput, btnRecoverWallet);
             }
+        }
+
+        /**
+         * Clears and regenerates all share input blocks based on the selected K value.
+         */
+        function updateRecoverSharesInputs() {
+            persistRecoverShareInputsToCache();
+            renderRecoverShareInputsFromCache();
         }
 
         recoverKRadios.forEach(radio => radio.addEventListener('change', updateRecoverSharesInputs));
@@ -2721,7 +2722,7 @@ TERMS OF USE
                 return;
             }
 
-            autocompleteContainer.innerHTML = '';
+            autocompleteContainer.replaceChildren();
             autocompleteContainer.addEventListener('mousemove', () => {
                 allowMouseHover = true;
             }, { once: true });
@@ -2878,8 +2879,31 @@ TERMS OF USE
         function highlightShareRow(shareIndex, rowIndex) {
             const container = document.getElementById(`share-container-${shareIndex}`);
             if (!container) return;
-            const inputs = container.querySelectorAll(`input[data-row-index="${rowIndex}"]`);
+            const inputs = container.querySelectorAll(
+                `input[data-row-index="${rowIndex}"][data-slot^="word-"], input[data-row-index="${rowIndex}"][data-slot="checksum"]`
+            );
             inputs.forEach(input => markInputInvalid(input, input.dataset.fieldLabel || 'Row value mismatch', { rowHighlight: true }));
+        }
+
+        function highlightShareColumn(shareIndex, columnIndex) {
+            const container = document.getElementById(`share-container-${shareIndex}`);
+            if (!container) return;
+            const checksumInputs = container.querySelectorAll('input[data-slot="checksum"]');
+            const rowCount = checksumInputs.length;
+            for (let row = 0; row < rowCount; row++) {
+                const wordInput = container.querySelector(
+                    `input[data-row-index="${row}"][data-slot="word-${columnIndex}"]`
+                );
+                if (wordInput) {
+                    markInputInvalid(wordInput, 'Column checksum mismatch', { rowHighlight: true });
+                }
+            }
+            const columnInput = container.querySelector(
+                `input[data-slot="column-checksum"][data-column-index="${columnIndex}"]`
+            );
+            if (columnInput) {
+                markInputInvalid(columnInput, 'Column checksum mismatch', { rowHighlight: true });
+            }
         }
 
         /**
@@ -2888,7 +2912,7 @@ TERMS OF USE
          * @param {number} shareIndex - The 1-based index of the share container.
          */
         function highlightShareGlobal(shareIndex) {
-            const input = document.getElementById(`recover-global-integrity-check-${shareIndex}`);
+            const input = document.getElementById(`recover-share-${shareIndex}-gic`);
             if (!input) return;
             markInputInvalid(input, input.dataset.fieldLabel || 'Global Integrity Check (GIC) mismatch', { rowHighlight: true });
         }
@@ -2911,18 +2935,14 @@ TERMS OF USE
          * Clears Global Integrity Check (GIC) highlight for a specific share.
          */
         function clearShareGlobalHighlight(shareIndex) {
-            const input = document.getElementById(`recover-global-integrity-check-${shareIndex}`);
+            const input = document.getElementById(`recover-share-${shareIndex}-gic`);
             if (input && input.getAttribute('data-row-highlight') === 'true') {
                 clearInputErrorState(input);
             }
         }
 
         /**
-         * Clean validation for a single share on blur. Follows predictable logic:
-         * 1. Clear all highlights for this share
-         * 2. Parse validation: highlight individual fields with invalid values
-         * 3. Row validation: if all 4 row fields parse OK, check checksum, highlight full row if wrong
-         * 4. Global validation: if all parse OK and no row errors, check global, highlight global only if wrong
+         * Clean validation for a single share on blur.
          */
         function validateShareInline(shareIndex) {
             const container = document.getElementById(`share-container-${shareIndex}`);
@@ -2953,110 +2973,62 @@ TERMS OF USE
                 }
             });
 
-            let anyRowFail = false;
-
-            // STEP 3: Row Checksum Validation
-            for (let row = 0; row < rowCount; row++) {
-                const wordInputs = [];
-                for (let slot = 0; slot < WORDS_PER_ROW; slot++) {
-                    const input = container.querySelector(`input[data-row-index="${row}"][data-slot="word-${slot}"]`);
-                    wordInputs.push(input);
-                }
-                const checksumInput = container.querySelector(`input[data-row-index="${row}"][data-slot="checksum"]`);
-                const rowInputs = [...wordInputs, checksumInput];
-
-                // c) Check if all 4 satisfy "b" (all parseable and none have parse errors)
-                const anyParseError = rowInputs.some(inp => parseErrors.has(inp));
-                const anyEmpty = rowInputs.some(inp => (inp?.value || '').trim() === '');
-                
-                if (anyParseError || anyEmpty) {
-                    // Can't validate checksum if any field has parse error or is empty
-                    continue;
-                }
-
-                // All 4 fields are parseable, check the checksum
-                const parsedWords = wordInputs.map(inp => parseShareValue(inp.value, { allowNumeric: true }));
-                const parsedChecksum = parseShareValue(checksumInput.value, { allowNumeric: true });
-
-                const sum = ((parsedWords[0].value + parsedWords[1].value + parsedWords[2].value) % FIELD_PRIME);
-                if (sum !== parsedChecksum.value) {
-                    // Checksum wrong: highlight ALL 4 fields in the row
-                    rowInputs.forEach(input => {
-                        markInputInvalid(input, 'Row checksum mismatch', { rowHighlight: true });
-                    });
-                    anyRowFail = true;
-                }
-            }
-
-            // STEP 4: Global Integrity Check Validation
-            // d) Only if all words + row checksums + Global Integrity Check (GIC) satisfy "b" AND no row errors
-            const globalInput = container.querySelector(`#recover-global-integrity-check-${shareIndex}`);
-            const allWordInputs = container.querySelectorAll(`input[data-slot^="word-"]`);
-            const allChecksumInputs = container.querySelectorAll(`input[data-slot="checksum"]`);
-            const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
-
-            // Check if any field has parse error
-            const anyGlobalParseError = parseErrors.has(globalInput) || 
-                                        Array.from(allWordInputs).some(inp => parseErrors.has(inp)) ||
-                                        Array.from(allChecksumInputs).some(inp => parseErrors.has(inp));
-            
-            // Check if any field is empty
-            const globalEmpty = (globalInput?.value || '').trim() === '';
+            const allWordInputs = container.querySelectorAll('input[data-slot^="word-"]');
             const anyWordEmpty = Array.from(allWordInputs).some(inp => (inp?.value || '').trim() === '');
-            const anyChecksumEmpty = Array.from(allChecksumInputs).some(inp => (inp?.value || '').trim() === '');
-            
-            if (!anyGlobalParseError && !anyRowFail && !globalEmpty && !anyWordEmpty && !anyChecksumEmpty) {
-                // All parseable, no row errors, compute Global Integrity Check (GIC)
-                const parsedWords = Array.from(allWordInputs).map(inp => parseShareValue(inp.value, { allowNumeric: true }));
-                const parsedChecksums = Array.from(allChecksumInputs).map(inp => parseShareValue(inp.value, { allowNumeric: true }));
-                const parsedGlobal = parseShareValue(globalInput.value, { allowNumeric: true });
-                const parsedShareNumber = shareNumberInput
-                    ? parseShareValue(shareNumberInput.value, { allowNumeric: true })
-                    : { ok: false };
+            const anyWordParseError = Array.from(allWordInputs).some(inp => parseErrors.has(inp));
+            if (anyWordEmpty || anyWordParseError) {
+                return;
+            }
 
-                if (parsedGlobal.ok && parsedShareNumber.ok) {
-                    const wordSum = parsedWords.reduce((acc, p) => (acc + p.value) % FIELD_PRIME, 0);
-                    const checksumSum = parsedChecksums.reduce((acc, p) => (acc + p.value) % FIELD_PRIME, 0);
-                    const expectedFromWords = (wordSum + parsedShareNumber.value) % FIELD_PRIME;
-                    const expectedFromChecksums = (checksumSum + parsedShareNumber.value) % FIELD_PRIME;
-                    const matchWords = expectedFromWords === parsedGlobal.value;
-                    const matchChecks = expectedFromChecksums === parsedGlobal.value;
-                    if (!matchWords || !matchChecks) {
-                        // Global wrong: highlight ONLY the global field
-                        markInputInvalid(globalInput, 'Global Integrity Check (GIC) mismatch', { rowHighlight: true });
-                    }
+            const rowTotalInline = computeRowTotal(rowCount);
+            const share = {
+                shareNumber: 0,
+                wordShares: [],
+                checksumShares: new Array(rowCount),
+                columnChecksumShares: [undefined, undefined, undefined],
+                globalIntegrityCheckShare: undefined
+            };
+
+            Array.from(allWordInputs).forEach(inp => {
+                share.wordShares.push(parseShareValue(inp.value, { allowNumeric: true }).value);
+            });
+            for (let row = 0; row < rowCount; row++) {
+                const checksumInput = container.querySelector(`input[data-row-index="${row}"][data-slot="checksum"]`);
+                const raw = (checksumInput?.value || '').trim();
+                if (raw !== '' && !parseErrors.has(checksumInput)) {
+                    share.checksumShares[row] = parseShareValue(raw, { allowNumeric: true }).value;
                 }
             }
-        }
+            for (let col = 0; col < 3; col++) {
+                const columnInput = container.querySelector(`input[data-slot="column-checksum"][data-column-index="${col}"]`);
+                const raw = (columnInput?.value || '').trim();
+                if (raw !== '' && !parseErrors.has(columnInput)) {
+                    share.columnChecksumShares[col] = parseShareValue(raw, { allowNumeric: true }).value;
+                }
+            }
+            const globalInput = container.querySelector(`#recover-share-${shareIndex}-gic`);
+            const gicRaw = (globalInput?.value || '').trim();
+            if (gicRaw !== '' && !parseErrors.has(globalInput)) {
+                share.globalIntegrityCheckShare = parseShareValue(gicRaw, { allowNumeric: true }).value;
+            }
+            const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
+            const parsedShareNumber = shareNumberInput
+                ? parseShareValue(shareNumberInput.value, { allowNumeric: true })
+                : { ok: false };
+            if (!parsedShareNumber.ok) {
+                if (gicRaw !== '') {
+                    markInputInvalid(shareNumberInput, 'Enter a valid share number (X) to verify GIC.', { rowHighlight: false });
+                }
+                return;
+            }
+            share.shareNumber = parsedShareNumber.value;
 
-        /**
-         * Highlights all inputs in the specified row across all shares.
-         * Note: We cannot determine which specific share has an error, so we highlight all.
-         * @param {number} rowIndex - Zero-based index of the row to highlight.
-         */
-        function highlightErrorRow(rowIndex) {
-            if (typeof rowIndex !== 'number' || rowIndex < 0) return;
-            const shareContainers = recoverSharesContainer.querySelectorAll('.share-input-container');
-            
-            shareContainers.forEach(container => {
-                const inputs = container.querySelectorAll(`input[data-row-index="${rowIndex}"]`);
-                inputs.forEach(input => {
-                    markInputInvalid(input, 'Check this field', { rowHighlight: true });
-                });
-            });
-        }
-        
-        /**
-         * Marks all "Global Integrity Check (GIC) Verification" input fields as invalid.
-         * Note: We cannot determine which specific share has an error, so we highlight all.
-         */
-        function highlightGlobalIntegrityCheckError() {
-            const globalIntegrityCheckInputs = document.querySelectorAll('[id^="recover-global-integrity-check-"]');
-            
-            globalIntegrityCheckInputs.forEach(input => {
-                const label = input.dataset.fieldLabel || 'Global Integrity Check (GIC) verification';
-                markInputInvalid(input, `${label} failed. Check all Global Integrity Check (GIC) fields.`, { rowHighlight: true });
-            });
+            const audit = DuraShare.auditOptionalChecksums(share, rowCount, rowTotalInline);
+            audit.rowFails.forEach((row) => highlightShareRow(shareIndex, row));
+            audit.colFails.forEach((col) => highlightShareColumn(shareIndex, col));
+            if (audit.gicFail && globalInput) {
+                markInputInvalid(globalInput, 'Global integrity check mismatch', { rowHighlight: true });
+            }
         }
 
         // ==========================================================================
@@ -3111,6 +3083,175 @@ TERMS OF USE
             modal.style.display = 'none';
         });
 
+        function appendShareMetadataLine(metadataEl, label, value) {
+            const p = document.createElement('p');
+            const strong = document.createElement('strong');
+            strong.textContent = `${label}: `;
+            p.appendChild(strong);
+            p.appendChild(document.createTextNode(String(value)));
+            metadataEl.appendChild(p);
+        }
+
+        function appendShareWordItem(listEl, labelText, fieldValue) {
+            const item = document.createElement('div');
+            item.className = 'share-word-item';
+            const label = document.createElement('label');
+            label.textContent = labelText;
+            const code = document.createElement('code');
+            code.className = 'mono';
+            code.textContent = formatShareFieldValue(fieldValue);
+            item.appendChild(label);
+            item.appendChild(code);
+            listEl.appendChild(item);
+        }
+
+        function buildShareWordList(share, rowCountDisplay) {
+            const list = document.createElement('div');
+            list.className = 'share-word-list';
+            let wordCounter = 0;
+            for (let i = 0; i < rowCountDisplay; i++) {
+                for (let j = 0; j < 3; j++) {
+                    appendShareWordItem(list, `${wordCounter + 1}.`, share.wordShares[wordCounter]);
+                    wordCounter++;
+                }
+                appendShareWordItem(list, `C${i + 1}.`, share.checksumShares[i]);
+            }
+            for (let col = 0; col < 3; col++) {
+                appendShareWordItem(list, `Col${col + 1}.`, share.columnChecksumShares[col]);
+            }
+            appendShareWordItem(list, 'GIC.', share.globalIntegrityCheckShare);
+            return list;
+        }
+
+        function appendShareCardContent(parent, share, metadata, n, rowCountDisplay) {
+            const title = document.createElement('h3');
+            title.textContent = `Share ${share.shareNumber} of ${n}`;
+            parent.appendChild(title);
+            parent.appendChild(document.createElement('hr'));
+
+            const metadataDiv = document.createElement('div');
+            metadataDiv.className = 'share-metadata';
+            appendShareMetadataLine(metadataDiv, 'Wallet Identifier', metadata.identifier);
+            appendShareMetadataLine(metadataDiv, 'Creation Date', metadata.date);
+            appendShareMetadataLine(metadataDiv, 'Scheme', metadata.scheme);
+            appendShareMetadataLine(metadataDiv, 'Share Number (X)', share.shareNumber);
+            parent.appendChild(metadataDiv);
+
+            const valuesHeading = document.createElement('h4');
+            valuesHeading.style.marginTop = '25px';
+            valuesHeading.style.marginBottom = '10px';
+            valuesHeading.style.color = 'var(--text-muted)';
+            valuesHeading.style.fontWeight = '600';
+            valuesHeading.textContent = 'Share Values (Y)';
+            parent.appendChild(valuesHeading);
+
+            const wordContainer = document.createElement('div');
+            wordContainer.className = 'share-word-container';
+            wordContainer.appendChild(buildShareWordList(share, rowCountDisplay));
+            parent.appendChild(wordContainer);
+        }
+
+        function buildPrintShareWarning(n) {
+            const warning = document.createElement('div');
+            warning.style.textAlign = 'center';
+            warning.style.padding = '5px';
+            warning.style.border = '1px solid var(--error-red)';
+            warning.style.background = 'var(--alert-error-bg)';
+            warning.style.borderRadius = '8px';
+            warning.style.marginBottom = '1rem';
+            const strong = document.createElement('strong');
+            strong.style.color = 'var(--error-red)';
+            strong.textContent = `This is 1 of ${n} shares. It CANNOT recover funds alone. Do NOT enter these words into a wallet.`;
+            warning.appendChild(strong);
+            return warning;
+        }
+
+        function appendManualRecoveryListItem(list, strongText, bodyText) {
+            const li = document.createElement('li');
+            li.style.marginBottom = '0.5em';
+            const strong = document.createElement('strong');
+            strong.textContent = strongText;
+            li.appendChild(strong);
+            li.appendChild(document.createTextNode(` ${bodyText}`));
+            list.appendChild(li);
+        }
+
+        function buildManualRecoveryInstructions(k, rowTotalDisplay, wordCount) {
+            const card = document.createElement('div');
+            card.className = 'component-card';
+            card.style.marginTop = '2rem';
+            card.style.borderStyle = 'dashed';
+            card.style.pageBreakInside = 'avoid';
+
+            const heading = document.createElement('h4');
+            heading.textContent = 'Manual Recovery Instructions (Pencil & Paper)';
+            card.appendChild(heading);
+
+            const intro = document.createElement('p');
+            intro.style.fontSize = '0.8rem';
+            intro.style.color = 'var(--text-muted)';
+            intro.style.textAlign = 'left';
+            intro.appendChild(document.createTextNode(
+                'These instructions explain how to recover the original wallet phrase without a computer, using only the numbers from your share sheets. You will need at least '
+            ));
+            const kStrong = document.createElement('strong');
+            kStrong.textContent = `${k} different share sheets`;
+            intro.appendChild(kStrong);
+            intro.appendChild(document.createTextNode(
+                ' from this set to proceed. All calculations are performed "modulo 2053", which means you divide by 2053 and take the remainder.'
+            ));
+            card.appendChild(intro);
+
+            const list = document.createElement('ol');
+            list.style.fontSize = '0.8rem';
+            list.style.paddingLeft = '20px';
+            list.style.textAlign = 'left';
+
+            appendManualRecoveryListItem(
+                list,
+                'Find Lagrange Coefficients (γ):',
+                'For the specific set of Share Numbers you have (e.g., #1, #2), you need a corresponding set of "Lagrange Coefficients". These are non-secret numbers. You can find them in the DuraShare whitepaper for common schemes or generate them with the official tool. You will have one coefficient for each share you are using.'
+            );
+
+            const recoverLi = document.createElement('li');
+            recoverLi.style.marginBottom = '0.5em';
+            const recoverStrong = document.createElement('strong');
+            recoverStrong.textContent = 'Recover One Number:';
+            recoverLi.appendChild(recoverStrong);
+            recoverLi.appendChild(document.createTextNode(
+                ` To recover a single original number (e.g., for position #1), take the numeric value (Y) from that position on each of your ${k} share sheets. Multiply each Y value by its corresponding Lagrange Coefficient (γ). Sum all the results. The remainder of this sum when divided by 2053 is the recovered secret number. `
+            ));
+            const formula = document.createElement('em');
+            formula.textContent = 'Formula: (Y₁·γ₁ + Y₂·γ₂ + ...) mod 2053 = Secret';
+            recoverLi.appendChild(document.createElement('br'));
+            recoverLi.appendChild(formula);
+            list.appendChild(recoverLi);
+
+            appendManualRecoveryListItem(
+                list,
+                'Recover and Verify Each Row:',
+                'Repeat step 2 for all three word values and the row checksum in each row. Verify: (word₁ + word₂ + word₃ + row number) mod 2053 = row checksum (row numbers are 1, 2, 3, …).'
+            );
+            appendManualRecoveryListItem(
+                list,
+                'Verify Column Checksums:',
+                'Recover Col1, Col2, and Col3 the same way. For each column, sum that column\'s recovered words plus its tag (Col1 +10, Col2 +20, Col3 +30) mod 2053 and compare to the recovered column checksum.'
+            );
+            appendManualRecoveryListItem(
+                list,
+                'Final Global Integrity Verification:',
+                `Recover the GIC value from the bottom-right table cell on each share. It must equal (sum of all recovered words + ${rowTotalDisplay} + ${COLUMN_TOTAL} + share number X) mod 2053. You can also cross-check via row checksums (+ ${COLUMN_TOTAL} + X) or column checksums (+ ${rowTotalDisplay} + X).`
+            );
+            appendManualRecoveryListItem(
+                list,
+                'Convert to Words:',
+                `Once all checks pass, use the standard BIP39 wordlist to look up the word for each of your ${wordCount} recovered numbers. The resulting sequence of ${wordCount} words is your wallet's original recovery phrase.`
+            );
+
+            card.appendChild(list);
+            return card;
+        }
+
         /**
          * Dynamically generates and displays the share cards on Page 2.
          * @param {Array<Object>} shares - The array of generated share data.
@@ -3119,112 +3260,28 @@ TERMS OF USE
         function displayShares(shares, metadata) {
             const outputContainer = document.getElementById('shares-output');
             const printContainer = document.getElementById('print-output');
-            
+
+            outputContainer.replaceChildren();
+            printContainer.replaceChildren();
+
             const [k, n] = metadata.scheme.split('of').map(Number);
-
-            const manualRecoveryInstructions = `
-                <div class="component-card" style="margin-top: 2rem; border-style: dashed; page-break-inside: avoid;">
-                    <h4>Manual Recovery Instructions (Pencil & Paper)</h4>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); text-align: left;">
-                        These instructions explain how to recover the original wallet phrase without a computer, using only the numbers from your share sheets. You will need at least <strong>${k} different share sheets</strong> from this set to proceed. All calculations are performed "modulo 2053", which means you divide by 2053 and take the remainder.
-                    </p>
-                    <ol style="font-size: 0.8rem; padding-left: 20px; text-align: left;">
-                        <li style="margin-bottom: 0.5em;">
-                            <strong>Find Lagrange Coefficients (γ):</strong> For the specific set of Share Numbers you have (e.g., #1, #2), you need a corresponding set of "Lagrange Coefficients". These are non-secret numbers. You can find them in the Schiavinato Sharing whitepaper for common schemes or generate them with the official tool. You will have one coefficient for each share you are using.
-                        </li>
-                        <li style="margin-bottom: 0.5em;">
-                            <strong>Recover One Number:</strong> To recover a single original number (e.g., for position #1), take the numeric value (Y) from that position on each of your ${k} share sheets. Multiply each Y value by its corresponding Lagrange Coefficient (γ). Sum all the results. The remainder of this sum when divided by 2053 is the recovered secret number.
-                            <br><em>Formula: (Y₁·γ₁ + Y₂·γ₂ + ...) mod 2053 = Secret</em>
-                        </li>
-                        <li style="margin-bottom: 0.5em;">
-                            <strong>Recover and Verify Each Row:</strong> Repeat step 2 for all three word values and the checksum value in a single row. Then, verify your math: add your three recovered word numbers together (modulo 2053). The result MUST equal your recovered checksum number for that row. If it doesn't, you have made a calculation error in that row.
-                        </li>
-                        <li style="margin-bottom: 0.5em;">
-                            <strong>Final Global Integrity Check (GIC) Verification:</strong> After all rows are recovered and verified, use the same method from step 2 to recover the "Global Integrity Check (GIC) Verification Number" from the share headers. Then, add all ${metadata.wordCount} of your recovered word numbers together (modulo 2053). The result MUST equal the recovered Global Integrity Check (GIC) Verification Number. If it doesn't, an error exists in one or more rows.
-                        </li>
-                        <li style="margin-bottom: 0.5em;">
-                            <strong>Convert to Words:</strong> Once all checks pass, use the standard BIP39 wordlist to look up the word for each of your ${metadata.wordCount} recovered numbers. The resulting sequence of ${metadata.wordCount} words is your wallet's original recovery phrase.
-                        </li>
-                    </ol>
-                </div>
-            `;
-
-            let allSharesScreenHtml = '';
-            let allSharesPrintHtml = '';
+            const rowCountDisplay = metadata.wordCount / 3;
+            const rowTotalDisplay = computeRowTotal(rowCountDisplay);
+            const manualRecoveryTemplate = buildManualRecoveryInstructions(k, rowTotalDisplay, metadata.wordCount);
 
             shares.forEach(share => {
-                const globalIntegrityCheckValue = share.globalIntegrityCheckShare;
-                // Format share value: 0="0000-0000", 1-2048="word-####", 2049-2052="####-####"
-                let globalIntegrityCheckShareDisplay;
-                if (globalIntegrityCheckValue === 0) {
-                    globalIntegrityCheckShareDisplay = '0000-0000';
-                } else if (globalIntegrityCheckValue >= 1 && globalIntegrityCheckValue <= 2048) {
-                    const word = BIP39_WORDLIST[globalIntegrityCheckValue - 1];
-                    globalIntegrityCheckShareDisplay = `${String(globalIntegrityCheckValue).padStart(4, '0')}-${word}`;
-                } else {
-                    globalIntegrityCheckShareDisplay = `${String(globalIntegrityCheckValue).padStart(4, '0')}-${String(globalIntegrityCheckValue).padStart(4, '0')}`;
-                }
+                const screenCard = document.createElement('div');
+                screenCard.className = 'component-card share-card';
+                appendShareCardContent(screenCard, share, metadata, n, rowCountDisplay);
+                outputContainer.appendChild(screenCard);
 
-                let wordListHtml = '';
-                let wordCounter = 0;
-                for (let i = 0; i < (metadata.wordCount / 3); i++) {
-                    for (let j = 0; j < 3; j++) {
-                        const value = share.wordShares[wordCounter];
-                        // Format share value: 0="0000-0000", 1-2048="word-####", 2049-2052="####-####"
-                        let display;
-                        if (value === 0) {
-                            display = '0000-0000';
-                        } else if (value >= 1 && value <= 2048) {
-                            const word = BIP39_WORDLIST[value - 1];
-                            display = `${String(value).padStart(4, '0')}-${word}`;
-                        } else {
-                            display = `${String(value).padStart(4, '0')}-${String(value).padStart(4, '0')}`;
-                        }
-                        wordListHtml += `<div class="share-word-item"><label>${wordCounter + 1}.</label><code class="mono">${display}</code></div>`;
-                        wordCounter++;
-                    }
-                    const checksumValue = share.checksumShares[i];
-                    // Format share value: 0="0000-0000", 1-2048="word-####", 2049-2052="####-####"
-                    let checksumDisplay;
-                    if (checksumValue === 0) {
-                        checksumDisplay = '0000-0000';
-                    } else if (checksumValue >= 1 && checksumValue <= 2048) {
-                        const word = BIP39_WORDLIST[checksumValue - 1];
-                        checksumDisplay = `${String(checksumValue).padStart(4, '0')}-${word}`;
-                    } else {
-                        checksumDisplay = `${String(checksumValue).padStart(4, '0')}-${String(checksumValue).padStart(4, '0')}`;
-                    }
-                    wordListHtml += `<div class="share-word-item"><label>C${i + 1}.</label><code class="mono">${checksumDisplay}</code></div>`;
-                }
-
-                const shareContentHtml = `
-                    <h3>Share ${share.shareNumber} of ${n}</h3>
-                    <hr>
-                    <div class="share-metadata">
-                        <p><strong>Wallet Identifier:</strong> ${metadata.identifier}</p>
-                        <p><strong>Creation Date:</strong> ${metadata.date}</p>
-                        <p><strong>Scheme:</strong> ${metadata.scheme}</p>
-                        <p><strong>Share Number (X):</strong> ${share.shareNumber}</p>
-                        <p><strong>Global Integrity Check (GIC):</strong> <code class="mono">${globalIntegrityCheckShareDisplay}</code></p>
-                    </div>
-                    <h4 style="margin-top: 25px; margin-bottom: 10px; color: var(--text-muted); font-weight: 600;">Share Values (Y)</h4>
-                    <div class="share-word-container">
-                        <div class="share-word-list">${wordListHtml}</div>
-                    </div>
-                `;
-
-                const printWarningHtml = `
-                    <div style="text-align: center; padding: 5px; border: 1px solid var(--error-red); background: var(--alert-error-bg); border-radius: 8px; margin-bottom: 1rem;">
-                        <strong style="color: var(--error-red);">This is 1 of ${n} shares. It CANNOT recover funds alone. Do NOT enter these words into a wallet.</strong>
-                    </div>
-                `;
-
-                allSharesScreenHtml += `<div class="component-card share-card">${shareContentHtml}</div>`;
-                allSharesPrintHtml += `<div class="component-card share-card">${printWarningHtml}${shareContentHtml}${manualRecoveryInstructions}</div>`;
+                const printCard = document.createElement('div');
+                printCard.className = 'component-card share-card';
+                printCard.appendChild(buildPrintShareWarning(n));
+                appendShareCardContent(printCard, share, metadata, n, rowCountDisplay);
+                printCard.appendChild(manualRecoveryTemplate.cloneNode(true));
+                printContainer.appendChild(printCard);
             });
-
-            outputContainer.innerHTML = allSharesScreenHtml;
-            printContainer.innerHTML = allSharesPrintHtml;
         }
 
         /**
@@ -3239,7 +3296,7 @@ TERMS OF USE
             if (!container || !pageContainer) return;
 
             // Clear previous results and warnings
-            container.innerHTML = ''; 
+            container.replaceChildren();
             const existingWarning = pageContainer.querySelector('.alert-error');
             if (existingWarning) {
                 existingWarning.remove();
@@ -3248,7 +3305,12 @@ TERMS OF USE
             if (showWarning) {
                 const warningDiv = document.createElement('div');
                 warningDiv.className = 'alert alert-error';
-                warningDiv.innerHTML = '<strong>WARNING: INVALID SEED.</strong> This recovery phrase has an incorrect BIP39 checksum. DO NOT use it to store funds.';
+                const warningStrong = document.createElement('strong');
+                warningStrong.textContent = 'WARNING: INVALID SEED.';
+                warningDiv.appendChild(warningStrong);
+                warningDiv.appendChild(document.createTextNode(
+                    ' This recovery phrase has an incorrect BIP39 checksum. DO NOT use it to store funds.'
+                ));
                 // Insert warning before the component card containing the seed phrase
                 const targetCard = pageContainer.querySelector('.component-card:nth-of-type(2)');
                 if(targetCard) {
@@ -3363,44 +3425,75 @@ TERMS OF USE
             button.addEventListener('click', async () => {
                 const confirmed = await showConfirmationModal(title, text);
                 if (confirmed) {
-                    // Security: Clear all input fields before reloading to reduce memory dump risk
+                    // Best-effort: clear on-screen fields before reload.
+                    // Everywhere: clear/close when finished. On Tails, also shut down (OS memory wipe).
                     cleanupSensitiveInputs();
                     window.location.reload();
                 }
             });
         }
-        
+
         /**
-         * Clears all potentially sensitive input fields in the DOM.
-         * This reduces the window of vulnerability to memory dump attacks.
+         * Clears seed-phrase inputs and the create-flow word cache after shares are generated.
+         * Leaves share output intact. JavaScript cannot securely erase immutable string copies.
          */
-        function cleanupSensitiveInputs() {
-            // Clear all text inputs, textareas, and any displayed mnemonics
-            const allInputs = document.querySelectorAll('input[type="text"], input[type="password"], textarea');
-            allInputs.forEach(input => {
-                if (input.value) {
+        function clearCreateFlowSeedInputs() {
+            for (let i = 1; i <= 24; i++) {
+                const input = document.getElementById(`word-${i}`);
+                if (input) {
                     input.value = '';
                 }
+            }
+            createFlowWordCache = Array(24).fill('');
+        }
+
+        /**
+         * Clears recover-flow share inputs after the seed is shown on screen.
+         * Leaves recoverFlowCache intact so "Go Back and Edit" can restore values.
+         * Start Over still clears the cache via cleanupSensitiveInputs().
+         */
+        function clearRecoverFlowShareInputs() {
+            const recoverRoot = document.getElementById('pageRecover1');
+            if (recoverRoot) {
+                recoverRoot.querySelectorAll('input[type="text"], input[type="password"], textarea').forEach((input) => {
+                    input.value = '';
+                });
+            }
+        }
+
+        /**
+         * Best-effort clear of sensitive DOM fields and in-page caches.
+         * Does not guarantee RAM erasure in the browser. Prefer Clear All & Start Over
+         * (or close the page) when finished; on Tails, also shut down for OS memory wipe.
+         */
+        function cleanupSensitiveInputs() {
+            const allInputs = document.querySelectorAll('input[type="text"], input[type="password"], textarea');
+            allInputs.forEach(input => {
+                input.value = '';
             });
-            
-            // Clear any displayed mnemonic words
+
             const mnemonicContainers = document.querySelectorAll('.share-word-list, .share-word-item code');
             mnemonicContainers.forEach(container => {
-                if (container.textContent) {
-                    container.textContent = '';
-                }
+                container.textContent = '';
             });
-            
-            // Clear cached data in memory
+
+            const sharesOutput = document.getElementById('shares-output');
+            if (sharesOutput) {
+                sharesOutput.replaceChildren();
+            }
+            const printOutput = document.getElementById('print-output');
+            if (printOutput) {
+                printOutput.replaceChildren();
+            }
+
             createFlowWordCache = Array(24).fill('');
             recoverFlowCache = Array(MAX_SHARES).fill(null).map(() => ({
                 shareNumber: '',
-                words: Array(24).fill(''),
-                checksums: Array(8).fill(''),
-                globalIntegrityCheck: ''
+                words: Array(32).fill(''),
+                columnChecksums: ['', '', ''],
+                globalIntegrityCheckShare: ''
             }));
-            
-            // Clear autocomplete cache
+
             if (typeof manualRecoveryShareCache !== 'undefined') {
                 Object.keys(manualRecoveryShareCache).forEach(key => {
                     manualRecoveryShareCache[key] = [];
@@ -3495,7 +3588,7 @@ TERMS OF USE
         // - This object contains all core cryptographic and validation logic.
         // - It is self-contained and has no dependencies on the DOM or UI scripts.
         // ==========================================================================
-        const SchiavinatoSharing = (function() {
+        const DuraShare = (function() {
             'use strict';
 
             // ==========================================================================
@@ -3503,6 +3596,21 @@ TERMS OF USE
             // ==========================================================================
             const FIELD_PRIME = 2053;
             const WORDS_PER_ROW = 3;
+            const COLUMN_TAGS = [10, 20, 30];
+            const COLUMN_TOTAL = 60;
+
+            function computeRowTotal(rowCount) {
+                return (rowCount * (rowCount + 1)) / 2;
+            }
+
+            /**
+             * Adds a value to the constant term (index 0) of a polynomial.
+             */
+            function addConstantTerm(polynomial, offset) {
+                const result = polynomial.slice();
+                result[0] = modAdd(result[0], offset);
+                return result;
+            }
 
             const GLOBAL_SCOPE = typeof globalThis !== 'undefined'
                 ? globalThis
@@ -3589,32 +3697,19 @@ TERMS OF USE
             }
 
             /**
-             * Securely overwrites an array with zeros.
-             * Reduces the window of vulnerability to memory dump attacks by
-             * explicitly clearing sensitive data instead of relying on garbage collection.
-             * @param {Array} arr - Array to wipe (will be modified in place)
+             * Best-effort in-place clear of a mutable array (typically field elements / coeffs).
+             * Useful for shortening how long scratch buffers stay populated. This is not a
+             * guarantee against memory forensics — JS runtimes may retain copies. Clear/close
+             * when finished; on Tails, also shut down for OS memory wipe.
+             * @param {Array} arr - Array to clear (modified in place)
              */
-            function secureWipeArray(arr) {
+            function clearSensitiveArray(arr) {
                 if (Array.isArray(arr)) {
                     for (let i = 0; i < arr.length; i++) {
                         arr[i] = 0;
                     }
+                    arr.length = 0;
                 }
-            }
-
-            /**
-             * Attempts to overwrite a string variable by reassigning it to zeros.
-             * Note: JavaScript strings are immutable, so this has limited effectiveness.
-             * The original string may remain in memory until garbage collected, but this
-             * reduces the window of vulnerability by breaking the reference.
-             * @param {string} str - The string to wipe
-             * @returns {string} A zeroed-out string of the same length
-             */
-            function wipeString(str) {
-                if (typeof str === 'string' && str.length > 0) {
-                    return '\0'.repeat(str.length);
-                }
-                return '';
             }
 
             // ==========================================================================
@@ -3690,6 +3785,9 @@ TERMS OF USE
                         throw new Error('Secure randomness provider is not configured.');
                     }
                 }
+                if (max > 0xFFFFFFFF) {
+                    throw new Error('max must be at most 2^32 - 1.');
+                }
                 const range = max + 1;
                 if (range <= 0) {
                     throw new Error('Invalid range for randomness.');
@@ -3712,17 +3810,6 @@ TERMS OF USE
                 return getRandomIntInclusive(FIELD_PRIME - 1);
             }
 
-            /**
-             * Draws a non-zero random element from GF(2053).
-             */
-            function getRandomNonZeroFieldElement() {
-                for (let attempt = 0; attempt < 256; attempt++) {
-                    const value = getRandomFieldElement();
-                    if (value !== 0) return value;
-                }
-                throw new Error('Failed to draw a non-zero field element (entropy source may be faulty).');
-            }
-            
             // ==========================================================================
             // POLYNOMIAL & INTERPOLATION LOGIC
             // ==========================================================================
@@ -3732,11 +3819,7 @@ TERMS OF USE
             function randomPolynomial(secret, degree) {
                 const coefficients = [mod(secret)];
                 for (let i = 0; i < degree; i++) {
-                    const isHighestPower = i === degree - 1;
-                    const coefficient = isHighestPower
-                        ? getRandomNonZeroFieldElement()
-                        : getRandomFieldElement();
-                    coefficients.push(coefficient);
+                    coefficients.push(getRandomFieldElement());
                 }
                 return coefficients;
             }
@@ -3824,16 +3907,34 @@ TERMS OF USE
                 for (let row = 0; row < rowCount; row++) {
                     const base = row * WORDS_PER_ROW;
                     const sum = modAdd(modAdd(wordIndices[base], wordIndices[base + 1]), wordIndices[base + 2]);
-                    checks.push(sum);
+                    checks.push(modAdd(sum, row + 1));
+                }
+                return checks;
+            }
+
+            /**
+             * Computes column checksums (sum of each column's words plus column tag 10/20/30).
+             */
+            function computeColumnChecks(wordIndices) {
+                const rowCount = wordIndices.length / WORDS_PER_ROW;
+                const checks = [];
+                for (let col = 0; col < 3; col++) {
+                    let sum = 0;
+                    for (let row = 0; row < rowCount; row++) {
+                        sum = modAdd(sum, wordIndices[row * WORDS_PER_ROW + col]);
+                    }
+                    checks.push(modAdd(sum, COLUMN_TAGS[col]));
                 }
                 return checks;
             }
             
             /**
-             * Calculates the Global Integrity Check (GIC) by summing all word indices mod 2053.
+             * Global integrity value: sum of all words plus row total and column total (before share binding).
              */
             function computeGlobalIntegrityCheck(wordIndices) {
-                return wordIndices.reduce((acc, value) => modAdd(acc, value), 0);
+                const rowCount = wordIndices.length / WORDS_PER_ROW;
+                const wordSum = wordIndices.reduce((acc, value) => modAdd(acc, value), 0);
+                return modAdd(modAdd(wordSum, computeRowTotal(rowCount)), COLUMN_TOTAL);
             }
 
             /**
@@ -3870,22 +3971,42 @@ TERMS OF USE
                 const rowPolynomials = [];
                 for (let row = 0; row < rowCount; row++) {
                     const base = row * WORDS_PER_ROW;
-                    const rowPoly = sumPolynomials([
+                    const rowPoly = addConstantTerm(sumPolynomials([
                         wordPolynomials[base],
                         wordPolynomials[base + 1],
                         wordPolynomials[base + 2]
-                    ]);
+                    ]), row + 1);
                     rowPolynomials.push(rowPoly);
                 }
                 return rowPolynomials;
             }
 
             /**
-             * Creates a Global Integrity Check (GIC) polynomial by summing all word polynomials.
-             * PATH B: Evaluating this polynomial should match the direct sum of all word shares (Path A).
+             * Creates column checksum polynomials (one per column) with tags in the constant term.
+             */
+            function computeColumnCheckPolynomials(wordPolynomials) {
+                const wordCount = wordPolynomials.length;
+                const rowCount = wordCount / WORDS_PER_ROW;
+                const columnPolynomials = [];
+                for (let col = 0; col < 3; col++) {
+                    const columnWordPolys = [];
+                    for (let row = 0; row < rowCount; row++) {
+                        columnWordPolys.push(wordPolynomials[row * WORDS_PER_ROW + col]);
+                    }
+                    columnPolynomials.push(addConstantTerm(sumPolynomials(columnWordPolys), COLUMN_TAGS[col]));
+                }
+                return columnPolynomials;
+            }
+
+            /**
+             * Creates the global integrity polynomial (all words + row total + column total).
              */
             function computeGlobalIntegrityCheckPolynomial(wordPolynomials) {
-                return sumPolynomials(wordPolynomials);
+                const rowCount = wordPolynomials.length / WORDS_PER_ROW;
+                return addConstantTerm(
+                    addConstantTerm(sumPolynomials(wordPolynomials), computeRowTotal(rowCount)),
+                    COLUMN_TOTAL
+                );
             }
             
             /**
@@ -3926,6 +4047,77 @@ TERMS OF USE
             }
 
             /**
+             * Validates optional checksum fields when present (v0.5.0). Words must be complete.
+             */
+            function auditOptionalChecksums(share, rowCount, rowTotal) {
+                const rowFails = [];
+                const colFails = [];
+                let gicFail = false;
+                let wordSum = 0;
+                let checksumSum = 0;
+                let columnChecksumSum = 0;
+                let hasRowError = false;
+                let hasColumnError = false;
+                const shareNumber = share.shareNumber;
+
+                for (let row = 0; row < rowCount; row++) {
+                    const base = row * WORDS_PER_ROW;
+                    const w0 = share.wordShares[base];
+                    const w1 = share.wordShares[base + 1];
+                    const w2 = share.wordShares[base + 2];
+                    wordSum = modAdd(modAdd(wordSum, w0), modAdd(w1, w2));
+                    const checksum = share.checksumShares[row];
+                    if (!Number.isInteger(checksum)) {
+                        continue;
+                    }
+                    const rowSum = modAdd(modAdd(modAdd(w0, w1), w2), row + 1);
+                    if (rowSum !== checksum) {
+                        rowFails.push(row);
+                        hasRowError = true;
+                    }
+                    checksumSum = modAdd(checksumSum, checksum);
+                }
+
+                for (let col = 0; col < 3; col++) {
+                    const columnChecksum = share.columnChecksumShares[col];
+                    if (!Number.isInteger(columnChecksum)) {
+                        continue;
+                    }
+                    let columnSum = 0;
+                    for (let row = 0; row < rowCount; row++) {
+                        columnSum = modAdd(columnSum, share.wordShares[row * WORDS_PER_ROW + col]);
+                    }
+                    if (modAdd(columnSum, COLUMN_TAGS[col]) !== columnChecksum) {
+                        colFails.push(col);
+                        hasColumnError = true;
+                    }
+                    columnChecksumSum = modAdd(columnChecksumSum, columnChecksum);
+                }
+
+                if (!Number.isInteger(share.globalIntegrityCheckShare)) {
+                    return { rowFails, colFails, gicFail };
+                }
+
+                const gic = share.globalIntegrityCheckShare;
+                const fromWords = modAdd(modAdd(modAdd(wordSum, rowTotal), COLUMN_TOTAL), shareNumber);
+                let gicOk = gic === fromWords;
+                const allRows = share.checksumShares.every((v) => Number.isInteger(v));
+                const allCols = share.columnChecksumShares.every((v) => Number.isInteger(v));
+                if (allRows && !hasRowError) {
+                    const fromRows = modAdd(modAdd(checksumSum, COLUMN_TOTAL), shareNumber);
+                    gicOk = gicOk && gic === fromRows;
+                }
+                if (allCols && !hasColumnError) {
+                    const fromCols = modAdd(modAdd(columnChecksumSum, rowTotal), shareNumber);
+                    gicOk = gicOk && gic === fromCols;
+                }
+                if (!gicOk) {
+                    gicFail = true;
+                }
+                return { rowFails, colFails, gicFail };
+            }
+
+            /**
              * Performs structural validation on each share before attempting recovery.
              */
             function validateSharesForRecovery(shares, wordCount) {
@@ -3938,10 +4130,10 @@ TERMS OF USE
                         throw new Error(`Share #${share.shareNumber} does not contain ${wordCount} word values.`);
                     }
                     if (!Array.isArray(share.checksumShares) || share.checksumShares.length !== rowCount) {
-                        throw new Error(`Share #${share.shareNumber} does not contain ${rowCount} checksum values.`);
+                        throw new Error(`Share #${share.shareNumber} has invalid row checksum storage.`);
                     }
-                    if (!Number.isInteger(share.globalIntegrityCheckShare)) {
-                        throw new Error(`Share #${share.shareNumber} is missing a Global Integrity Check (GIC).`);
+                    if (!Array.isArray(share.columnChecksumShares) || share.columnChecksumShares.length !== 3) {
+                        throw new Error(`Share #${share.shareNumber} has invalid column checksum storage.`);
                     }
                 });
             }
@@ -4057,7 +4249,10 @@ TERMS OF USE
                 const wordPolynomials = wordIndices.map((secret) => randomPolynomial(secret, degree));
                 // v0.4.0: Create checksum polynomials (Path B) by summing coefficients
                 const rowCheckPolynomials = computeRowCheckPolynomials(wordPolynomials);
+                const columnCheckPolynomials = computeColumnCheckPolynomials(wordPolynomials);
                 const globalIntegrityCheckPolynomial = computeGlobalIntegrityCheckPolynomial(wordPolynomials);
+                const rowCount = wordIndices.length / WORDS_PER_ROW;
+                const rowTotal = computeRowTotal(rowCount);
                 
                 const shares = [];
                 try {
@@ -4066,6 +4261,7 @@ TERMS OF USE
                             shareNumber: shareIndex,
                             wordShares: [],
                             checksumShares: [],
+                            columnChecksumShares: [],
                             globalIntegrityCheckShare: 0
                         };
                         
@@ -4074,16 +4270,15 @@ TERMS OF USE
                             share.wordShares.push(evaluatePolynomial(polynomial, shareIndex));
                         }
                         
-                        // v0.4.0 Dual-path checksum validation (Path A: direct sums, Path B: polynomial)
-                        const rowCount = wordIndices.length / WORDS_PER_ROW;
                         for (let row = 0; row < rowCount; row++) {
                             const base = row * WORDS_PER_ROW;
-                            // Path A: sum of evaluated word shares
                             const checksumPathA = modAdd(
-                                modAdd(share.wordShares[base], share.wordShares[base + 1]), 
-                                share.wordShares[base + 2]
+                                modAdd(
+                                    modAdd(share.wordShares[base], share.wordShares[base + 1]),
+                                    share.wordShares[base + 2]
+                                ),
+                                row + 1
                             );
-                            // Path B: evaluate checksum polynomial
                             const checksumPathB = evaluatePolynomial(rowCheckPolynomials[row], shareIndex);
                             if (checksumPathA !== checksumPathB) {
                                 throw new Error(
@@ -4094,29 +4289,51 @@ TERMS OF USE
                             }
                             share.checksumShares.push(checksumPathA);
                         }
+
+                        for (let col = 0; col < 3; col++) {
+                            let columnPathA = 0;
+                            for (let row = 0; row < rowCount; row++) {
+                                columnPathA = modAdd(columnPathA, share.wordShares[row * WORDS_PER_ROW + col]);
+                            }
+                            columnPathA = modAdd(columnPathA, COLUMN_TAGS[col]);
+                            const columnPathB = evaluatePolynomial(columnCheckPolynomials[col], shareIndex);
+                            if (columnPathA !== columnPathB) {
+                                throw new Error(
+                                    `Column checksum path mismatch at share ${shareIndex}, column ${col + 1}: ` +
+                                    `Path A (sum)=${columnPathA}, Path B (polynomial)=${columnPathB}. ` +
+                                    'This indicates a hardware fault or memory corruption during share generation.'
+                                );
+                            }
+                            share.columnChecksumShares.push(columnPathA);
+                        }
                         
-                        // Global Integrity Check: validate Path A vs Path B
-                        const globalPathA = share.wordShares.reduce((acc, val) => modAdd(acc, val), 0);
+                        const globalPathA = modAdd(
+                            modAdd(
+                                share.wordShares.reduce((acc, val) => modAdd(acc, val), 0),
+                                rowTotal
+                            ),
+                            COLUMN_TOTAL
+                        );
                         const globalPathB = evaluatePolynomial(globalIntegrityCheckPolynomial, shareIndex);
                         if (globalPathA !== globalPathB) {
                             throw new Error(
-                                `Global Integrity Check (GIC) path mismatch at share ${shareIndex}: ` +
+                                `Global integrity path mismatch at share ${shareIndex}: ` +
                                 `Path A (sum)=${globalPathA}, Path B (polynomial)=${globalPathB}. ` +
                                 'This indicates a hardware fault or memory corruption during share generation.'
                             );
                         }
-                        // v0.4.0 Fix: Bind the GIC to the share number (Sum + x)
                         share.globalIntegrityCheckShare = modAdd(globalPathA, shareIndex);
                         
                         shares.push(share);
                     }
                     return { shares };
                 } finally {
-                    // Security: Clean up sensitive data from memory
-                    secureWipeArray(wordIndices);
-                    wordPolynomials.forEach(poly => secureWipeArray(poly));
-                    rowCheckPolynomials.forEach(poly => secureWipeArray(poly));
-                    secureWipeArray(globalIntegrityCheckPolynomial);
+                    // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
+                    clearSensitiveArray(wordIndices);
+                    wordPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    rowCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    columnCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    clearSensitiveArray(globalIntegrityCheckPolynomial);
                 }
             }
 
@@ -4140,8 +4357,9 @@ TERMS OF USE
                         bip39: false,
                         generic: null,
                         shareValidation: null,
-                        rowPathMismatch: [],    // v0.4.0: Path A vs Path B row disagreement
-                        globalPathMismatch: false, // v0.4.0: Path A vs Path B global disagreement
+                        rowPathMismatch: [],
+                        globalPathMismatch: false,
+                        column: [],
                         // Derived (UI helpers) - populated later
                         failedRows: [],
                         globalIntegrityCheckError: {
@@ -4154,6 +4372,7 @@ TERMS OF USE
                 // Declare sensitive variables outside try block for cleanup in finally
                 let recoveredWords = [];
                 let recoveredChecks = [];
+                let recoveredColumnChecks = [];
                 let recoveredGlobalIntegrityCheck = 0;
 
                 try {
@@ -4175,8 +4394,10 @@ TERMS OF USE
                     // 1b. Pre-flight per-share validation (STOP on mismatch)
                     const shareValidation = {
                         rowErrors: [],
+                        columnErrors: [],
                         globalErrors: []
                     };
+                    const rowTotal = computeRowTotal(rowCount);
 
                     shares.forEach((share, index) => {
                         const shareIndex = Number.isInteger(share.shareIndex) ? share.shareIndex : index + 1;
@@ -4185,50 +4406,46 @@ TERMS OF USE
                             throw new Error(`Share #${shareIndex} has an invalid share number (0).`);
                         }
 
-                        let wordSum = 0;
-                        let checksumSum = 0;
-                        let hasRowError = false;
+                        const normalized = {
+                            shareNumber,
+                            wordShares: share.wordShares.map((v, i) =>
+                                normalizeShareValue(v, `Share #${shareIndex} word ${i + 1}`)
+                            ),
+                            checksumShares: [...share.checksumShares],
+                            columnChecksumShares: [...share.columnChecksumShares],
+                            globalIntegrityCheckShare: share.globalIntegrityCheckShare
+                        };
 
-                        for (let row = 0; row < rowCount; row++) {
-                            const base = row * WORDS_PER_ROW;
-                            const wordA = normalizeShareValue(share.wordShares[base], `Share #${shareIndex} word ${base + 1}`);
-                            const wordB = normalizeShareValue(share.wordShares[base + 1], `Share #${shareIndex} word ${base + 2}`);
-                            const wordC = normalizeShareValue(share.wordShares[base + 2], `Share #${shareIndex} word ${base + 3}`);
-                            const checksum = normalizeShareValue(share.checksumShares[row], `Share #${shareIndex} checksum C${row + 1}`);
-
-                            wordSum = modAdd(modAdd(wordSum, wordA), modAdd(wordB, wordC));
-                            checksumSum = modAdd(checksumSum, checksum);
-
-                            const rowSum = modAdd(modAdd(wordA, wordB), wordC);
-                            if (rowSum !== checksum) {
-                                shareValidation.rowErrors.push({ shareIndex, rowIndex: row });
-                                hasRowError = true;
-                            }
-                        }
-
-                        if (!hasRowError) {
-                            const gicValue = normalizeShareValue(
-                                share.globalIntegrityCheckShare,
-                                `Share #${shareIndex} Global Integrity Check (GIC)`
-                            );
-                            const expectedFromWords = modAdd(wordSum, shareNumber);
-                            const expectedFromChecksums = modAdd(checksumSum, shareNumber);
-                            if (gicValue !== expectedFromWords || gicValue !== expectedFromChecksums) {
-                                shareValidation.globalErrors.push({ shareIndex });
-                            }
+                        const audit = auditOptionalChecksums(normalized, rowCount, rowTotal);
+                        audit.rowFails.forEach((rowIndex) => {
+                            shareValidation.rowErrors.push({ shareIndex, rowIndex });
+                        });
+                        audit.colFails.forEach((columnIndex) => {
+                            shareValidation.columnErrors.push({ shareIndex, columnIndex });
+                        });
+                        if (audit.gicFail) {
+                            shareValidation.globalErrors.push({ shareIndex });
                         }
                     });
 
-                    if (shareValidation.rowErrors.length > 0 || shareValidation.globalErrors.length > 0) {
+                    if (
+                        shareValidation.rowErrors.length > 0 ||
+                        shareValidation.columnErrors.length > 0 ||
+                        shareValidation.globalErrors.length > 0
+                    ) {
                         const messages = [];
                         if (shareValidation.rowErrors.length > 0) {
                             messages.push('Row checksum mismatch detected. Fix the highlighted rows and retry.');
                         }
+                        if (shareValidation.columnErrors.length > 0) {
+                            messages.push('Column checksum mismatch detected. Fix the highlighted column checksum fields and retry.');
+                        }
                         if (shareValidation.globalErrors.length > 0) {
-                            messages.push('Printed Global Integrity Check (GIC) binding mismatch detected. Fix the highlighted GIC fields and retry.');
+                            messages.push('Printed global integrity value mismatch detected. Fix the highlighted GIC fields and retry.');
                         }
                         report.errors.shareValidation = {
                             rowErrors: shareValidation.rowErrors,
+                            columnErrors: shareValidation.columnErrors,
                             globalErrors: shareValidation.globalErrors,
                             message: messages.join('\n')
                         };
@@ -4257,39 +4474,78 @@ TERMS OF USE
                         recoveredWords.push(lagrangeInterpolateAtZero(points));
                     }
 
-                    recoveredChecks = [];
+                    recoveredChecks = new Array(rowCount);
                     for (let row = 0; row < rowCount; row++) {
+                        if (!shares.every((share) => Number.isInteger(share.checksumShares[row]))) {
+                            continue;
+                        }
                         const points = shares.map((share) => ({
                             x: mod(share.shareNumber),
                             y: normalizeShareValue(share.checksumShares[row], `Checksum share C${row + 1} (share ${share.shareNumber})`)
                         }));
-                        recoveredChecks.push(lagrangeInterpolateAtZero(points));
+                        recoveredChecks[row] = lagrangeInterpolateAtZero(points);
                     }
-                    
-                    const globalIntegrityCheckPoints = shares.map((share) => ({
-                        x: mod(share.shareNumber),
-                        y: normalizeShareValue(share.globalIntegrityCheckShare, `Global Integrity Check (GIC) verification (share ${share.shareNumber})`)
-                    }));
-                    recoveredGlobalIntegrityCheck = lagrangeInterpolateAtZero(globalIntegrityCheckPoints);
-                    
-                    // 3. Perform internal Schiavinato validations with dual-path checking (v0.4.0)
-                    // Path A: recompute checksums from recovered words
+
+                    recoveredColumnChecks = [undefined, undefined, undefined];
+                    for (let col = 0; col < 3; col++) {
+                        if (!shares.every((share) => Number.isInteger(share.columnChecksumShares[col]))) {
+                            continue;
+                        }
+                        const points = shares.map((share) => ({
+                            x: mod(share.shareNumber),
+                            y: normalizeShareValue(
+                                share.columnChecksumShares[col],
+                                `Column checksum Col${col + 1} (share ${share.shareNumber})`
+                            )
+                        }));
+                        recoveredColumnChecks[col] = lagrangeInterpolateAtZero(points);
+                    }
+
+                    const allGicProvided = shares.every((share) => Number.isInteger(share.globalIntegrityCheckShare));
+                    if (allGicProvided) {
+                        const globalIntegrityCheckPoints = shares.map((share) => ({
+                            x: mod(share.shareNumber),
+                            y: normalizeShareValue(
+                                share.globalIntegrityCheckShare,
+                                `Global Integrity Check (GIC) verification (share ${share.shareNumber})`
+                            )
+                        }));
+                        recoveredGlobalIntegrityCheck = lagrangeInterpolateAtZero(globalIntegrityCheckPoints);
+                    }
+
                     const recomputedChecks = computeRowChecks(recoveredWords);
+                    const recomputedColumnChecks = computeColumnChecks(recoveredWords);
                     const recomputedGlobalIntegrityCheck = computeGlobalIntegrityCheck(recoveredWords);
 
                     for (let rowIdx = 0; rowIdx < rowCount; rowIdx++) {
+                        if (!Number.isInteger(recoveredChecks[rowIdx])) {
+                            continue;
+                        }
                         const rowMismatch = !constantTimeEqual(recoveredChecks[rowIdx], recomputedChecks[rowIdx]);
                         if (rowMismatch) {
-                            // Core errors (parity with JS/PY)
                             report.errors.rowPathMismatch.push(rowIdx);
                             report.errors.row.push(rowIdx);
                         }
                     }
 
-                    const globalMismatch = !constantTimeEqual(recoveredGlobalIntegrityCheck, recomputedGlobalIntegrityCheck);
-                    if (globalMismatch) {
-                        report.errors.globalPathMismatch = true;
-                        report.errors.global = true;
+                    for (let colIdx = 0; colIdx < 3; colIdx++) {
+                        if (!Number.isInteger(recoveredColumnChecks[colIdx])) {
+                            continue;
+                        }
+                        if (!constantTimeEqual(recoveredColumnChecks[colIdx], recomputedColumnChecks[colIdx])) {
+                            if (!report.errors.column) {
+                                report.errors.column = [];
+                            }
+                            report.errors.column.push(colIdx);
+                        }
+                    }
+
+                    if (allGicProvided) {
+                        const globalMismatch = !constantTimeEqual(recoveredGlobalIntegrityCheck, recomputedGlobalIntegrityCheck);
+                        if (globalMismatch) {
+                            report.errors.globalPathMismatch = true;
+                            report.errors.global = true;
+                        }
                     }
 
                     // Derive UI-friendly structures from core errors (keep UI decoupled)
@@ -4328,12 +4584,13 @@ TERMS OF USE
                         report.recoveredMnemonic = mnemonic;
                         report.recoveredIndices = [...recoveredWords];  // Store copy
 
-                    // 5. Validate BIP39 ONLY if all Schiavinato checks passed
+                    // 5. Validate BIP39 ONLY if all DuraShare checks passed
                     if (
                         report.errors.row.length === 0 &&
                         !report.errors.global &&
                         report.errors.rowPathMismatch.length === 0 &&
-                        !report.errors.globalPathMismatch
+                        !report.errors.globalPathMismatch &&
+                        (!report.errors.column || report.errors.column.length === 0)
                     ) {
                             try {
                                 await validateBIP39Mnemonic(mnemonic, wordlist);
@@ -4348,9 +4605,10 @@ TERMS OF USE
                     // Catch unrecoverable errors (e.g., bad inputs, non-invertible matrix)
                     report.errors.generic = error.message;
                 } finally {
-                    // Security: Clean up sensitive data from memory
-                    secureWipeArray(recoveredWords);
-                    secureWipeArray(recoveredChecks);
+                    // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
+                    clearSensitiveArray(recoveredWords);
+                    clearSensitiveArray(recoveredChecks);
+                    clearSensitiveArray(recoveredColumnChecks);
                     recoveredGlobalIntegrityCheck = 0;
                 }
 
@@ -4363,19 +4621,26 @@ TERMS OF USE
                 recoverAndValidate,
                 validateBIP39Mnemonic,
                 computeRowChecks,
+                computeColumnChecks,
                 computeGlobalIntegrityCheck,
-                // v0.4.0 checksum polynomial helpers
+                computeRowTotal,
                 sumPolynomials,
                 computeRowCheckPolynomials,
+                computeColumnCheckPolynomials,
                 computeGlobalIntegrityCheckPolynomial,
                 configureEnvironment,
                 getRandomFieldElement, // Expose for the manual helper tool
-                getRandomNonZeroFieldElement,
                 computeLagrangeMultipliers,
-                wipeString, // Expose for UI-side cleanup of sensitive strings
-                secureWipeArray // Expose for UI-side cleanup of sensitive arrays
+                auditOptionalChecksums,
+                clearSensitiveArray // Best-effort clear of mutable numeric arrays (not secure RAM erase)
             };
         })();
+
+        // Publish for Playwright / page.evaluate and external tooling.
+        // Classic-script `const` is lexical-only and is not on globalThis by default.
+        globalThis.DuraShare = DuraShare;
+        // Temporary alias during the Schiavinato Sharing → DuraShare rename window.
+        globalThis.SchiavinatoSharing = DuraShare;
 
         // BIP39 English wordlist (2048 words)
         const BIP39_WORDLIST = [

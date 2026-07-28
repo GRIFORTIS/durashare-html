@@ -1,7 +1,7 @@
 {
-  "name": "schiavinato-sharing-html-tests",
-  "version": "0.4.1",
-  "description": "End-to-end tests for Schiavinato Sharing HTML tool",
+  "name": "durashare-html-tests",
+  "version": "0.5.0",
+  "description": "End-to-end tests for DuraShare HTML tool",
   "type": "module",
   "scripts": {
     "test": "playwright test",
@@ -10,12 +10,17 @@
     "test:debug": "playwright test --debug",
     "test:ci": "playwright test",
     "test:html": "playwright test --reporter=html",
-    "lint": "eslint tests/ --ext .js",
+    "lint": "eslint tests/ --ext .js && npm run lint:html",
+    "lint:tests": "eslint tests/ --ext .js",
+    "lint:html": "node scripts/extract-html-scripts.mjs && eslint --no-eslintrc --no-ignore --config .eslintrc.durashare.json .cache/durashare.extracted.js",
     "lint:fix": "eslint tests/ --ext .js --fix"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
     "eslint": "^8.56.0"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.8",
+    "js-yaml": "4.3.0"
   }
 }
-

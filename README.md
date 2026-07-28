@@ -1,8 +1,12 @@
-# Schiavinato Sharing (HTML)
+# DuraShare (HTML)
+
+> ## Schiavinato Sharing is now DuraShare
+>
+> **Schiavinato Sharing is now DuraShare.** Brand rename only: protocol lineage and behavior are unchanged. Canonical repos are `GRIFORTIS/durashare` / `durashare-html` / `durashare-js` / `durashare-py` (old `schiavinato-sharing*` URLs redirect). The air-gapped tool file is now `durashare.html` (JS API: `globalThis.DuraShare`, with a temporary `SchiavinatoSharing` alias).
 
 [![Security: Experimental](https://img.shields.io/badge/Security-⚠️%20EXPERIMENTAL%20⚠️-red)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
-[![CI](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/ci.yml)
-[![CodeQL](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/schiavinato-sharing-html/actions/workflows/codeql.yml)
+[![CI](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -10,19 +14,23 @@
 > 
 >DO NOT USE IT FOR REAL FUNDS!
 >
-> Schiavinato Sharing specification and implementations have NOT been audited. Use for testing, learning, and experimentation only. See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md) for details.
+> DuraShare specification and implementations have NOT been audited. Use for testing, learning, and experimentation only. See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md) for details.
 >
 >We invite **cryptographers** and **developers** to review the spec and software. See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
 
-**Single-file, air-gapped HTML implementation of Schiavinato Sharing**
+**Single-file, air-gapped HTML implementation of DuraShare**
 
-Human-executable secret sharing for BIP39 mnemonics using GF(2053). Runs entirely offline in any modern browser with no installation or network connection required.
+A single-file, air-gapped tool for splitting a Bitcoin recovery phrase into **k-of-n** threshold shares and recovering it. Software guides both ceremonies — sharing and recovery — with no installation, no internet connection, and no vendor account required. Open the verified file on any air-gapped computer and run.
+
+Use it when you want threshold backup without a single point of failure: shares split between family members, distributed across a business treasury board, held by a trusted advisor and two geographic locations, or spread across an NGO where any quorum of members can recover independently. Whether you plan to recover next month or decades from now, the workflow is the same.
+
+The same arithmetic also works entirely by hand on paper — no software needed — as a continuity backstop. For high-security environments, run from a [Tails OS](https://tails.boum.org/) session booted from a USB stick.
 
 ---
 
 ## What is this?
 
-**Schiavinato Sharing** is a dual-mode (**manual + software**) \(k\)-of-\(n\) threshold secret sharing scheme for **BIP39 mnemonics**. It operates directly on the **1-indexed BIP39 word indices** over the prime field **GF(2053)**, so the recovered secret is a standard BIP39 mnemonic compatible with modern wallets.
+**DuraShare** is a dual-mode (**manual + software**) \(k\)-of-\(n\) threshold secret sharing scheme for **BIP39 mnemonics**. It operates directly on the **1-indexed BIP39 word indices** over the prime field **GF(2053)**, so the recovered secret is a standard BIP39 mnemonic compatible with modern wallets.
 
 **In this HTML implementation, you can:**
 
@@ -30,7 +38,7 @@ Human-executable secret sharing for BIP39 mnemonics using GF(2053). Runs entirel
 - Recover the original BIP39 mnemonic from \(k\) shares
 - Validate inputs and share integrity during split/recovery to prevent silent mistakes
 
-It is a self-contained HTML/JavaScript application implementing the Schiavinato Sharing scheme. Designed for offline/air-gapped environments where computational convenience is preferred over manual math, but network access or software dependencies are unavailable or untrusted.
+It is a self-contained HTML/JavaScript application implementing the DuraShare scheme. Designed for offline/air-gapped environments where computational convenience is preferred over manual math, but network access or software dependencies are unavailable or untrusted.
 
 **Key properties:**
 - Single file (all CSS/JS inline)
@@ -41,11 +49,11 @@ It is a self-contained HTML/JavaScript application implementing the Schiavinato 
 
 ## Links
 
-- **Canonical protocol + specs**: [schiavinato-sharing](https://github.com/GRIFORTIS/schiavinato-sharing)
-- **Whitepaper**: [PDF (latest)](https://github.com/GRIFORTIS/schiavinato-sharing/releases/latest/download/WHITEPAPER.pdf) | [Releases (versioned PDF)](https://github.com/GRIFORTIS/schiavinato-sharing/releases) | [LaTeX](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/whitepaper/WHITEPAPER.tex)
-- **Test Vectors**: [TEST_VECTORS](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/test_vectors/README.md)
-- **JavaScript library**: [schiavinato-sharing-js](https://github.com/GRIFORTIS/schiavinato-sharing-js)
-- **Python library**: [schiavinato-sharing-py](https://github.com/GRIFORTIS/schiavinato-sharing-py)
+- **Canonical protocol + specs**: [durashare](https://github.com/GRIFORTIS/durashare)
+- **Whitepaper**: [PDF (latest)](https://github.com/GRIFORTIS/durashare/releases/latest/download/WHITEPAPER.pdf) | [Releases (versioned PDF)](https://github.com/GRIFORTIS/durashare/releases) | [LaTeX](https://github.com/GRIFORTIS/durashare/blob/main/whitepaper/WHITEPAPER.tex)
+- **Test Vectors**: [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
+- **JavaScript library**: [durashare-js](https://github.com/GRIFORTIS/durashare-js)
+- **Python library**: [durashare-py](https://github.com/GRIFORTIS/durashare-py)
 
 ---
 
@@ -66,7 +74,7 @@ This tool implements well-established cryptographic principles but has **NOT** b
 ### 1. Import GRIFORTIS Public Key (One-Time)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/GRIFORTIS/schiavinato-sharing/main/GRIFORTIS-PGP-PUBLIC-KEY.asc | gpg --import
+curl -fsSL https://raw.githubusercontent.com/GRIFORTIS/durashare/main/GRIFORTIS-PGP-PUBLIC-KEY.asc | gpg --import
 ```
 
 **Verify fingerprint:**
@@ -79,16 +87,18 @@ gpg --fingerprint security@grifortis.com
 ### 2. Download Release Files
 
 ```bash
-# Replace VERSION with actual release (e.g., v0.4.1)
-VERSION="v0.4.1"
-curl -fsSL -O "https://github.com/GRIFORTIS/schiavinato-sharing-html/releases/download/${VERSION}/schiavinato_sharing.html"
-curl -fsSL -O "https://github.com/GRIFORTIS/schiavinato-sharing-html/releases/download/${VERSION}/schiavinato_sharing.html.asc"
+# Replace VERSION with actual release (e.g., v0.5.0)
+VERSION="v0.5.0"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/durashare.html"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/durashare.html.asc"
 ```
+
+> **Note:** HTML **v0.4.1** release assets used the filename `schiavinato_sharing.html`. From **v0.5.0** the artifact is `durashare.html`.
 
 ### 3. Verify GPG Signature
 
 ```bash
-gpg --verify schiavinato_sharing.html.asc schiavinato_sharing.html
+gpg --verify durashare.html.asc durashare.html
 ```
 
 **Expected output**: `Good signature from "GRIFORTIS <security@grifortis.com>"`
@@ -96,8 +106,8 @@ gpg --verify schiavinato_sharing.html.asc schiavinato_sharing.html
 ### 4. Verify Checksum (Optional but Recommended)
 
 ```bash
-curl -fsSL -O "https://github.com/GRIFORTIS/schiavinato-sharing-html/releases/download/${VERSION}/CHECKSUMS.txt"
-curl -fsSL -O "https://github.com/GRIFORTIS/schiavinato-sharing-html/releases/download/${VERSION}/CHECKSUMS.txt.asc"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.txt"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.txt.asc"
 gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
 sha256sum --check CHECKSUMS.txt --ignore-missing
 ```
@@ -106,11 +116,13 @@ sha256sum --check CHECKSUMS.txt --ignore-missing
 
 ## Usage
 
-1. Open `schiavinato_sharing.html` in any modern browser (Chrome, Firefox, Safari, Edge)
+1. Open `durashare.html` in any modern browser (Chrome, Firefox, Safari, Edge)
 2. Follow on-screen instructions to split or recover mnemonics
 3. **Use offline only** — disconnect from all networks before proceeding
 
 **No installation, no dependencies, no network connection required.**
+
+**For maximum security**, run from a [Tails OS](https://tails.boum.org/) session booted from a USB drive. Tails leaves no traces on the host computer, ensures a clean trusted environment, and works on any laptop without installation. Copy the verified HTML file onto the USB stick, boot Tails, open the file locally, and run the ceremony fully air-gapped. When finished: **clear on-screen fields or close the page** everywhere; **on Tails, also shut down** — OS memory wipe on shutdown is the real amnesia control. The page cannot guarantee erasure of secrets from browser RAM.
 
 ---
 
@@ -125,7 +137,7 @@ Maintainers: see [`RELEASE.md`](./RELEASE.md) for the signed-tag release process
 ## Conformance Validation
 
 This implementation is validated against canonical test vectors:
-- [TEST_VECTORS](https://github.com/GRIFORTIS/schiavinato-sharing/blob/main/test_vectors/README.md)
+- [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
 
 Tests run automatically in CI on every push/PR.
 
@@ -133,10 +145,12 @@ Tests run automatically in CI on every push/PR.
 
 ## Compatibility
 
-- **Spec version**: v0.4.1 (non-digital-payload subset)
+- **HTML tool version**: v0.5.0 (`package.json` / UI footer)
+- **What this tool is**: the **arithmetic share-table subset** (split/recover with position-bound row/column checksums and printed GIC), validated against frozen `previous_versions/v0.5.0/` vectors
+- **What this tool is not**: full protocol **v0.7.0** — no digital envelope / Bech32m QR payloads, no MAT, no Manifest Audit Hash, no RBT/RVA, and other living-spec surfaces remain out of scope here
 - **BIP39 word counts**: 12, 15, 18, 21, 24
 - **Threshold schemes**: 2-of-3, 2-of-4, 3-of-5
-- **Digital payload (Bech32m/QR/Identity+Transport locks)**: not implemented in the HTML tool
+- **Breaking vs HTML v0.4.1**: v0.4.1 shares need the **v0.4.1 tool** (`schiavinato_sharing.html`, still published on that release). New releases ship `durashare.html`
 - **Browser requirements**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 
 ---
@@ -158,4 +172,4 @@ See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.m
 
 ---
 
-**Made by [GRIFORTIS](https://github.com/GRIFORTIS)** — Open-source tools for sovereign crypto self-custody
+**Made by [GRIFORTIS](https://github.com/GRIFORTIS)** — Open-source tools for long-horizon Bitcoin self-custody, for anyone with sovereignty in mind.

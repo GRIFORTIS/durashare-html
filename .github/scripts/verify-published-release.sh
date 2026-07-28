@@ -55,8 +55,8 @@ echo "==> Downloading release assets"
 gh release download "$TAG" --repo "$REPO" --dir "$WORKDIR/assets"
 
 EXPECTED_FILES=(
-  schiavinato_sharing.html
-  schiavinato_sharing.html.asc
+  durashare.html
+  durashare.html.asc
   CHECKSUMS.txt
   CHECKSUMS.txt.asc
   CHECKSUMS.json
@@ -78,7 +78,7 @@ if [[ "$actual_fp" != "$EXPECTED_FP" ]]; then
 fi
 
 echo "==> Verifying detached signatures"
-gpg --batch --verify assets/schiavinato_sharing.html.asc assets/schiavinato_sharing.html
+gpg --batch --verify assets/durashare.html.asc assets/durashare.html
 gpg --batch --verify assets/CHECKSUMS.txt.asc assets/CHECKSUMS.txt
 gpg --batch --verify assets/CHECKSUMS.json.asc assets/CHECKSUMS.json
 
@@ -107,15 +107,15 @@ print("CHECKSUMS.json OK")
 PY
 
 echo "==> Verifying release HTML matches tagged repository tree"
-repo_html="${RELEASE_ROOT}/schiavinato_sharing.html"
+repo_html="${RELEASE_ROOT}/durashare.html"
 if [[ ! -f "$repo_html" ]]; then
-  echo "Missing schiavinato_sharing.html in tagged checkout" >&2
+  echo "Missing durashare.html in tagged checkout" >&2
   exit 1
 fi
 repo_sum="$(sha256sum "$repo_html" | awk '{print $1}')"
-asset_sum="$(sha256sum assets/schiavinato_sharing.html | awk '{print $1}')"
+asset_sum="$(sha256sum assets/durashare.html | awk '{print $1}')"
 if [[ "$repo_sum" != "$asset_sum" ]]; then
-  echo "Release asset schiavinato_sharing.html does not match tagged commit" >&2
+  echo "Release asset durashare.html does not match tagged commit" >&2
   exit 1
 fi
 

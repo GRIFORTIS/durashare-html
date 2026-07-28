@@ -21,7 +21,7 @@
     "node_modules/",
     "playwright-report/",
     "test-results/",
-    "schiavinato_sharing.html"
+    "durashare.html"
   ]
 }
 

@@ -15,7 +15,8 @@ permissions:
   actions: read
 
 env:
-  SPEC_REPO_REF: v0.5.0
+  # Need a tag that contains previous_versions/v0.5.0/ (first present at v0.6.0).
+  SPEC_REPO_REF: v0.6.0
 
 jobs:
   verify:
@@ -70,8 +71,8 @@ jobs:
             echo "Tag/package.json mismatch: tag=$TAG_NAME package=$TAG_NORM" >&2
             exit 1
           fi
-          if ! grep -Fq "$TAG_NORM" schiavinato_sharing.html; then
-            echo "schiavinato_sharing.html missing user-facing version ${TAG_NORM}" >&2
+          if ! grep -Fq "$TAG_NORM" durashare.html; then
+            echo "durashare.html missing user-facing version ${TAG_NORM}" >&2
             exit 1
           fi
           echo "OK: ${TAG_NAME}"
@@ -106,9 +107,9 @@ jobs:
       - name: Checkout canonical spec vectors
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          repository: GRIFORTIS/schiavinato-sharing
+          repository: GRIFORTIS/durashare
           ref: ${{ env.SPEC_REPO_REF }}
-          path: schiavinato-sharing
+          path: durashare
 
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -129,4 +130,4 @@ jobs:
         working-directory: release-tree
         run: npm run test:ci
         env:
-          SCHIAVINATO_SHARING_SPEC_REPO_PATH: ${{ github.workspace }}/schiavinato-sharing
+          DURASHARE_SPEC_REPO_PATH: ${{ github.workspace }}/durashare

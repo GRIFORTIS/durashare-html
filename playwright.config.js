@@ -37,7 +37,13 @@ function tryPinPlaywrightBrowsersPath() {
   }
 }
 
-tryPinPlaywrightBrowsersPath();
+// Local macOS: use installed Google Chrome (no `playwright install` required).
+const useSystemChrome = !isCI && process.platform === 'darwin';
+if (useSystemChrome) {
+  delete process.env.PLAYWRIGHT_BROWSERS_PATH;
+} else {
+  tryPinPlaywrightBrowsersPath();
+}
 
 export default defineConfig({
   testDir: './tests',
@@ -63,7 +69,7 @@ export default defineConfig({
   // Avoid writing heavy artifacts into Dropbox-synced folders during local runs
   outputDir: isCI
     ? 'test-results'
-    : path.join(os.tmpdir(), 'schiavinato-sharing-html-playwright', 'test-results'),
+    : path.join(os.tmpdir(), 'durashare-html-playwright', 'test-results'),
   
   use: {
     // Run browser in headless mode (hidden)
@@ -75,26 +81,24 @@ export default defineConfig({
     // Screenshot on failure
     screenshot: 'only-on-failure',
     
-    // Video on failure
-    video: 'retain-on-failure',
+    // Video on failure (CI only — local runs use system Chrome)
+    video: isCI ? 'retain-on-failure' : 'off',
+
+    // Critical: Allow file:// protocol access
+    launchOptions: {
+      args: ['--allow-file-access-from-files', '--disable-web-security']
+    }
   },
 
-  // Configure projects for major browsers
   projects: [
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
-        headless: true, // Run browser in headless mode (hidden)
-        // Critical: Allow file:// protocol access
-        launchOptions: {
-          args: [
-            '--allow-file-access-from-files',
-            '--disable-web-security'
-          ]
-        }
-      },
-    },
+        headless: true,
+        ...(useSystemChrome ? { channel: 'chrome' } : {})
+      }
+    }
   ],
 
   // Timeout settings
