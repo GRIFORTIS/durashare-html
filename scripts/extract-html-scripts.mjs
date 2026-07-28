@@ -14,7 +14,8 @@ const outDir = path.join(root, '.cache');
 const outPath = path.join(outDir, 'durashare.extracted.js');
 
 const html = fs.readFileSync(htmlPath, 'utf8');
-const re = /<script(\s[^>]*)?>([\s\S]*?)<\/script>/gi;
+// Match </script> with optional whitespace before '>' (CodeQL: js/incomplete-multi-character-sanitization).
+const re = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
 const blocks = [];
 let match;
 while ((match = re.exec(html)) !== null) {
