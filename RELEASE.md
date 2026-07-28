@@ -1,6 +1,6 @@
 # Release Process
 
-Maintainer release flow for `schiavinato-sharing-html`. Not part of the Schiavinato Sharing protocol specification.
+Maintainer release flow for `durashare-html`. Not part of the DuraShare protocol specification.
 
 ## Trust model
 
@@ -16,8 +16,8 @@ On the target commit (normally `main` after merge):
 
 1. **CI must be green** on GitHub (`ci.yml` + `codeql.yml`). Branch ruleset enforces this for merges.
 2. `CHANGELOG.md` has the dated release section for this version.
-3. `package.json` `version`, user-facing strings in `schiavinato_sharing.html`, and the git tag all match (e.g. `0.4.1` / `v0.4.1`).
-4. Conformance tests pass locally (`npm ci`, Playwright). Spec checkout: `GRIFORTIS/schiavinato-sharing@v0.5.0` (frozen v0.4.1 vectors at `previous_versions/v0.4.1/test_vectors/vectors.json`).
+3. `package.json` `version`, user-facing strings in `durashare.html`, and the git tag all match (e.g. `0.5.0` / `v0.5.0`).
+4. Conformance tests pass locally (`npm ci`, Playwright). Spec checkout: `GRIFORTIS/durashare@v0.5.0` (frozen v0.5.0 vectors at `previous_versions/v0.5.0/test_vectors/vectors.json`).
 
 Signing identity:
 
@@ -31,9 +31,9 @@ Build into `release-assets/` at the repository root. That directory is **gitigno
 From a clean checkout at the release commit:
 
 ```bash
-export VERSION="v0.4.1"
+export VERSION="v0.5.0"
 mkdir -p release-assets
-cp schiavinato_sharing.html "release-assets/schiavinato_sharing.html"
+cp durashare.html "release-assets/durashare.html"
 
 python3 - <<'PY'
 import hashlib, json
@@ -41,7 +41,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 version = __import__("os").environ["VERSION"]
-files = ["schiavinato_sharing.html"]
+files = ["durashare.html"]
 generated = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 def sha256(path: Path) -> str:
@@ -53,7 +53,7 @@ def sha256(path: Path) -> str:
 
 root = Path("release-assets")
 lines = [
-    "# SHA256 Checksums - Schiavinato Sharing (HTML)",
+    "# SHA256 Checksums - DuraShare (HTML)",
     "",
     f"Version: {version}",
     f"Generated: {generated.replace('T', ' ').replace('Z', ' UTC')}",
@@ -80,10 +80,10 @@ PY
 
 ```bash
 cd release-assets
-gpg --armor --detach-sign schiavinato_sharing.html
+gpg --armor --detach-sign durashare.html
 gpg --armor --detach-sign CHECKSUMS.txt
 gpg --armor --detach-sign CHECKSUMS.json
-gpg --verify schiavinato_sharing.html.asc schiavinato_sharing.html
+gpg --verify durashare.html.asc durashare.html
 gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
 gpg --verify CHECKSUMS.json.asc CHECKSUMS.json
 sha256sum -c CHECKSUMS.txt --ignore-missing
@@ -107,8 +107,8 @@ Wait for **CI on the tag** (`ci.yml` runs on `v*` tags) to finish green before p
 
 1. Create a **draft** GitHub Release from the pushed signed tag (do not announce yet).
 2. Upload from `release-assets/`:
-   - `schiavinato_sharing.html`
-   - `schiavinato_sharing.html.asc`
+   - `durashare.html`
+   - `durashare.html.asc`
    - `CHECKSUMS.txt`
    - `CHECKSUMS.txt.asc`
    - `CHECKSUMS.json`
@@ -119,8 +119,10 @@ Wait for **CI on the tag** (`ci.yml` runs on `v*` tags) to finish green before p
 Manual re-verify:
 
 ```bash
-gh workflow run release.yml -f tag=v0.4.1
+gh workflow run release.yml -f tag=v0.5.0
 ```
+
+> **Note:** HTML **v0.4.1** release assets used `schiavinato_sharing.html`. From **v0.5.0** publish `durashare.html` (and matching `.asc` / checksum entries).
 
 ## Final spot-check
 

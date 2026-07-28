@@ -12,7 +12,7 @@ import {
 } from './test-helpers.js';
 
 const SPEC_VERSION = 'v0.5.0';
-/** Frozen v0.5.0 machine-readable vectors (see schiavinato-sharing `previous_versions/README.md`). */
+/** Frozen v0.5.0 machine-readable vectors (see durashare `previous_versions/README.md`). */
 const VECTORS_REL_PATH = join('previous_versions', SPEC_VERSION, 'test_vectors', 'vectors.json');
 const SUPPORTED_WORD_COUNTS = new Set([12, 15, 18, 21, 24]);
 
@@ -20,15 +20,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 function resolveSpecRepoRoot() {
-  const envPath = process.env.SCHIAVINATO_SHARING_SPEC_REPO_PATH;
+  const envPath =
+    process.env.DURASHARE_SPEC_REPO_PATH || process.env.SCHIAVINATO_SHARING_SPEC_REPO_PATH;
   if (envPath) return envPath;
 
-  const siblingPath = resolve(__dirname, '..', '..', 'schiavinato-sharing');
-  if (fs.existsSync(siblingPath)) return siblingPath;
+  // Prefer the new local folder name; keep the pre-rename sibling name for transition.
+  for (const name of ['durashare', 'schiavinato-sharing']) {
+    const siblingPath = resolve(__dirname, '..', '..', name);
+    if (fs.existsSync(siblingPath)) return siblingPath;
+  }
 
   throw new Error(
-    'Canonical vectors not found. Set SCHIAVINATO_SHARING_SPEC_REPO_PATH to the spec repo ' +
-      'or clone schiavinato-sharing next to schiavinato-sharing-html.'
+    'Canonical vectors not found. Set DURASHARE_SPEC_REPO_PATH to the spec repo ' +
+      'or clone durashare next to durashare-html.'
   );
 }
 
@@ -38,8 +42,8 @@ function loadVectors() {
   if (!fs.existsSync(vectorsPath)) {
     throw new Error(
       `Missing frozen v0.5.0 vectors at ${vectorsPath}. Use an up-to-date ` +
-        'schiavinato-sharing tree (see `previous_versions/v0.5.0/test_vectors/`) and set ' +
-        'SCHIAVINATO_SHARING_SPEC_REPO_PATH if the spec repo is not a sibling of this repo.'
+        'durashare tree (see `previous_versions/v0.5.0/test_vectors/`) and set ' +
+        'DURASHARE_SPEC_REPO_PATH if the spec repo is not a sibling of this repo.'
     );
   }
 

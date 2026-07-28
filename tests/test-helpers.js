@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const HTML_PATH = resolve(__dirname, '..', 'schiavinato_sharing.html');
+const HTML_PATH = resolve(__dirname, '..', 'durashare.html');
 
 const FIELD_PRIME = 2053;
 const COLUMN_TAGS = [10, 20, 30];
@@ -68,7 +68,7 @@ function getWordlist() {
   const html = fs.readFileSync(HTML_PATH, 'utf8');
   const match = html.match(/const BIP39_WORDLIST = \[([\s\S]*?)\];/);
   if (!match) {
-    throw new Error('Could not locate BIP39_WORDLIST in schiavinato_sharing.html');
+    throw new Error('Could not locate BIP39_WORDLIST in durashare.html');
   }
   cachedWordlist = JSON.parse(`[${match[1]}]`);
   return cachedWordlist;
@@ -179,14 +179,10 @@ export async function generateShares(page) {
  */
 export async function configureMockRandomSource(page, fillStatement) {
   await page.evaluate((statement) => {
-    const api =
-      globalThis.SchiavinatoSharing ??
-      globalThis.Function(
-        'return (typeof SchiavinatoSharing !== "undefined") ? SchiavinatoSharing : undefined;'
-      )();
+    const api = globalThis.DuraShare;
 
     if (!api?.configureEnvironment) {
-      throw new Error('SchiavinatoSharing.configureEnvironment not available in page context');
+      throw new Error('DuraShare.configureEnvironment not available in page context');
     }
 
     api.configureEnvironment({

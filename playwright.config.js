@@ -69,7 +69,7 @@ export default defineConfig({
   // Avoid writing heavy artifacts into Dropbox-synced folders during local runs
   outputDir: isCI
     ? 'test-results'
-    : path.join(os.tmpdir(), 'schiavinato-sharing-html-playwright', 'test-results'),
+    : path.join(os.tmpdir(), 'durashare-html-playwright', 'test-results'),
   
   use: {
     // Run browser in headless mode (hidden)

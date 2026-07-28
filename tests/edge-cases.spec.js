@@ -24,7 +24,7 @@ import {
  * These tests validate:
  * 1. Polynomial handling with repeated values
  * 2. Field arithmetic at boundaries (GF(2053))
- * 3. BIP39 validation independence from Schiavinato validation
+ * 3. BIP39 validation independence from DuraShare validation
  */
 
 // Edge case mnemonics (generated with valid BIP39 checksums)
