@@ -6,8 +6,10 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    # Run weekly on Mondays at 00:00 UTC
+    # Weekly; also keeps the workflow from going idle-only if PRs are rare.
+    # If GitHub sets state=disabled_inactivity, CI fails until: gh workflow enable codeql.yml
     - cron: '0 0 * * 1'
+  workflow_dispatch:
 
 jobs:
   analyze:

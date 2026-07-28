@@ -10,7 +10,9 @@
     "test:debug": "playwright test --debug",
     "test:ci": "playwright test",
     "test:html": "playwright test --reporter=html",
-    "lint": "eslint tests/ --ext .js",
+    "lint": "eslint tests/ --ext .js && npm run lint:html",
+    "lint:tests": "eslint tests/ --ext .js",
+    "lint:html": "node scripts/extract-html-scripts.mjs && eslint --no-eslintrc --no-ignore --config .eslintrc.durashare.json .cache/durashare.extracted.js",
     "lint:fix": "eslint tests/ --ext .js --fix"
   },
   "devDependencies": {

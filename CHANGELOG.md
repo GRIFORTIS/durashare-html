@@ -28,6 +28,11 @@ versions; recreate shares with this tool only if migrating deliberately.
 - Add a restrictive Content-Security-Policy meta (`default-src 'none'`, inline script/style only, `connect-src 'none'`) for air-gapped single-file hardening.
 - Publish `DuraShare` on `globalThis` so Playwright mock-RNG injection does not depend on classic-script lexical scope.
 
+### Added
+- CI lints product JS: extract inline `<script>` from `durashare.html` and run ESLint (`npm run lint:html`).
+- CI fails closed if the CodeQL workflow is not `active` (guards against silent `disabled_inactivity`).
+- CodeQL workflow supports `workflow_dispatch` for manual re-runs.
+
 ### Fixed
 - `getRandomIntInclusive` rejects `max > 2^32 - 1` to avoid a rejection-sampling hang when `limit === 0`.
 - CI `npm audit --audit-level=high`: pin transitive `js-yaml@4.3.0` and `brace-expansion@5.0.8` via `package.json` overrides (devDependency chain only; does not affect `durashare.html`).

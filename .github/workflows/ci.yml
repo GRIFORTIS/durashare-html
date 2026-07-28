@@ -70,7 +70,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linter
+      - name: Ensure CodeQL workflow is active
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          state="$(gh api "repos/${{ github.repository }}/actions/workflows/codeql.yml" --jq .state)"
+          echo "CodeQL workflow state: ${state}"
+          if [ "${state}" != "active" ]; then
+            echo "::error::CodeQL workflow is '${state}' (expected active). Re-enable with: gh workflow enable codeql.yml"
+            exit 1
+          fi
+
+      - name: Run linter (tests + extracted durashare.html scripts)
         run: npm run lint
 
       - name: Dependency audit (high/critical)
