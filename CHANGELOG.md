@@ -30,6 +30,7 @@ versions; recreate shares with this tool only if migrating deliberately.
 
 ### Fixed
 - `getRandomIntInclusive` rejects `max > 2^32 - 1` to avoid a rejection-sampling hang when `limit === 0`.
+- CI `npm audit --audit-level=high`: pin transitive `js-yaml@4.3.0` and `brace-expansion@5.0.8` via `package.json` overrides (devDependency chain only; does not affect `durashare.html`).
 
 ## 0.4.1 - 2026-05-16
 
