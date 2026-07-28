@@ -18,8 +18,9 @@ permissions:
   actions: read
 
 env:
-  # Frozen v0.5.0 vectors live under previous_versions/ in the spec repo.
-  SPEC_REPO_REF: v0.5.0
+  # Frozen v0.5.0 vectors are under previous_versions/ starting at spec tag v0.6.0
+  # (tag v0.5.0 still has them at root test_vectors/ only).
+  SPEC_REPO_REF: v0.6.0
 
 jobs:
   secret-scan:

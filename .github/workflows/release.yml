@@ -15,7 +15,8 @@ permissions:
   actions: read
 
 env:
-  SPEC_REPO_REF: v0.5.0
+  # Need a tag that contains previous_versions/v0.5.0/ (first present at v0.6.0).
+  SPEC_REPO_REF: v0.6.0
 
 jobs:
   verify:

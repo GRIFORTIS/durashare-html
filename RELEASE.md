@@ -17,7 +17,7 @@ On the target commit (normally `main` after merge):
 1. **CI must be green** on GitHub (`ci.yml` + `codeql.yml`). Branch ruleset enforces this for merges.
 2. `CHANGELOG.md` has the dated release section for this version.
 3. `package.json` `version`, user-facing strings in `durashare.html`, and the git tag all match (e.g. `0.5.0` / `v0.5.0`).
-4. Conformance tests pass locally (`npm ci`, Playwright). Spec checkout: `GRIFORTIS/durashare@v0.5.0` (frozen v0.5.0 vectors at `previous_versions/v0.5.0/test_vectors/vectors.json`).
+4. Conformance tests pass locally (`npm ci`, Playwright). Spec checkout: `GRIFORTIS/durashare@v0.6.0` (frozen v0.5.0 vectors at `previous_versions/v0.5.0/test_vectors/vectors.json`).
 
 Signing identity:
 
