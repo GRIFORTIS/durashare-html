@@ -1650,7 +1650,14 @@ TERMS OF USE
                 showPage('create2', 'Create Shares');
 
             } catch (error) {
-                await showErrorModal('Generation Failed', error.message);
+                const message = error && error.message
+                    ? error.message
+                    : 'Share generation failed.';
+                const isRngFailure = DuraShare.isRngHardStopError(error);
+                await showErrorModal(
+                    isRngFailure ? 'Secure Randomness Failed' : 'Generation Failed',
+                    message
+                );
             }
         });
         
@@ -2281,7 +2288,7 @@ TERMS OF USE
         /**
          * Generates a fresh polynomial equation for the manual sharding helper using random coefficients.
          */
-        function updateManualShardingEquation() {
+        async function updateManualShardingEquation() {
             if (!polynomialDisplay) return;
             const selectedSchemeRadio = document.querySelector('input[name="scheme"]:checked');
             if (!selectedSchemeRadio) return;
@@ -2291,9 +2298,11 @@ TERMS OF USE
             const coefficients = [];
             polynomialDisplay.replaceChildren();
             try {
+                DuraShare.assertCsprngHealthy();
                 for (let i = 0; i < degree; i++) {
                     coefficients.push(DuraShare.getRandomFieldElement());
                 }
+                DuraShare.assertCoefficientBatchHealthy(coefficients);
                 const code = document.createElement('code');
                 code.className = 'mono';
                 code.style.fontSize = '1.1rem';
@@ -2318,10 +2327,23 @@ TERMS OF USE
                 });
                 polynomialDisplay.appendChild(code);
             } catch (error) {
-                const errorSpan = document.createElement('span');
-                errorSpan.style.color = 'var(--error-red)';
-                errorSpan.textContent = 'Error: Could not generate secure random numbers.';
-                polynomialDisplay.appendChild(errorSpan);
+                polynomialDisplay.replaceChildren();
+                if (DuraShare.isRngHardStopError(error)) {
+                    await showErrorModal(
+                        'Secure Randomness Failed',
+                        error.message || 'Secure randomness failed. Stop this ceremony.'
+                    );
+                } else {
+                    await showErrorModal(
+                        'Generation Failed',
+                        error && error.message
+                            ? error.message
+                            : 'Could not generate coefficients.'
+                    );
+                }
+            } finally {
+                // Best-effort: drop scratch coeffs (display already copied into text nodes).
+                DuraShare.clearSensitiveArray(coefficients);
             }
         }
 
@@ -3704,11 +3726,19 @@ TERMS OF USE
              * @param {Array} arr - Array to clear (modified in place)
              */
             function clearSensitiveArray(arr) {
+                if (!arr) {
+                    return;
+                }
                 if (Array.isArray(arr)) {
                     for (let i = 0; i < arr.length; i++) {
                         arr[i] = 0;
                     }
                     arr.length = 0;
+                    return;
+                }
+                // TypedArray / DataView scratch (smoke buffers, Uint32 draws).
+                if (ArrayBuffer.isView(arr) && typeof arr.fill === 'function') {
+                    arr.fill(0);
                 }
             }
 
@@ -3773,18 +3803,182 @@ TERMS OF USE
             // ==========================================================================
             // CRYPTOGRAPHICALLY SECURE RANDOMNESS
             // ==========================================================================
+            // Sole CSPRNG for this application: crypto.getRandomValues.
+            // Never fall back to Math.random() or any non-crypto PRNG. If WebCrypto is
+            // missing, non-writing, throws, or fails smoke checks, throw RngHardStopError
+            // and hard-stop the ceremony — do not produce shares or coefficients.
+            // ==========================================================================
+            const CSPRNG_SMOKE_BYTES = 256;
+            const CSPRNG_SENTINEL_BYTE = 0xA5;
+            // Frequency ≥ 6 is a stuck/pathology canary, not a uniqueness proof.
+            // Pairs/triples are expected under healthy GF(2053) draws; six repeats in a
+            // typical ceremony batch (12–48 coeffs) is astronomically unlikely if uniform.
+            const COEFF_BATCH_MAX_FREQUENCY = 6;
+            const RNG_HARD_STOP_GUIDANCE =
+                'Stop this ceremony. Do not trust any output from this run. ' +
+                'Use another clean environment (for example a fresh Tails session). ' +
+                'This check refuses dead or stuck RNGs; it cannot prove the platform CSPRNG is strong.';
+
             /**
-             * Returns a uniform random integer in [0, max] using window.crypto entropy.
+             * Typed hard-stop for ceremony RNG failures. UI must key off name/isRngHardStopError,
+             * never on message string prefixes.
              */
-            function getRandomIntInclusive(max) {
+            class RngHardStopError extends Error {
+                constructor(detail) {
+                    super(`Secure randomness failed: ${detail} ${RNG_HARD_STOP_GUIDANCE}`);
+                    this.name = 'RngHardStopError';
+                }
+            }
+
+            function rngHardStopError(detail) {
+                return new RngHardStopError(detail);
+            }
+
+            function isRngHardStopError(error) {
+                return Boolean(error) && error.name === 'RngHardStopError';
+            }
+
+            /**
+             * Resolves the configured CSPRNG. Throws if crypto.getRandomValues is unavailable.
+             */
+            function resolveRandomSource() {
                 if (!randomSource || typeof randomSource.getRandomValues !== 'function') {
                     const fallback = GLOBAL_SCOPE.crypto;
                     if (fallback && typeof fallback.getRandomValues === 'function') {
                         randomSource = fallback;
                     } else {
-                        throw new Error('Secure randomness provider is not configured.');
+                        throw rngHardStopError(
+                            'crypto.getRandomValues is not available.'
+                        );
                     }
                 }
+                return randomSource;
+            }
+
+            /**
+             * Sole write path into the CSPRNG. Native throws become RngHardStopError.
+             */
+            function fillRandomValues(typedArray) {
+                const src = resolveRandomSource();
+                try {
+                    src.getRandomValues(typedArray);
+                } catch (error) {
+                    if (isRngHardStopError(error)) {
+                        throw error;
+                    }
+                    const detail = error && error.message
+                        ? error.message
+                        : 'unexpected failure';
+                    throw rngHardStopError(`getRandomValues failed (${detail}).`);
+                }
+            }
+
+            function typedArraysEqual(a, b) {
+                if (a.length !== b.length) {
+                    return false;
+                }
+                let diff = 0;
+                for (let i = 0; i < a.length; i++) {
+                    diff |= a[i] ^ b[i];
+                }
+                return diff === 0;
+            }
+
+            function isConstantFilledBytes(buf) {
+                if (buf.length === 0) {
+                    return true;
+                }
+                const first = buf[0];
+                for (let i = 1; i < buf.length; i++) {
+                    if (buf[i] !== first) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            /**
+             * Fail-loud smoke test of the CSPRNG wiring before any coefficient draw.
+             * Catches missing API, no-op fills, constant-byte output, identical dual bursts,
+             * and native getRandomValues failures. Does not prove the platform CSPRNG is strong.
+             */
+            function assertCsprngHealthy() {
+                const burst1 = new Uint8Array(CSPRNG_SMOKE_BYTES);
+                const burst2 = new Uint8Array(CSPRNG_SMOKE_BYTES);
+                try {
+                    burst1.fill(CSPRNG_SENTINEL_BYTE);
+                    fillRandomValues(burst1);
+                    if (isConstantFilledBytes(burst1) && burst1[0] === CSPRNG_SENTINEL_BYTE) {
+                        throw rngHardStopError(
+                            'getRandomValues did not overwrite the sentinel buffer.'
+                        );
+                    }
+                    if (isConstantFilledBytes(burst1)) {
+                        throw rngHardStopError(
+                            'getRandomValues returned a constant-filled byte burst.'
+                        );
+                    }
+                    burst2.fill(CSPRNG_SENTINEL_BYTE);
+                    fillRandomValues(burst2);
+                    if (isConstantFilledBytes(burst2) && burst2[0] === CSPRNG_SENTINEL_BYTE) {
+                        throw rngHardStopError(
+                            'getRandomValues did not overwrite the second sentinel buffer.'
+                        );
+                    }
+                    if (isConstantFilledBytes(burst2)) {
+                        throw rngHardStopError(
+                            'getRandomValues returned a second constant-filled byte burst.'
+                        );
+                    }
+                    if (typedArraysEqual(burst1, burst2)) {
+                        throw rngHardStopError(
+                            'two consecutive getRandomValues bursts were identical.'
+                        );
+                    }
+                } finally {
+                    clearSensitiveArray(burst1);
+                    clearSensitiveArray(burst2);
+                }
+            }
+
+            /**
+             * Ceremony canary on a batch of GF(2053) coefficients (no redraw).
+             * Hard-stops if all values are identical (batch size ≥ 2) or any value
+             * appears ≥ COEFF_BATCH_MAX_FREQUENCY times. Pairs alone are allowed.
+             * Manual helper with degree 1 yields batch size 1 and cannot trip the
+             * all-identical / frequency rules after smoke — educational path only.
+             */
+            function assertCoefficientBatchHealthy(values) {
+                if (!Array.isArray(values) || values.length === 0) {
+                    throw rngHardStopError('coefficient batch is empty.');
+                }
+                const counts = new Map();
+                let maxFrequency = 0;
+                for (let i = 0; i < values.length; i++) {
+                    const value = values[i];
+                    const next = (counts.get(value) || 0) + 1;
+                    counts.set(value, next);
+                    if (next > maxFrequency) {
+                        maxFrequency = next;
+                    }
+                }
+                if (values.length >= 2 && maxFrequency === values.length) {
+                    throw rngHardStopError(
+                        'all drawn coefficients were identical.'
+                    );
+                }
+                if (maxFrequency >= COEFF_BATCH_MAX_FREQUENCY) {
+                    throw rngHardStopError(
+                        `a coefficient value repeated ${maxFrequency} times (limit ${COEFF_BATCH_MAX_FREQUENCY - 1}).`
+                    );
+                }
+            }
+
+            /**
+             * Returns a uniform random integer in [0, max] using crypto.getRandomValues.
+             */
+            function getRandomIntInclusive(max) {
+                resolveRandomSource();
                 if (max > 0xFFFFFFFF) {
                     throw new Error('max must be at most 2^32 - 1.');
                 }
@@ -3795,12 +3989,16 @@ TERMS OF USE
                 const maxUint32 = 0x100000000;
                 const limit = maxUint32 - (maxUint32 % range);
                 const buffer = new Uint32Array(1);
-                let value;
-                do {
-                    randomSource.getRandomValues(buffer);
-                    value = buffer[0];
-                } while (value >= limit);
-                return value % range;
+                try {
+                    let value;
+                    do {
+                        fillRandomValues(buffer);
+                        value = buffer[0];
+                    } while (value >= limit);
+                    return value % range;
+                } finally {
+                    clearSensitiveArray(buffer);
+                }
             }
 
             /**
@@ -3815,6 +4013,8 @@ TERMS OF USE
             // ==========================================================================
             /**
              * Builds a random polynomial of the requested degree whose constant term is the secret.
+             * Caller must run assertCsprngHealthy before a ceremony batch and
+             * assertCoefficientBatchHealthy on the collected non-constant coefficients.
              */
             function randomPolynomial(secret, degree) {
                 const coefficients = [mod(secret)];
@@ -4246,16 +4446,31 @@ TERMS OF USE
                 });
                 const degree = k - 1;
 
-                const wordPolynomials = wordIndices.map((secret) => randomPolynomial(secret, degree));
-                // v0.4.0: Create checksum polynomials (Path B) by summing coefficients
-                const rowCheckPolynomials = computeRowCheckPolynomials(wordPolynomials);
-                const columnCheckPolynomials = computeColumnCheckPolynomials(wordPolynomials);
-                const globalIntegrityCheckPolynomial = computeGlobalIntegrityCheckPolynomial(wordPolynomials);
-                const rowCount = wordIndices.length / WORDS_PER_ROW;
-                const rowTotal = computeRowTotal(rowCount);
-                
-                const shares = [];
+                let wordPolynomials = null;
+                let coefficientBatch = null;
+                let rowCheckPolynomials = null;
+                let columnCheckPolynomials = null;
+                let globalIntegrityCheckPolynomial = null;
+
                 try {
+                    assertCsprngHealthy();
+                    coefficientBatch = [];
+                    wordPolynomials = wordIndices.map((secret) => {
+                        const polynomial = randomPolynomial(secret, degree);
+                        for (let i = 1; i < polynomial.length; i++) {
+                            coefficientBatch.push(polynomial[i]);
+                        }
+                        return polynomial;
+                    });
+                    assertCoefficientBatchHealthy(coefficientBatch);
+                    // v0.4.0: Create checksum polynomials (Path B) by summing coefficients
+                    rowCheckPolynomials = computeRowCheckPolynomials(wordPolynomials);
+                    columnCheckPolynomials = computeColumnCheckPolynomials(wordPolynomials);
+                    globalIntegrityCheckPolynomial = computeGlobalIntegrityCheckPolynomial(wordPolynomials);
+                    const rowCount = wordIndices.length / WORDS_PER_ROW;
+                    const rowTotal = computeRowTotal(rowCount);
+
+                    const shares = [];
                     for (let shareIndex = 1; shareIndex <= n; shareIndex++) {
                         const share = {
                             shareNumber: shareIndex,
@@ -4264,12 +4479,12 @@ TERMS OF USE
                             columnChecksumShares: [],
                             globalIntegrityCheckShare: 0
                         };
-                        
+
                         // Evaluate word polynomials
                         for (const polynomial of wordPolynomials) {
                             share.wordShares.push(evaluatePolynomial(polynomial, shareIndex));
                         }
-                        
+
                         for (let row = 0; row < rowCount; row++) {
                             const base = row * WORDS_PER_ROW;
                             const checksumPathA = modAdd(
@@ -4306,7 +4521,7 @@ TERMS OF USE
                             }
                             share.columnChecksumShares.push(columnPathA);
                         }
-                        
+
                         const globalPathA = modAdd(
                             modAdd(
                                 share.wordShares.reduce((acc, val) => modAdd(acc, val), 0),
@@ -4323,16 +4538,24 @@ TERMS OF USE
                             );
                         }
                         share.globalIntegrityCheckShare = modAdd(globalPathA, shareIndex);
-                        
+
                         shares.push(share);
                     }
                     return { shares };
                 } finally {
                     // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
+                    // Includes canary/smoke abort paths — seed-bearing scratch must not outlive the call.
                     clearSensitiveArray(wordIndices);
-                    wordPolynomials.forEach(poly => clearSensitiveArray(poly));
-                    rowCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
-                    columnCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    if (wordPolynomials) {
+                        wordPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    }
+                    clearSensitiveArray(coefficientBatch);
+                    if (rowCheckPolynomials) {
+                        rowCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    }
+                    if (columnCheckPolynomials) {
+                        columnCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
+                    }
                     clearSensitiveArray(globalIntegrityCheckPolynomial);
                 }
             }
@@ -4629,6 +4852,9 @@ TERMS OF USE
                 computeColumnCheckPolynomials,
                 computeGlobalIntegrityCheckPolynomial,
                 configureEnvironment,
+                assertCsprngHealthy,
+                assertCoefficientBatchHealthy,
+                isRngHardStopError,
                 getRandomFieldElement, // Expose for the manual helper tool
                 computeLagrangeMultipliers,
                 auditOptionalChecksums,

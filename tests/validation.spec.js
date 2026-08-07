@@ -11,7 +11,6 @@ import {
   navigateToRecover,
   setupRecovery,
   fillRecoveryShare,
-  recoverWallet,
   getRecoveredMnemonic,
   modifyShareValue,
   configureMockRandomSource
@@ -217,7 +216,7 @@ test('pre-flight row checksum failure highlights specific share row', async ({ p
   await expect(share2Row).toHaveCount(0);
 });
 
-test('2-of-3: all-zero random coefficients still split and recover', async ({ page }) => {
+test('2-of-3: constant-zero RNG hard-stops (no shares)', async ({ page }) => {
   const originalMnemonic =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
@@ -229,18 +228,11 @@ test('2-of-3: all-zero random coefficients still split and recover', async ({ pa
 
   await configureMockRandomSource(page, 'arr.fill(0);');
 
-  await generateShares(page);
-
-  const share1 = await extractShareData(page, 0);
-  const share2 = await extractShareData(page, 1);
-
-  await navigateToRecover(page);
-  await setupRecovery(page, 12, 2);
-  await fillRecoveryShare(page, 1, share1);
-  await fillRecoveryShare(page, 2, share2);
-  await recoverWallet(page);
-
-  const recoveredMnemonic = await getRecoveredMnemonic(page);
-  expect(recoveredMnemonic.trim()).toBe(originalMnemonic);
+  await page.click('#btn-generate-shares');
+  const modal = page.locator('#custom-modal:has-text("Secure Randomness Failed")');
+  await expect(modal).toBeVisible();
+  await expect(page.locator('#modal-text')).toContainText('Secure randomness failed');
+  await expect(page.locator('#pageCreate2')).toBeHidden();
+  await expect(page.locator('#pageCreate1')).toBeVisible();
 });
 

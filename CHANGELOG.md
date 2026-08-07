@@ -5,6 +5,15 @@ All notable changes to the **HTML implementation** will be documented in this fi
 Protocol/spec changes belong in the canonical repo:
 - [durashare](https://github.com/GRIFORTIS/durashare)
 
+## [Unreleased]
+
+### Security
+- Hard-stop CSPRNG smoke tests before share generation and manual sharding Random Again: require working `crypto.getRandomValues`, reject sentinel no-ops, constant-filled byte bursts, and identical consecutive bursts. Never fall back to `Math.random`.
+- Ceremony coefficient canary: refuse batches where all coefficients are identical (size ≥ 2) or any value repeats ≥ 6 times; no silent redraw — modal abort only.
+- Failures surface via the Secure Randomness Failed modal; shares are not displayed.
+- RNG failures use typed `RngHardStopError` (UI keys off `isRngHardStopError`, not message prefixes). Native `getRandomValues` throws are mapped to the same hard-stop.
+- Smoke / field-draw scratch buffers and ceremony coefficient scratch (including canary abort paths) are best-effort cleared in `finally`.
+
 ## 0.5.0 - 2026-07-27
 
 HTML **v0.5.0** is the **arithmetic share-table subset** validated against frozen
