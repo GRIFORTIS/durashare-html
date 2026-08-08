@@ -1,22 +1,12 @@
 # DuraShare (HTML)
 
-> ## Schiavinato Sharing is now DuraShare
->
-> **Schiavinato Sharing is now DuraShare.** Brand rename only: protocol lineage and behavior are unchanged. Canonical repos are `GRIFORTIS/durashare` / `durashare-html` / `durashare-js` / `durashare-py` (old `schiavinato-sharing*` URLs redirect). The air-gapped tool file is now `durashare.html` (JS API: `globalThis.DuraShare`, with a temporary `SchiavinatoSharing` alias).
-
-[![Security: Experimental](https://img.shields.io/badge/Security-⚠️%20EXPERIMENTAL%20⚠️-red)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
+[![Security: Unaudited](https://img.shields.io/badge/Security-Unaudited-orange)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 [![CI](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> ## ⚠️ WARNING: EXPERIMENTAL SOFTWARE ⚠️
-> 
->DO NOT USE IT FOR REAL FUNDS!
->
-> DuraShare specification and implementations have NOT been audited. Use for testing, learning, and experimentation only. See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md) for details.
->
->We invite **cryptographers** and **developers** to review the spec and software. See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
+DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. This implementation is thoroughly tested, published in good faith **as is**, and has **not** been independently audited. **Do not use with real funds.** See [Disclaimer](#disclaimer).
 
 **Single-file, air-gapped HTML implementation of DuraShare**
 
@@ -169,6 +159,10 @@ See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.m
 ## License
 
 [MIT License](LICENSE)
+
+## Disclaimer
+
+This software has been thoroughly tested and is not known to contain errors. It is made available in good faith, as is, so use at your own risk. The author does not assume any responsibility for any damage, financial or other, that may result from using this software. It has not been independently audited. **Do not use with real funds.** See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md).
 
 ---
 

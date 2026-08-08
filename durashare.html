@@ -24,15 +24,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ==========================================================================
-⚠️ WARNING: EXPERIMENTAL SOFTWARE ⚠️
+STATUS: UNAUDITED SOFTWARE
 ==========================================================================
 
-DO NOT USE IT FOR REAL FUNDS!
+DO NOT USE WITH REAL FUNDS.
 
-DuraShare specification and implementations have NOT been audited. Use 
-for testing, learning, and experimentation only.
-
-We invite cryptographers and developers to review the spec and contribute.
+DuraShare modifies existing, well-established cryptographic techniques for
+human-friendly threshold backup. This implementation has been thoroughly
+tested and is not known to contain errors. It is made available in good
+faith, as is, so use at your own risk. It has NOT been independently audited.
 
 TERMS OF USE
 
@@ -66,6 +66,10 @@ TERMS OF USE
    erase secrets from RAM.
 
 4) LIABILITY DISCLAIMER
+   This software has been thoroughly tested and is not known to contain
+   errors. It is made available in good faith, as is, so use at your own
+   risk. The author does not assume any responsibility for any damage,
+   financial or other, that may result from using this software.
    GRIFORTIS and its contributors are not responsible for any loss of funds,
    data corruption, or any other damages that may result from using this
    software. Use at your own risk.
@@ -770,24 +774,24 @@ TERMS OF USE
             ========================================================================== -->
             <section id="pageLanding">
                 <div class="component-card">
-                    <h2 style="color: var(--error-red); text-align: center;">⚠️ WARNING: EXPERIMENTAL SOFTWARE ⚠️</h2>
+                    <h2 style="text-align: center;">Unaudited software</h2>
                     <p style="text-align: center; font-weight: 600;">
-                        This software has NOT been audited. Use for testing, learning, and experimentation only.
+                        Thoroughly tested. Published in good faith, as is. Not independently audited. Do not use with real funds.
                     </p>
                     <hr>
-                    <h3>Terms of Use & Liability Disclaimer</h3>
+                    <h3>Terms of Use &amp; Liability Disclaimer</h3>
                     <ul>
                         <li><strong>You must verify this file's authenticity.</strong> Before using this tool with real crypto seeds, verify the GPG signature to ensure the file hasn't been tampered with. Instructions are in the GitHub repository README under "Verify Before Use (Required)".</li>
                         <li><strong>You must be offline.</strong> This tool is designed for air-gapped environments only. Disconnect from all networks before proceeding.</li>
                         <li><strong>You must use a secure environment.</strong> For maximum security, use a temporary, trusted operating system (e.g., Tails) or a fresh OS install on a secure computer.</li>
                         <li><strong>Finish the session cleanly.</strong> When done, use Clear All &amp; Start Over (or close the page) so secrets are not left on screen. On Tails, also shut down the laptop — that is the OS memory wipe. This page cannot guarantee erasure of secrets from browser RAM.</li>
-                        <li><strong>You are 100% responsible.</strong> GRIFORTIS and its contributors are not responsible for any loss of funds, data corruption, or any other damages that may result from using this software. Use at your own risk.</li>
+                        <li><strong>As-is; use at your own risk.</strong> This software has been thoroughly tested and is not known to contain errors. The author does not assume any responsibility for any damage, financial or other, that may result from using this software. GRIFORTIS and its contributors are not responsible for loss of funds, data corruption, or other damages.</li>
                     </ul>
                     <hr>
                     <div class="form-group" style="margin-top: 20px;">
                         <div class="choice-group">
                             <input type="checkbox" id="disclaimer-checkbox">
-                            <label for="disclaimer-checkbox">I have read the warnings, I know exactly what I'm doing, and I'm aware of the risks.</label>
+                            <label for="disclaimer-checkbox">I have read the disclaimer, I know exactly what I'm doing, and I'm aware of the risks.</label>
                         </div>
                     </div>
                     <div style="text-align: center; margin-top: 20px;">
@@ -4639,7 +4643,7 @@ TERMS OF USE
         // Publish for Playwright / page.evaluate and external tooling.
         // Classic-script `const` is lexical-only and is not on globalThis by default.
         globalThis.DuraShare = DuraShare;
-        // Temporary alias during the Schiavinato Sharing → DuraShare rename window.
+        // Compatibility alias for older scripts that expect SchiavinatoSharing.
         globalThis.SchiavinatoSharing = DuraShare;
 
         // BIP39 English wordlist (2048 words)
