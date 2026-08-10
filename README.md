@@ -6,31 +6,31 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+## DuraShare
+
 **DuraShare: BIP39-Native Threshold Backup over GF(2053) with Full Manual Fallback and Per-Share Audit**
 
 DuraShare uses Shamir secret sharing to split a **standard BIP39** recovery phrase into **k-of-n** durable, human-readable shares in an offline, software-assisted experience, **while keeping all the math executable manually on paper**. It also allows **individual geographically distributed shares to be verified** before recovery, without gathering a threshold or revealing the secret.
 
-DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. This implementation is thoroughly tested, published in good faith **as is**, and has **not** been independently audited. **Do not use with real funds.** See [Disclaimer](#disclaimer).
+DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. Reference implementations are thoroughly tested, published in good faith **as is**, and have **not** been independently audited. See [Disclaimer](#disclaimer).
+
+## What is this?
 
 **Single-file, air-gapped HTML implementation of DuraShare**
 
-A single-file, air-gapped tool for splitting a Bitcoin recovery phrase into **k-of-n** threshold shares and recovering it. Software guides both ceremonies — sharing and recovery — with no installation, no internet connection, and no vendor account required. Open the verified file on any air-gapped computer and run.
+A single-file, air-gapped tool for splitting a Bitcoin recovery phrase into **k-of-n** threshold shares and recovering it. Software guides Sharing and Recovery with no installation, no internet connection, and no vendor account required. Open the verified file on any air-gapped computer and run.
 
-Use it when you want threshold backup without a single point of failure: shares split between family members, distributed across a business treasury board, held by a trusted advisor and two geographic locations, or spread across an NGO where any quorum of members can recover independently. Whether you plan to recover next month or decades from now, the workflow is the same.
+For high-security environments, run from a [Tails OS](https://tails.boum.org/) session booted from a USB stick.
 
-The same arithmetic also works entirely by hand on paper — no software needed — as a continuity backstop. For high-security environments, run from a [Tails OS](https://tails.boum.org/) session booted from a USB stick.
+> **Note:** This implementation is not yet full protocol v0.7.0.
 
 ---
-
-## What is this?
 
 **In this HTML implementation, you can:**
 
 - Split a BIP39 mnemonic into \(k\)-of-\(n\) shares
 - Recover the original BIP39 mnemonic from \(k\) shares
 - Validate inputs and share integrity during split/recovery to prevent silent mistakes
-
-It is a self-contained HTML/JavaScript application implementing the DuraShare scheme. Designed for offline/air-gapped environments where computational convenience is preferred over manual math, but network access or software dependencies are unavailable or untrusted.
 
 **Key properties:**
 - Single file (all CSS/JS inline)
@@ -41,11 +41,14 @@ It is a self-contained HTML/JavaScript application implementing the DuraShare sc
 
 ## Links
 
-- **Canonical protocol + specs**: [durashare](https://github.com/GRIFORTIS/durashare)
-- **Whitepaper**: [PDF (latest)](https://github.com/GRIFORTIS/durashare/releases/latest/download/WHITEPAPER.pdf) | [Releases (versioned PDF)](https://github.com/GRIFORTIS/durashare/releases) | [LaTeX](https://github.com/GRIFORTIS/durashare/blob/main/whitepaper/WHITEPAPER.tex)
-- **Test Vectors**: [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
-- **JavaScript library**: [durashare-js](https://github.com/GRIFORTIS/durashare-js)
-- **Python library**: [durashare-py](https://github.com/GRIFORTIS/durashare-py)
+- **Canonical specification**: [durashare](https://github.com/GRIFORTIS/durashare)
+  - Standing review guide: [docs/review](https://github.com/GRIFORTIS/durashare/blob/main/docs/review.md)
+- **Whitepaper**: [PDF (latest)](https://github.com/GRIFORTIS/durashare/releases/latest/download/WHITEPAPER.pdf) | [Releases](https://github.com/GRIFORTIS/durashare/releases) | [LaTeX](https://github.com/GRIFORTIS/durashare/blob/main/whitepaper/WHITEPAPER.tex)
+- **Test vectors**: [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
+- **Related implementations**:
+  - JavaScript/TypeScript: [durashare-js](https://github.com/GRIFORTIS/durashare-js)
+  - Python: [durashare-py](https://github.com/GRIFORTIS/durashare-py)
+- **Security**: [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 
 ---
 
@@ -149,14 +152,7 @@ Tests run automatically in CI on every push/PR.
 
 ## Contributing
 
-When contributing:
-- Maintain single-file, self-contained design
-- Add/update tests for any behavioral changes
-- Run full test suite before submitting PR
-
-See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
-
----
+See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md).
 
 ## People
 
