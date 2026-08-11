@@ -181,6 +181,88 @@ test('CSPRNG smoke: unavailable getRandomValues hard-stops as RngHardStopError',
   await expectSecureRandomnessModal(page);
 });
 
+test('rejection sampling: permanently rejected Uint32 values hard-stop after bounded attempts', async ({ page }) => {
+  await prepareCreateForm(page);
+  await page.evaluate(() => {
+    const api = globalThis.DuraShare;
+    let smokeCall = 0;
+    globalThis.__dsFieldDrawCalls = 0;
+    api.configureEnvironment({
+      randomSource: {
+        getRandomValues(arr) {
+          if (arr instanceof Uint8Array) {
+            smokeCall += 1;
+            for (let i = 0; i < arr.length; i++) {
+              arr[i] = (i + smokeCall * 31) & 0xff;
+            }
+            if (arr.length > 1) arr[arr.length - 1] ^= 1;
+            return;
+          }
+          // 2^32 - 1 is above the GF(2053) rejection limit.
+          globalThis.__dsFieldDrawCalls += 1;
+          arr[0] = 0xffffffff;
+        }
+      }
+    });
+  });
+  await page.click('#btn-generate-shares');
+  await expectSecureRandomnessModal(page);
+  expect(await page.evaluate(() => globalThis.__dsFieldDrawCalls)).toBe(8);
+});
+
+test('rejection sampling: accepts a valid value on the eighth and final attempt', async ({ page }) => {
+  await openApp(page);
+  const result = await page.evaluate(() => {
+    const api = globalThis.DuraShare;
+    let fieldDrawCalls = 0;
+    api.configureEnvironment({
+      randomSource: {
+        getRandomValues(arr) {
+          fieldDrawCalls += 1;
+          arr[0] = fieldDrawCalls < 8 ? 0xffffffff : 123;
+        }
+      }
+    });
+    return {
+      value: api.getRandomFieldElement(),
+      fieldDrawCalls
+    };
+  });
+  expect(result.value).toBe(123);
+  expect(result.fieldDrawCalls).toBe(8);
+});
+
+test('coefficient generation: mid-polynomial RNG throw hard-stops with no shares', async ({ page }) => {
+  await prepareCreateForm(page);
+  await page.evaluate(() => {
+    const api = globalThis.DuraShare;
+    let smokeCall = 0;
+    globalThis.__dsFieldDrawCalls = 0;
+    api.configureEnvironment({
+      randomSource: {
+        getRandomValues(arr) {
+          if (arr instanceof Uint8Array) {
+            smokeCall += 1;
+            for (let i = 0; i < arr.length; i++) {
+              arr[i] = (i + smokeCall * 31) & 0xff;
+            }
+            if (arr.length > 1) arr[arr.length - 1] ^= 1;
+            return;
+          }
+          globalThis.__dsFieldDrawCalls += 1;
+          if (globalThis.__dsFieldDrawCalls === 3) {
+            throw new Error('simulated mid-polynomial CSPRNG fault');
+          }
+          arr[0] = globalThis.__dsFieldDrawCalls;
+        }
+      }
+    });
+  });
+  await page.click('#btn-generate-shares');
+  await expectSecureRandomnessModal(page);
+  expect(await page.evaluate(() => globalThis.__dsFieldDrawCalls)).toBe(3);
+});
+
 test('healthy CSPRNG path still creates shares', async ({ page }) => {
   await prepareCreateForm(page);
   await generateShares(page);
@@ -210,7 +292,7 @@ test('assertCoefficientBatchHealthy / isRngHardStopError unit: pair ok, freq rul
       freq6ContiguousThrows: false,
       freq6SparseThrows: false,
       allIdenticalThrows: false,
-      isRngHelperTrue: false,
+      forgedNameRejected: false,
       isRngHelperFalseOnGeneric: false,
       throwingFillMapsToRngHardStop: false
     };
@@ -244,7 +326,8 @@ test('assertCoefficientBatchHealthy / isRngHardStopError unit: pair ok, freq rul
     } catch (e) {
       out.allIdenticalThrows = api.isRngHardStopError(e) && String(e.message).includes('identical');
     }
-    out.isRngHelperTrue = api.isRngHardStopError({ name: 'RngHardStopError', message: 'x' });
+    out.forgedNameRejected =
+      api.isRngHardStopError({ name: 'RngHardStopError', message: 'forged' }) === false;
     out.isRngHelperFalseOnGeneric = api.isRngHardStopError(new Error('Secure randomness failed: forged')) === false;
     try {
       api.configureEnvironment({
@@ -266,7 +349,7 @@ test('assertCoefficientBatchHealthy / isRngHardStopError unit: pair ok, freq rul
   expect(result.freq6ContiguousThrows).toBe(true);
   expect(result.freq6SparseThrows).toBe(true);
   expect(result.allIdenticalThrows).toBe(true);
-  expect(result.isRngHelperTrue).toBe(true);
+  expect(result.forgedNameRejected).toBe(true);
   expect(result.isRngHelperFalseOnGeneric).toBe(true);
   expect(result.throwingFillMapsToRngHardStop).toBe(true);
 });

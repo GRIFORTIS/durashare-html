@@ -12,7 +12,9 @@ Protocol/spec changes belong in the canonical repo:
 - Ceremony coefficient canary: refuse batches where all coefficients are identical (size ≥ 2) or any value repeats ≥ 6 times; no silent redraw — modal abort only.
 - Failures surface via the Secure Randomness Failed modal; shares are not displayed.
 - RNG failures use typed `RngHardStopError` (UI keys off `isRngHardStopError`, not message prefixes). Native `getRandomValues` throws are mapped to the same hard-stop.
+- Rejection sampling hard-stops after 8 consecutive rejected draws instead of allowing a broken provider to hang the ceremony.
 - Smoke / field-draw scratch buffers and ceremony coefficient scratch (including canary abort paths) are best-effort cleared in `finally`.
+- Partial polynomial construction clears its own secret-bearing scratch if an RNG failure interrupts a draw.
 
 ## 0.5.0 - 2026-07-27
 

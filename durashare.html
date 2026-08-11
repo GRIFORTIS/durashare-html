@@ -3810,6 +3810,10 @@ TERMS OF USE
             // ==========================================================================
             const CSPRNG_SMOKE_BYTES = 256;
             const CSPRNG_SENTINEL_BYTE = 0xA5;
+            // For GF(2053), one rejection occurs with probability 964 / 2^32.
+            // Eight consecutive rejections are negligible for a healthy CSPRNG;
+            // exceeding this bound indicates a stuck or broken provider.
+            const MAX_REJECTION_ATTEMPTS = 8;
             // Frequency ≥ 6 is a stuck/pathology canary, not a uniqueness proof.
             // Pairs/triples are expected under healthy GF(2053) draws; six repeats in a
             // typical ceremony batch (12–48 coeffs) is astronomically unlikely if uniform.
@@ -3820,8 +3824,8 @@ TERMS OF USE
                 'This check refuses dead or stuck RNGs; it cannot prove the platform CSPRNG is strong.';
 
             /**
-             * Typed hard-stop for ceremony RNG failures. UI must key off name/isRngHardStopError,
-             * never on message string prefixes.
+             * Typed hard-stop for ceremony RNG failures. UI must use
+             * isRngHardStopError, never names or message string prefixes.
              */
             class RngHardStopError extends Error {
                 constructor(detail) {
@@ -3835,7 +3839,7 @@ TERMS OF USE
             }
 
             function isRngHardStopError(error) {
-                return Boolean(error) && error.name === 'RngHardStopError';
+                return error instanceof RngHardStopError;
             }
 
             /**
@@ -3990,12 +3994,15 @@ TERMS OF USE
                 const limit = maxUint32 - (maxUint32 % range);
                 const buffer = new Uint32Array(1);
                 try {
-                    let value;
-                    do {
+                    for (let attempt = 0; attempt < MAX_REJECTION_ATTEMPTS; attempt++) {
                         fillRandomValues(buffer);
-                        value = buffer[0];
-                    } while (value >= limit);
-                    return value % range;
+                        if (buffer[0] < limit) {
+                            return buffer[0] % range;
+                        }
+                    }
+                    throw rngHardStopError(
+                        `rejection sampling failed after ${MAX_REJECTION_ATTEMPTS} attempts.`
+                    );
                 } finally {
                     clearSensitiveArray(buffer);
                 }
@@ -4018,10 +4025,17 @@ TERMS OF USE
              */
             function randomPolynomial(secret, degree) {
                 const coefficients = [mod(secret)];
-                for (let i = 0; i < degree; i++) {
-                    coefficients.push(getRandomFieldElement());
+                try {
+                    for (let i = 0; i < degree; i++) {
+                        coefficients.push(getRandomFieldElement());
+                    }
+                    return coefficients;
+                } catch (error) {
+                    // On a mid-polynomial RNG failure, this array has not reached
+                    // the caller and must clear its own partial secret-bearing state.
+                    clearSensitiveArray(coefficients);
+                    throw error;
                 }
-                return coefficients;
             }
 
             /**
@@ -4446,22 +4460,23 @@ TERMS OF USE
                 });
                 const degree = k - 1;
 
-                let wordPolynomials = null;
-                let coefficientBatch = null;
+                const wordPolynomials = [];
+                const coefficientBatch = [];
                 let rowCheckPolynomials = null;
                 let columnCheckPolynomials = null;
                 let globalIntegrityCheckPolynomial = null;
 
                 try {
                     assertCsprngHealthy();
-                    coefficientBatch = [];
-                    wordPolynomials = wordIndices.map((secret) => {
+                    for (const secret of wordIndices) {
                         const polynomial = randomPolynomial(secret, degree);
+                        // Publish each complete polynomial to the outer collection
+                        // immediately so finally can clear it if a later draw fails.
+                        wordPolynomials.push(polynomial);
                         for (let i = 1; i < polynomial.length; i++) {
                             coefficientBatch.push(polynomial[i]);
                         }
-                        return polynomial;
-                    });
+                    }
                     assertCoefficientBatchHealthy(coefficientBatch);
                     // v0.4.0: Create checksum polynomials (Path B) by summing coefficients
                     rowCheckPolynomials = computeRowCheckPolynomials(wordPolynomials);
@@ -4546,9 +4561,7 @@ TERMS OF USE
                     // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
                     // Includes canary/smoke abort paths — seed-bearing scratch must not outlive the call.
                     clearSensitiveArray(wordIndices);
-                    if (wordPolynomials) {
-                        wordPolynomials.forEach(poly => clearSensitiveArray(poly));
-                    }
+                    wordPolynomials.forEach(poly => clearSensitiveArray(poly));
                     clearSensitiveArray(coefficientBatch);
                     if (rowCheckPolynomials) {
                         rowCheckPolynomials.forEach(poly => clearSensitiveArray(poly));
