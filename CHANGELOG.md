@@ -5,6 +5,14 @@ All notable changes to the **HTML implementation** will be documented in this fi
 Protocol/spec changes belong in the canonical repo:
 - [durashare](https://github.com/GRIFORTIS/durashare)
 
+## [Unreleased]
+
+### Changed
+- CI and release workflows use SHA-pinned Node.js 24-native action releases; CI adds Node.js 24 while retaining the existing required Node.js 18/20/22 checks during migration.
+
+### Fixed
+- CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.1 (development tooling only; no change to `durashare.html`).
+
 ## 0.5.0 - 2026-07-27
 
 HTML **v0.5.0** is the **arithmetic share-table subset** validated against frozen
