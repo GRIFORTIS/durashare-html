@@ -8,7 +8,7 @@ Protocol/spec changes belong in the canonical repo:
 ## [Unreleased]
 
 ### Changed
-- CI and release workflows use minimally upgraded, SHA-pinned Node.js 24-native action releases; CI adds Node.js 24 and a stable `CI Gate` while retaining the existing required Node.js 18/20/22 checks during migration.
+- CI and release workflows use minimally upgraded, SHA-pinned Node.js 24-native action releases; CI uses one Node.js 24 toolchain behind a stable `CI Gate` instead of version-specific required checks.
 
 ### Fixed
 - CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.1 (development tooling only; no change to `durashare.html`).
