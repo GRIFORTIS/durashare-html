@@ -3,6 +3,7 @@
 [![Security: Unaudited](https://img.shields.io/badge/Security-Unaudited-orange)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 [![CI](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml)
+[![CI Toolchain: Node.js 24](https://img.shields.io/badge/CI%20toolchain-Node.js%2024-339933)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## DuraShare
