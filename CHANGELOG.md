@@ -9,6 +9,7 @@ Protocol/spec changes belong in the canonical repo:
 
 ### Changed
 - CI and release workflows use minimally upgraded, SHA-pinned Node.js 24-native action releases; CI uses one Node.js 24 toolchain behind a stable `CI Gate` instead of version-specific required checks.
+- CodeQL advanced setup uses SHA-pinned CodeQL Action v4.37.7 on Node.js 24 instead of deprecated v3.
 
 ### Fixed
 - CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.1 (development tooling only; no change to `durashare.html`).
