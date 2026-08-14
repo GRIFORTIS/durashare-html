@@ -1,44 +1,36 @@
 # DuraShare (HTML)
 
-> ## Schiavinato Sharing is now DuraShare
->
-> **Schiavinato Sharing is now DuraShare.** Brand rename only: protocol lineage and behavior are unchanged. Canonical repos are `GRIFORTIS/durashare` / `durashare-html` / `durashare-js` / `durashare-py` (old `schiavinato-sharing*` URLs redirect). The air-gapped tool file is now `durashare.html` (JS API: `globalThis.DuraShare`, with a temporary `SchiavinatoSharing` alias).
-
-[![Security: Experimental](https://img.shields.io/badge/Security-⚠️%20EXPERIMENTAL%20⚠️-red)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
+[![Security: Unaudited](https://img.shields.io/badge/Security-Unaudited-orange)](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 [![CI](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/codeql.yml)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![CI Toolchain: Node.js 24](https://img.shields.io/badge/CI%20toolchain-Node.js%2024-339933)](https://github.com/GRIFORTIS/durashare-html/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> ## ⚠️ WARNING: EXPERIMENTAL SOFTWARE ⚠️
-> 
->DO NOT USE IT FOR REAL FUNDS!
->
-> DuraShare specification and implementations have NOT been audited. Use for testing, learning, and experimentation only. See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md) for details.
->
->We invite **cryptographers** and **developers** to review the spec and software. See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
+## DuraShare
 
-**Single-file, air-gapped HTML implementation of DuraShare**
+**DuraShare: BIP39-Native Threshold Backup over GF(2053) with Full Manual Fallback and Per-Share Audit**
 
-A single-file, air-gapped tool for splitting a Bitcoin recovery phrase into **k-of-n** threshold shares and recovering it. Software guides both ceremonies — sharing and recovery — with no installation, no internet connection, and no vendor account required. Open the verified file on any air-gapped computer and run.
+DuraShare uses Shamir secret sharing to split a **standard BIP39** recovery phrase into **k-of-n** durable, human-readable shares in an offline, software-assisted experience, **while keeping all the math executable manually on paper**. It also allows **individual geographically distributed shares to be verified** before recovery, without gathering a threshold or revealing the secret.
 
-Use it when you want threshold backup without a single point of failure: shares split between family members, distributed across a business treasury board, held by a trusted advisor and two geographic locations, or spread across an NGO where any quorum of members can recover independently. Whether you plan to recover next month or decades from now, the workflow is the same.
-
-The same arithmetic also works entirely by hand on paper — no software needed — as a continuity backstop. For high-security environments, run from a [Tails OS](https://tails.boum.org/) session booted from a USB stick.
-
----
+DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. Reference implementations are thoroughly tested, published in good faith **as is**, and have **not** been independently audited. See [Disclaimer](#disclaimer).
 
 ## What is this?
 
-**DuraShare** is a dual-mode (**manual + software**) \(k\)-of-\(n\) threshold secret sharing scheme for **BIP39 mnemonics**. It operates directly on the **1-indexed BIP39 word indices** over the prime field **GF(2053)**, so the recovered secret is a standard BIP39 mnemonic compatible with modern wallets.
+**Single-file, air-gapped HTML implementation of DuraShare**
+
+A single-file, air-gapped tool for splitting a Bitcoin recovery phrase into **k-of-n** threshold shares and recovering it. Software guides Sharing and Recovery with no installation, no internet connection, and no vendor account required. Open the verified file on any air-gapped computer and run.
+
+For high-security environments, run from a [Tails OS](https://tails.boum.org/) session booted from a USB stick.
+
+> **Note:** This implementation is not yet full protocol v0.7.0.
+
+---
 
 **In this HTML implementation, you can:**
 
 - Split a BIP39 mnemonic into \(k\)-of-\(n\) shares
 - Recover the original BIP39 mnemonic from \(k\) shares
 - Validate inputs and share integrity during split/recovery to prevent silent mistakes
-
-It is a self-contained HTML/JavaScript application implementing the DuraShare scheme. Designed for offline/air-gapped environments where computational convenience is preferred over manual math, but network access or software dependencies are unavailable or untrusted.
 
 **Key properties:**
 - Single file (all CSS/JS inline)
@@ -49,11 +41,14 @@ It is a self-contained HTML/JavaScript application implementing the DuraShare sc
 
 ## Links
 
-- **Canonical protocol + specs**: [durashare](https://github.com/GRIFORTIS/durashare)
-- **Whitepaper**: [PDF (latest)](https://github.com/GRIFORTIS/durashare/releases/latest/download/WHITEPAPER.pdf) | [Releases (versioned PDF)](https://github.com/GRIFORTIS/durashare/releases) | [LaTeX](https://github.com/GRIFORTIS/durashare/blob/main/whitepaper/WHITEPAPER.tex)
-- **Test Vectors**: [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
-- **JavaScript library**: [durashare-js](https://github.com/GRIFORTIS/durashare-js)
-- **Python library**: [durashare-py](https://github.com/GRIFORTIS/durashare-py)
+- **Canonical specification**: [durashare](https://github.com/GRIFORTIS/durashare)
+  - Standing review guide: [docs/review](https://github.com/GRIFORTIS/durashare/blob/main/docs/review.md)
+- **Whitepaper**: [PDF (latest)](https://github.com/GRIFORTIS/durashare/releases/latest/download/WHITEPAPER.pdf) | [Releases](https://github.com/GRIFORTIS/durashare/releases) | [LaTeX](https://github.com/GRIFORTIS/durashare/blob/main/whitepaper/WHITEPAPER.tex)
+- **Test vectors**: [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
+- **Related implementations**:
+  - JavaScript/TypeScript: [durashare-js](https://github.com/GRIFORTIS/durashare-js)
+  - Python: [durashare-py](https://github.com/GRIFORTIS/durashare-py)
+- **Security**: [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md)
 
 ---
 
@@ -157,19 +152,26 @@ Tests run automatically in CI on every push/PR.
 
 ## Contributing
 
-When contributing:
-- Maintain single-file, self-contained design
-- Add/update tests for any behavioral changes
-- Run full test suite before submitting PR
+See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md).
 
-See [CONTRIBUTING](https://github.com/GRIFORTIS/.github/blob/main/CONTRIBUTING.md) to know more.
+## People
 
----
+### Renato Schiavinato Lopez — Founder & Protocol Author
+- Creator of DuraShare.
+- [LinkedIn](https://www.linkedin.com/in/renato-agile-coach/) · [GitHub](https://github.com/renatoslopes)
+
+### Jeroen van de Graaf — Chief Scientist; Advisory Board
+- Professor, DCC–UFMG. Cryptographer (ZK, MPC, privacy, applied protocols); PhD, Université de Montréal (1997).
+- [DCC/UFMG](https://dcc.ufmg.br/professor/jeroen-van-de-graaf/) · [DBLP](https://dblp.org/pid/27/6925.html) · [Lattes](http://lattes.cnpq.br/0069989873499216) · [Google Scholar](https://scholar.google.com.br/citations?user=-w8olWwAAAAJ)
 
 ## License
 
 [MIT License](LICENSE)
 
+## Disclaimer
+
+Software has been thoroughly tested and is not known to contain errors. It is made available in good faith, as is, so use at your own risk. The author does not assume any responsibility for any damage, financial or other, that may result from using this software. Reference implementations have not been independently audited. **Do not use with real funds.** See [SECURITY](https://github.com/GRIFORTIS/.github/blob/main/SECURITY.md).
+
 ---
 
-**Made by [GRIFORTIS](https://github.com/GRIFORTIS)** — Open-source tools for long-horizon Bitcoin self-custody, for anyone with sovereignty in mind.
+**Maintained by**: [GRIFORTIS](https://github.com/GRIFORTIS)
