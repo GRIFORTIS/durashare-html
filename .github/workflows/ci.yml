@@ -31,12 +31,12 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0
 
       - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
@@ -47,21 +47,21 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x, 24.x]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
 
       - name: Checkout canonical spec vectors
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           repository: GRIFORTIS/durashare
           ref: ${{ env.SPEC_REPO_REF }}
           path: durashare
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -98,7 +98,7 @@ jobs:
       - name: Upload Playwright report
         if: always()
         id: upload_playwright_report
-        uses: actions/upload-artifact@4c0ff1c489dca52fedb26375d7d8fe7bd9233f19 # v4.4.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: playwright-report-${{ matrix.node-version }}
           path: playwright-report/
@@ -106,7 +106,7 @@ jobs:
 
       - name: Retry upload Playwright report (once)
         if: always() && steps.upload_playwright_report.outcome == 'failure'
-        uses: actions/upload-artifact@4c0ff1c489dca52fedb26375d7d8fe7bd9233f19 # v4.4.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: playwright-report-${{ matrix.node-version }}
           path: playwright-report/
@@ -115,7 +115,7 @@ jobs:
       - name: Upload test artifacts
         if: failure()
         id: upload_test_results
-        uses: actions/upload-artifact@4c0ff1c489dca52fedb26375d7d8fe7bd9233f19 # v4.4.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: test-results-${{ matrix.node-version }}
           path: test-results/
@@ -123,8 +123,26 @@ jobs:
 
       - name: Retry upload test artifacts (once)
         if: failure() && steps.upload_test_results.outcome == 'failure'
-        uses: actions/upload-artifact@4c0ff1c489dca52fedb26375d7d8fe7bd9233f19 # v4.4.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: test-results-${{ matrix.node-version }}
           path: test-results/
           retention-days: 7
+
+  ci-gate:
+    name: CI Gate
+    if: always()
+    needs: [secret-scan, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - name: Require successful security scan and test matrix
+        env:
+          SECRET_SCAN_RESULT: ${{ needs.secret-scan.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+        run: |
+          if [ "${SECRET_SCAN_RESULT}" != "success" ] || [ "${TEST_RESULT}" != "success" ]; then
+            echo "Required CI job failed: secret-scan=${SECRET_SCAN_RESULT}, test=${TEST_RESULT}" >&2
+            exit 1
+          fi
