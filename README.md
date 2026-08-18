@@ -10,7 +10,17 @@
 
 **DuraShare: BIP39-Native Threshold Backup over GF(2053) with Full Manual Fallback and Per-Share Audit**
 
-DuraShare uses Shamir secret sharing to split a **standard BIP39** recovery phrase into **k-of-n** durable, human-readable shares in an offline, software-assisted experience, **while keeping all the math executable manually on paper**. It also allows **individual geographically distributed shares to be verified** before recovery, without gathering a threshold or revealing the secret.
+DuraShare is a human-first, software-assisted **k-of-n** threshold secret sharing protocol for BIP39 mnemonics with one arithmetic layer and two operational paths: a recommended computational deployment and a **full manual fallback**. It applies Shamir Secret Sharing over the prime field GF(2053) directly to the 1-indexed BIP39 word indices (1..2048), word by word, producing durable, human-readable shares that can be validated and recovered either by hand (modular arithmetic + precomputed Lagrange coefficients) or via an air-gapped tool (with a digital envelope). It also allows **individual geographically distributed shares to be verified** before recovery, without gathering a threshold or revealing the secret.
+
+Key features (see [What it does and how](#what-it-does-and-how) for details):
+- One math, two paths: software or fully manual (no black box, no lock-in)
+- BIP39-native: split the seed you already have (no new word list, no moving funds)
+- Flexible k-of-n, from common 2-of-3 setups to advanced high-threshold schemes; fewer than k shares reveal nothing
+- Optional nesting: groups of groups with individual k-of-n each (up to 4 layers)
+- Human-readable shares: print secret-bearing material only to an offline, non-network printer, or copy by hand
+- Built-in error detection: detects any passive copy mistake or damage affecting up to 3 cells per share
+- Per-share audit: authenticate one share where it lives, without gathering the others or revealing the secret
+- Post-recovery checks including wallet derivation and BIP39 passphrase (passphrase is not stored and demands its own backup)
 
 DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. Reference implementations are thoroughly tested, published in good faith **as is**, and have **not** been independently audited. See [Disclaimer](#disclaimer).
 
