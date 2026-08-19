@@ -12,7 +12,7 @@
 
 DuraShare is a human-first, software-assisted **k-of-n** threshold secret sharing protocol for BIP39 mnemonics with one arithmetic layer and two operational paths: a recommended computational deployment and a **full manual fallback**. It applies Shamir Secret Sharing over the prime field GF(2053) directly to the 1-indexed BIP39 word indices (1..2048), word by word, producing durable, human-readable shares that can be validated and recovered either by hand (modular arithmetic + precomputed Lagrange coefficients) or via an air-gapped tool (with a digital envelope). It also allows **individual geographically distributed shares to be verified** before recovery, without gathering a threshold or revealing the secret.
 
-Key features (see [What it does and how](#what-it-does-and-how) for details):
+Key features (see [What it does and how on the spec repo](https://github.com/GRIFORTIS/durashare#what-it-does-and-how) for details):
 - One math, two paths: software or fully manual (no black box, no lock-in)
 - BIP39-native: split the seed you already have (no new word list, no moving funds)
 - Flexible k-of-n, from common 2-of-3 setups to advanced high-threshold schemes; fewer than k shares reveal nothing
@@ -24,6 +24,8 @@ Key features (see [What it does and how](#what-it-does-and-how) for details):
 
 DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. Reference implementations are thoroughly tested, published in good faith **as is**, and have **not** been independently audited. See [Disclaimer](#disclaimer).
 
+> **HTML implementation status:** This implementation is a work in progress. The DuraShare overview above describes the protocol as a whole; not every listed feature is currently available here. See [Compatibility](#compatibility) for the exact supported scope.
+
 ## What is this?
 
 **Single-file, air-gapped HTML implementation of DuraShare**
@@ -31,8 +33,6 @@ DuraShare **modifies existing, well-established cryptographic techniques** for h
 A single-file, air-gapped tool for splitting a Bitcoin recovery phrase into **k-of-n** threshold shares and recovering it. Software guides Sharing and Recovery with no installation, no internet connection, and no vendor account required. Open the verified file on any air-gapped computer and run.
 
 For high-security environments, run from a [Tails OS](https://tails.boum.org/) session booted from a USB stick.
-
-> **Note:** This implementation is not yet full protocol v0.7.0.
 
 ---
 
@@ -152,7 +152,7 @@ Tests run automatically in CI on every push/PR.
 
 - **HTML tool version**: v0.5.0 (`package.json` / UI footer)
 - **What this tool is**: the **arithmetic share-table subset** (split/recover with position-bound row/column checksums and printed GIC), validated against frozen `previous_versions/v0.5.0/` vectors
-- **What this tool is not**: full protocol **v0.7.0** — no digital envelope / Bech32m QR payloads, no MAT, no Manifest Audit Hash, no RBT/RVA, and other living-spec surfaces remain out of scope here
+- **What this tool is not**: the complete DuraShare protocol — no digital envelope / Bech32m QR payloads, no MAT, no Manifest Audit Hash, no RBT/RVA, and other living-spec surfaces remain out of scope here
 - **BIP39 word counts**: 12, 15, 18, 21, 24
 - **Threshold schemes**: 2-of-3, 2-of-4, 3-of-5
 - **Breaking vs HTML v0.4.1**: v0.4.1 shares need the **v0.4.1 tool** (`schiavinato_sharing.html`, still published on that release). New releases ship `durashare.html`
