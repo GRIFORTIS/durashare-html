@@ -16,6 +16,7 @@ Protocol/spec changes belong in the canonical repo:
 - Manual Authentication (MAT) work in progress: create single- or dual-column MAT shares with Whole-Key or Split-Key Manifests, and optionally audit complete tag/key rows during recovery.
 
 ### Fixed
+- CI test reliability: run each GIC-binding scheme as an independent case and read each rendered Share card in one validated browser pass, preserving the same UI assertions without exceeding the per-test timeout.
 - CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.1 (development tooling only; no change to `durashare.html`).
 
 ## 0.5.0 - 2026-07-27
