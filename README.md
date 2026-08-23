@@ -140,9 +140,10 @@ Tests run automatically in CI on every push/PR.
 
 ## Compatibility
 
-- **HTML tool version**: v0.5.0 (`package.json` / UI footer)
-- **What this tool is**: the **arithmetic share-table subset** (split/recover with position-bound row/column checksums and printed GIC), validated against frozen `previous_versions/v0.5.0/` vectors
-- **What this tool is not**: full protocol **v0.7.0** — no digital envelope / Bech32m QR payloads, no MAT, no Manifest Audit Hash, no RBT/RVA, and other living-spec surfaces remain out of scope here
+- **Released HTML tool version**: v0.5.0 (`package.json` / UI footer)
+- **Released v0.5.0 scope**: the **arithmetic share-table subset** (split/recover with position-bound row/column checksums and printed GIC), validated against frozen `previous_versions/v0.5.0/` vectors
+- **Unreleased work in progress**: single- or dual-column Manual Authentication (MAT), including Whole-Key and Split-Key Manifests and optional recovery-time MAT auditing. Session Batch ID and Recovery Binding Tag (RBT) are not implemented yet.
+- **Still out of scope**: the complete DuraShare protocol — digital envelope / Bech32m QR payloads, Manifest Audit Hash, RBT/RVA, and other living-spec surfaces
 - **BIP39 word counts**: 12, 15, 18, 21, 24
 - **Threshold schemes**: 2-of-3, 2-of-4, 3-of-5
 - **Breaking vs HTML v0.4.1**: v0.4.1 shares need the **v0.4.1 tool** (`schiavinato_sharing.html`, still published on that release). New releases ship `durashare.html`

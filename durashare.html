@@ -117,6 +117,11 @@ TERMS OF USE
             --alert-success-bg: #113a29;
             --alert-success-border: #1a6445;
             --alert-success-text: #bbf7d0;
+
+            --alert-info-bg: #172554;
+            --alert-info-border: #1d4ed8;
+            --alert-info-text: #dbeafe;
+            --validation-blank: #8A8D91;
             
             color-scheme: dark;
         }
@@ -143,6 +148,11 @@ TERMS OF USE
             --alert-success-bg: #E6F8F2;
             --alert-success-border: #6EE7B7;
             --alert-success-text: #064e3b;
+
+            --alert-info-bg: #EFF6FF;
+            --alert-info-border: #60A5FA;
+            --alert-info-text: #1E3A8A;
+            --validation-blank: #6B7280;
             
             color-scheme: light;
         }
@@ -194,7 +204,7 @@ TERMS OF USE
         /* --- 6. LAYOUT (CONTAINERS) --- */
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -403,6 +413,129 @@ TERMS OF USE
             border-color: var(--alert-error-border);
             color: var(--alert-error-text);
         }
+
+        .alert-info {
+            background-color: var(--alert-info-bg);
+            border-color: var(--alert-info-border);
+            color: var(--alert-info-text);
+        }
+
+        .recovery-validation-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 1rem;
+        }
+        .recovery-validation-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            min-width: 0;
+        }
+        .recovery-validation-item h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        .recovery-status-value {
+            display: inline-block;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+        .recovery-status-value.pass {
+            color: var(--success-green);
+        }
+        .recovery-status-value.fail {
+            color: var(--error-red);
+        }
+        .recovery-status-value.not-checked {
+            color: var(--validation-blank);
+        }
+        .recovery-validation-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+        .recovery-donut-layout {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .recovery-donut {
+            width: 112px;
+            height: 112px;
+            flex: 0 0 112px;
+        }
+        .recovery-donut-center-count {
+            fill: var(--text-main);
+            font-size: 17px;
+            font-weight: 800;
+            text-anchor: middle;
+        }
+        .recovery-donut-center-label {
+            fill: var(--text-muted);
+            font-size: 8px;
+            text-anchor: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .recovery-donut-legend {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            min-width: 0;
+        }
+        .recovery-donut-legend li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .recovery-donut-legend li:last-child {
+            margin-bottom: 0;
+        }
+        .recovery-legend-swatch {
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            flex: 0 0 14px;
+            position: relative;
+        }
+        .recovery-legend-swatch.pass {
+            background-color: var(--success-green);
+        }
+        .recovery-legend-swatch.fail {
+            background-color: var(--error-red);
+        }
+        .recovery-legend-swatch.fail::after {
+            content: '×';
+            position: absolute;
+            inset: -5px 0 0 1px;
+            color: var(--brand-navy);
+            font-size: 16px;
+            font-weight: 900;
+            line-height: 14px;
+        }
+        .recovery-legend-swatch.blank {
+            background-color: var(--validation-blank);
+        }
+        .recovery-legend-swatch.blank::after {
+            content: '·';
+            position: absolute;
+            inset: -7px 0 0 2px;
+            color: var(--bg-main);
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 14px;
+        }
+
+        @media (max-width: 720px) {
+            .recovery-validation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
         
         /* --- 10. DISCLAIMER / FOOTER --- */
         .disclaimer {
@@ -414,20 +547,38 @@ TERMS OF USE
         }
 
         /* Custom style for seed word inputs */
+        .seed-word-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
         .seed-word-row {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
         .seed-word-row label {
             font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
             color: var(--text-muted);
-            width: 30px; /* fixed width for alignment */
+            width: 38px;
             text-align: right;
-            margin-bottom: 0; /* Override default label margin */
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        .seed-word-row input, .seed-word-row code.mono {
+            flex-grow: 1;
+            width: 100%;
         }
         .seed-word-row input {
-            flex-grow: 1;
+            padding: 12px 14px;
+        }
+        .seed-word-row code.mono {
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: block;
         }
 
         /* Page 2: Share Card Refinements */
@@ -436,7 +587,7 @@ TERMS OF USE
         }
         .share-metadata {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 0.5rem 2rem;
             margin: 1.5rem 0;
         }
@@ -451,28 +602,78 @@ TERMS OF USE
         }
         .share-word-list {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px 10px; /* Increased vertical gap */
+            grid-template-columns: repeat(var(--share-columns, 4), minmax(135px, 1fr));
+            gap: 20px 24px;
         }
         .share-word-item {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            height: 100%;
         }
         .share-word-item label {
             font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
             color: var(--text-muted);
-            width: 30px; /* fixed width for alignment */
-            text-align: right;
+            width: auto;
+            text-align: left;
             flex-shrink: 0;
+            font-size: 0.8rem;
+            margin-bottom: 0;
         }
-        .share-word-item code.mono {
+        .share-word-item code.mono, .share-word-item input {
             border: 1px solid var(--border-color);
-            padding: 8px;
+            padding: 12px 14px;
             text-align: center;
             border-radius: 6px; /* Match input fields */
             flex-grow: 1;
             width: 100%;
+        }
+        .share-word-item code.mono {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .manifest-card {
+            border-color: var(--cyber-gold);
+        }
+        .manifest-share-section {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            background: var(--input-bg);
+        }
+        .manifest-key-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .manifest-key-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            height: 100%;
+        }
+        .manifest-key-item label {
+            color: var(--text-muted);
+            font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            width: auto;
+            font-size: 0.8rem;
+            margin-bottom: 0;
+        }
+        .manifest-key-item code {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 14px;
+            text-align: center;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Autocomplete & Validation Styles */
@@ -499,6 +700,71 @@ TERMS OF USE
         input.invalid {
             border-color: var(--error-red) !important;
             box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.3) !important;
+        }
+        input.valid {
+            border-color: var(--success-green) !important;
+            box-shadow: 0 0 0 2px rgba(0, 230, 118, 0.25) !important;
+        }
+        .validation-state-host {
+            position: relative;
+        }
+        .validation-state-host input {
+            padding-left: 34px;
+            padding-right: 34px;
+        }
+        .validation-indicator {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            z-index: 1;
+            font-family: system-ui, sans-serif;
+            font-size: 1rem;
+            font-weight: 900;
+            line-height: 1;
+            pointer-events: none;
+        }
+        .validation-indicator.valid {
+            color: var(--success-green);
+        }
+        .validation-indicator.invalid {
+            color: var(--error-red);
+        }
+        .recovery-mat-keys {
+            margin-top: 22px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+        }
+        .recovery-mat-keys summary {
+            padding: 14px 16px;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .recovery-mat-keys-content {
+            padding: 0 16px 16px;
+        }
+        .recovery-mat-key-part {
+            margin-top: 12px;
+        }
+        .recovery-mat-key-part h5 {
+            margin: 0 0 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .recovery-manifest-panel > h4 {
+            margin: 0 0 6px;
+        }
+        .recovery-manifest-panel > .recover-hint {
+            margin-bottom: 14px;
+        }
+        .recovery-manifest-panel .recovery-mat-key-part + .recovery-mat-key-part {
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+        .manifest-key-item input {
+            width: 100%;
+            text-align: center;
         }
         .recover-hint {
             font-size: 0.85rem;
@@ -888,9 +1154,45 @@ TERMS OF USE
                 <!-- Section 1.2: Sharding Scheme Selection Placeholder -->
                 <div id="create-scheme-placeholder"></div>
 
-                <!-- Section 1.3: Seed Phrase Input -->
+                <!-- Section 1.3: Manual Authentication Layer -->
                 <div class="component-card">
-                    <h2>3. Seed Phrase</h2>
+                    <h2>3. Manual Authentication (MAT)</h2>
+                    <p>MAT adds one or two independently keyed authentication columns to each Share. Matching keys are kept on the separate Manifest below the Shares.</p>
+                    <div class="form-group">
+                        <label>MAT Columns</label>
+                        <div class="horizontal-radio-group">
+                            <div class="choice-group">
+                                <input type="radio" id="mat-none" name="mat-mode" value="none">
+                                <label for="mat-none">None</label>
+                            </div>
+                            <div class="choice-group">
+                                <input type="radio" id="mat-single" name="mat-mode" value="single">
+                                <label for="mat-single">Single</label>
+                            </div>
+                            <div class="choice-group">
+                                <input type="radio" id="mat-dual" name="mat-mode" value="dual" checked>
+                                <label for="mat-dual">Dual (Recommended)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="mat-custody-options">
+                        <label>Manifest Key Custody</label>
+                        <div class="horizontal-radio-group">
+                            <div class="choice-group">
+                                <input type="radio" id="mat-custody-whole" name="mat-custody" value="whole" checked>
+                                <label for="mat-custody-whole">Whole-Key</label>
+                            </div>
+                            <div class="choice-group">
+                                <input type="radio" id="mat-custody-split" name="mat-custody" value="split">
+                                <label for="mat-custody-split">Split-Key Manifests A + B</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 1.4: Seed Phrase Input -->
+                <div class="component-card">
+                    <h2>4. Seed Phrase</h2>
                     <!-- Word Count Toggle -->
                     <div class="form-group" style="text-align: left;">
                         <div class="word-count-toggle" id="create-word-count-toggle">
@@ -905,7 +1207,7 @@ TERMS OF USE
                         </div>
                     </div>
                     <!-- Container for dynamic seed word inputs -->
-                    <div id="seed-word-inputs" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                    <div id="seed-word-inputs" class="seed-word-inputs">
                         <!-- Inputs are dynamically inserted here by JS -->
                     </div>
                 </div>
@@ -952,18 +1254,18 @@ TERMS OF USE
                         <h4 style="margin-top: 25px; margin-bottom: 10px; color: var(--text-muted); font-weight: 600;">Encrypted Seed Phrase (Y) - Not a real BIP39 seed phrase</h4>
                         <div class="share-word-container">
                             <div class="share-word-list">
-                                <div class="share-word-item"><label>1.</label><code class="mono">hospital - 0876</code></div>
-                                <div class="share-word-item"><label>2.</label><code class="mono">spray - 1654</code></div>
-                                <div class="share-word-item"><label>3.</label><code class="mono">logic - 1042</code></div>
-                                <div class="share-word-item"><label>C1.</label><code class="mono">lemon - 1014</code></div>
-                                <div class="share-word-item"><label>4.</label><code class="mono">manual - 1083</code></div>
-                                <div class="share-word-item"><label>5.</label><code class="mono">forward - 0721</code></div>
-                                <div class="share-word-item"><label>6.</label><code class="mono">vehicle - 1959</code></div>
-                                <div class="share-word-item"><label>C2.</label><code class="mono">glass - 0789</code></div>
-                                <div class="share-word-item"><label>Col1.</label><code class="mono">0100-0100</code></div>
-                                <div class="share-word-item"><label>Col2.</label><code class="mono">0120-0120</code></div>
-                                <div class="share-word-item"><label>Col3.</label><code class="mono">0130-0130</code></div>
-                                <div class="share-word-item"><label>GIC.</label><code class="mono">0001-abandon</code></div>
+                                <div class="share-word-item"><label>W1</label><code class="mono">hospital - 0876</code></div>
+                                <div class="share-word-item"><label>W2</label><code class="mono">spray - 1654</code></div>
+                                <div class="share-word-item"><label>W3</label><code class="mono">logic - 1042</code></div>
+                                <div class="share-word-item"><label>RC1</label><code class="mono">lemon - 1014</code></div>
+                                <div class="share-word-item"><label>W4</label><code class="mono">manual - 1083</code></div>
+                                <div class="share-word-item"><label>W5</label><code class="mono">forward - 0721</code></div>
+                                <div class="share-word-item"><label>W6</label><code class="mono">vehicle - 1959</code></div>
+                                <div class="share-word-item"><label>RC2</label><code class="mono">glass - 0789</code></div>
+                                <div class="share-word-item"><label>CC1</label><code class="mono">0100-0100</code></div>
+                                <div class="share-word-item"><label>CC2</label><code class="mono">0120-0120</code></div>
+                                <div class="share-word-item"><label>CC3</label><code class="mono">0130-0130</code></div>
+                                <div class="share-word-item"><label>GIC</label><code class="mono">0001-abandon</code></div>
                             </div>
                         </div>
                     </div>
@@ -990,7 +1292,7 @@ TERMS OF USE
                         <li style="margin-bottom: 0.75em;">Use the multipliers to compute <code>Recovered = Σ(Y × λ) mod 2053</code> for each word and checksum row.</li>
                         <li style="margin-bottom: 0.75em;">Repeat for every row and finally verify the Global Integrity Check (GIC) to confirm the recovery.</li>
                     </ol>
-                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">After every row, add the three recovered word numbers plus the row number (1 for the first row, 2 for the second, and so on), modulo 2053, and confirm the result matches that row's checksum. Verify the three column checksums (Col1, Col2, Col3) by summing each column's words plus 10, 20, or 30 respectively. Finally, verify the GIC value in the bottom-right table cell before rebuilding the mnemonic.</p>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">After every row, add the three recovered word numbers plus the row number (1 for the first row, 2 for the second, and so on), modulo 2053, and confirm the result matches that row's checksum. Verify the three column checksums (CC1, CC2, CC3) by summing each column's words plus 10, 20, or 30 respectively. Finally, verify the GIC value in the bottom-right table cell before rebuilding the mnemonic.</p>
                 </div>
 
                 <div class="component-card">
@@ -1095,7 +1397,7 @@ TERMS OF USE
                     </div>
                 </div>
 
-                <p class="recover-hint">Enter each share number (X) and all word values. Row (C), column (Col), and GIC checks are optional—leave blank if missing from your sheet; filled values are verified.</p>
+                <p class="recover-hint"><strong>Only the Share Number and Share words are required.</strong> Copy RC, CC, GIC, MAT A, and MAT B only when they appear on your Share. Leave every unavailable field empty. Manifest keys are entered in the optional section below each Share.</p>
 
                 <!-- Section 3.2: Dynamic Share Inputs -->
                 <div id="recover-shares-container">
@@ -1112,14 +1414,14 @@ TERMS OF USE
             <!-- ==========================================================================
             PAGE 4: RECOVER WALLET - DISPLAY
             - The second step in the "Recover Wallet" flow.
-            - Displays the successfully recovered original seed phrase.
+            - Displays the candidate phrase and independent validation results.
             ========================================================================== -->
             <section id="pageRecover2" style="display: none;">
-                <!-- Success Message and Print Button -->
+                <!-- Candidate Message and Print Button -->
                 <div class="component-card">
-                    <h2>Wallet Recovered</h2>
-                    <div class="alert alert-success">
-                        <strong>SUCCESS:</strong> The original seed phrase has been recovered.
+                    <h2>Candidate Recovery Result</h2>
+                    <div class="alert alert-info">
+                        <strong>CANDIDATE READY:</strong> The Share Numbers and word values were sufficient to interpolate the phrase below. Review every available validation result before acting on it.
                     </div>
                     <div class="alert alert-error" style="margin-top: 12px;">
                         <strong>ATTENTION:</strong> Transcribe the seed if needed, then use Clear All &amp; Start Over (or close the page). On Tails, also shut down the machine when the ceremony is finished.
@@ -1129,35 +1431,42 @@ TERMS OF USE
                     </div>
                 </div>
 
+                <!-- Independent Recovery Validation Summary -->
+                <div class="component-card">
+                    <h3 style="margin-top: 0;">Validation Summary</h3>
+                    <p>These checks answer different questions. A failed or unavailable optional check does not hide the candidate phrase.</p>
+                    <div id="recovery-validation-summary" class="recovery-validation-grid"></div>
+                </div>
+
                 <!-- Recovered Seed Phrase Display -->
                 <div class="component-card">
-                    <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--text-muted); font-weight: 600;">Original BIP39 Seed Phrase</h4>
-                    <div class="share-word-list" style="grid-template-columns: repeat(3, 1fr);">
+                    <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--text-muted); font-weight: 600;">Recovered Seed Phrase</h4>
+                    <div class="seed-word-inputs" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
                         <!-- Example for 24 words -->
-                        <div class="share-word-item"><label>1.</label><code class="mono">abandon</code></div>
-                        <div class="share-word-item"><label>2.</label><code class="mono">ability</code></div>
-                        <div class="share-word-item"><label>3.</label><code class="mono">able</code></div>
-                        <div class="share-word-item"><label>4.</label><code class="mono">about</code></div>
-                        <div class="share-word-item"><label>5.</label><code class="mono">above</code></div>
-                        <div class="share-word-item"><label>6.</label><code class="mono">absent</code></div>
-                        <div class="share-word-item"><label>7.</label><code class="mono">absorb</code></div>
-                        <div class="share-word-item"><label>8.</label><code class="mono">abstract</code></div>
-                        <div class="share-word-item"><label>9.</label><code class="mono">absurd</code></div>
-                        <div class="share-word-item"><label>10.</label><code class="mono">abuse</code></div>
-                        <div class="share-word-item"><label>11.</label><code class="mono">access</code></div>
-                        <div class="share-word-item"><label>12.</label><code class="mono">accident</code></div>
-                        <div class="share-word-item"><label>13.</label><code class="mono">account</code></div>
-                        <div class="share-word-item"><label>14.</label><code class="mono">accuse</code></div>
-                        <div class="share-word-item"><label>15.</label><code class="mono">achieve</code></div>
-                        <div class="share-word-item"><label>16.</label><code class="mono">acid</code></div>
-                        <div class="share-word-item"><label>17.</label><code class="mono">acoustic</code></div>
-                        <div class="share-word-item"><label>18.</label><code class="mono">acquire</code></div>
-                        <div class="share-word-item"><label>19.</label><code class="mono">across</code></div>
-                        <div class="share-word-item"><label>20.</label><code class="mono">act</code></div>
-                        <div class="share-word-item"><label>21.</label><code class="mono">action</code></div>
-                        <div class="share-word-item"><label>22.</label><code class="mono">actor</code></div>
-                        <div class="share-word-item"><label>23.</label><code class="mono">actress</code></div>
-                        <div class="share-word-item"><label>24.</label><code class="mono">actual</code></div>
+                        <div class="seed-word-row"><label>01.</label><code class="mono">abandon</code></div>
+                        <div class="seed-word-row"><label>02.</label><code class="mono">ability</code></div>
+                        <div class="seed-word-row"><label>03.</label><code class="mono">able</code></div>
+                        <div class="seed-word-row"><label>04.</label><code class="mono">about</code></div>
+                        <div class="seed-word-row"><label>05.</label><code class="mono">above</code></div>
+                        <div class="seed-word-row"><label>06.</label><code class="mono">absent</code></div>
+                        <div class="seed-word-row"><label>07.</label><code class="mono">absorb</code></div>
+                        <div class="seed-word-row"><label>08.</label><code class="mono">abstract</code></div>
+                        <div class="seed-word-row"><label>09.</label><code class="mono">absurd</code></div>
+                        <div class="seed-word-row"><label>10.</label><code class="mono">abuse</code></div>
+                        <div class="seed-word-row"><label>11.</label><code class="mono">access</code></div>
+                        <div class="seed-word-row"><label>12.</label><code class="mono">accident</code></div>
+                        <div class="seed-word-row"><label>13.</label><code class="mono">account</code></div>
+                        <div class="seed-word-row"><label>14.</label><code class="mono">accuse</code></div>
+                        <div class="seed-word-row"><label>15.</label><code class="mono">achieve</code></div>
+                        <div class="seed-word-row"><label>16.</label><code class="mono">acid</code></div>
+                        <div class="seed-word-row"><label>17.</label><code class="mono">acoustic</code></div>
+                        <div class="seed-word-row"><label>18.</label><code class="mono">acquire</code></div>
+                        <div class="seed-word-row"><label>19.</label><code class="mono">across</code></div>
+                        <div class="seed-word-row"><label>20.</label><code class="mono">act</code></div>
+                        <div class="seed-word-row"><label>21.</label><code class="mono">action</code></div>
+                        <div class="seed-word-row"><label>22.</label><code class="mono">actor</code></div>
+                        <div class="seed-word-row"><label>23.</label><code class="mono">actress</code></div>
+                        <div class="seed-word-row"><label>24.</label><code class="mono">actual</code></div>
                     </div>
                 </div>
 
@@ -1251,6 +1560,23 @@ TERMS OF USE
             return (a + b) % FIELD_PRIME;
         }
 
+        function summarizeValidationOutcomes(outcomes) {
+            const summary = {
+                blank: 0,
+                pass: 0,
+                fail: 0,
+                total: outcomes.length
+            };
+            outcomes.forEach((outcome) => {
+                if (outcome === 'pass' || outcome === 'fail') {
+                    summary[outcome]++;
+                } else {
+                    summary.blank++;
+                }
+            });
+            return summary;
+        }
+
         function formatShareFieldValue(value) {
             if (value === 0) {
                 return '0000-0000';
@@ -1265,16 +1591,33 @@ TERMS OF USE
         let createFlowWordCache = Array(24).fill('');
         let createWordCount = 24;
 
-        let recoverFlowCache = [];
         const MAX_SHARES = 5;
-        for (let i = 0; i < MAX_SHARES; i++) {
-            recoverFlowCache.push({
+        const MAX_RECOVERY_ROWS = 8;
+
+        function createEmptyRecoveryMatKeySet() {
+            return {
+                weights: ['', '', ''],
+                rowPads: Array(MAX_RECOVERY_ROWS).fill('')
+            };
+        }
+
+        function createEmptyRecoveryCacheEntry() {
+            return {
                 shareNumber: '',
                 words: Array(32).fill(''),
+                matTags: [[], []],
                 columnChecksums: ['', '', ''],
-                globalIntegrityCheckShare: ''
-            });
+                globalIntegrityCheckShare: '',
+                manifestOpen: false,
+                splitKeyStarted: false,
+                matKeys: [0, 1].map(() => ({
+                    primary: createEmptyRecoveryMatKeySet(),
+                    secondary: createEmptyRecoveryMatKeySet()
+                }))
+            };
         }
+
+        let recoverFlowCache = Array(MAX_SHARES).fill(null).map(() => createEmptyRecoveryCacheEntry());
         let recoverWordCount = 24;
         const manualRecoveryShareCache = {};
 
@@ -1297,6 +1640,12 @@ TERMS OF USE
             if (slot === 'checksum') {
                 return `Share ${shareIndex} · Row ${rowNumber} checksum`;
             }
+            if (slot === 'mat-a') {
+                return `Share ${shareIndex} · MAT A row ${rowNumber}`;
+            }
+            if (slot === 'mat-b') {
+                return `Share ${shareIndex} · MAT B row ${rowNumber}`;
+            }
             if (slot === 'column-checksum') {
                 return `Share ${shareIndex} · Column ${rowNumber} checksum`;
             }
@@ -1313,11 +1662,35 @@ TERMS OF USE
          */
         function markInputInvalid(input, message, { rowHighlight = false } = {}) {
             if (!input) return;
+            clearInputErrorState(input);
             input.classList.add('invalid');
+            input.setAttribute('aria-invalid', 'true');
             if (rowHighlight) {
                 input.setAttribute('data-row-highlight', 'true');
             }
-            // No inline messages: clean layout, highlight only.
+            addValidationIndicator(input, '!', 'invalid', message);
+        }
+
+        function markInputValid(input) {
+            if (!input) return;
+            clearInputErrorState(input);
+            input.classList.add('valid');
+            input.setAttribute('aria-invalid', 'false');
+            addValidationIndicator(input, '✓', 'valid', 'Check passed');
+        }
+
+        function addValidationIndicator(input, symbol, state, message) {
+            const host = input.parentElement;
+            if (!host) return;
+            host.classList.add('validation-state-host');
+            const indicator = document.createElement('span');
+            indicator.className = `validation-indicator ${state}`;
+            indicator.textContent = symbol;
+            indicator.setAttribute('aria-hidden', 'true');
+            if (message) {
+                indicator.title = message;
+            }
+            host.appendChild(indicator);
         }
 
         /**
@@ -1325,10 +1698,16 @@ TERMS OF USE
          */
         function clearInputErrorState(input) {
             if (!input) return;
-            input.classList.remove('invalid');
+            input.classList.remove('invalid', 'valid');
+            input.removeAttribute('aria-invalid');
             input.removeAttribute('data-error-message');
             input.removeAttribute('title');
             input.removeAttribute('data-row-highlight');
+            const host = input.parentElement;
+            if (host) {
+                host.querySelectorAll(':scope > .validation-indicator').forEach(indicator => indicator.remove());
+                host.classList.remove('validation-state-host');
+            }
         }
 
         /**
@@ -1518,6 +1897,8 @@ TERMS OF USE
 
         const schemeRadios = document.querySelectorAll('input[name="scheme"]');
         const schemeExplanation = document.getElementById('scheme-explanation');
+        const matModeRadios = document.querySelectorAll('input[name="mat-mode"]');
+        const matCustodyOptions = document.getElementById('mat-custody-options');
         const btn12Words = document.getElementById('btn-12-words');
         const btn24Words = document.getElementById('btn-24-words');
         const btn15Words = document.getElementById('btn-15-words');
@@ -1617,14 +1998,39 @@ TERMS OF USE
             btnManualShardingHelper.addEventListener('click', () => showPage('manualSharding', 'Manual Sharding Helper'));
         }
         btnsBackHome.forEach(btn => btn.addEventListener('click', () => showPage('home')));
-        
+
+        function updateMatCustodyVisibility() {
+            const selectedMode = document.querySelector('input[name="mat-mode"]:checked')?.value || 'dual';
+            if (matCustodyOptions) {
+                matCustodyOptions.style.display = selectedMode === 'none' ? 'none' : 'block';
+            }
+        }
+
+        matModeRadios.forEach(radio => radio.addEventListener('change', updateMatCustodyVisibility));
+        updateMatCustodyVisibility();
+
+        let shareGenerationInProgress = false;
+
         btnGenerateShares.addEventListener('click', async () => {
+            if (shareGenerationInProgress) {
+                return;
+            }
+            shareGenerationInProgress = true;
+            const idleButtonLabel = btnGenerateShares.textContent;
+            btnGenerateShares.disabled = true;
+            btnGenerateShares.setAttribute('aria-busy', 'true');
+            btnGenerateShares.textContent = 'Generating… Please wait';
+            let generatedArtifacts = null;
             try {
                 // 1. Gather all inputs from the form
                 const identifier = document.getElementById('wallet-identifier').value || 'Default Wallet';
                 const date = document.getElementById('creation-date').value;
                 const scheme = document.querySelector('input[name="scheme"]:checked').value;
                 const [k, n] = scheme.split('of').map(Number);
+                const matMode = document.querySelector('input[name="mat-mode"]:checked')?.value || 'dual';
+                const matCustody = matMode === 'none'
+                    ? 'none'
+                    : (document.querySelector('input[name="mat-custody"]:checked')?.value || 'whole');
 
                 const words = [];
                 for (let i = 1; i <= createWordCount; i++) {
@@ -1638,7 +2044,13 @@ TERMS OF USE
 
                 // 2. Call the core logic function
                 // Note: BIP39_WORDLIST must be globally available for this to work.
-                const { shares } = await DuraShare.splitBip39(mnemonic, k, n, BIP39_WORDLIST);
+                generatedArtifacts = await DuraShare.createSharingArtifacts(
+                    mnemonic,
+                    k,
+                    n,
+                    BIP39_WORDLIST,
+                    { matMode, matCustody }
+                );
 
                 // 3. Drop seed copies we no longer need (shares stay on the next page).
                 // JS strings are immutable — this only drops references / clears DOM inputs.
@@ -1649,12 +2061,27 @@ TERMS OF USE
                 clearCreateFlowSeedInputs();
 
                 // 4. Populate the next page and display it
-                displayShares(shares, { identifier, date, scheme, wordCount: createWordCount });
+                displayShares(generatedArtifacts.shares, {
+                    identifier,
+                    date,
+                    scheme,
+                    wordCount: createWordCount,
+                    matMode,
+                    matCustody
+                }, generatedArtifacts.manifests);
 
                 showPage('create2', 'Create Shares');
 
             } catch (error) {
                 await showErrorModal('Generation Failed', error.message);
+            } finally {
+                if (generatedArtifacts) {
+                    DuraShare.clearSharingArtifacts(generatedArtifacts);
+                }
+                shareGenerationInProgress = false;
+                btnGenerateShares.disabled = false;
+                btnGenerateShares.removeAttribute('aria-busy');
+                btnGenerateShares.textContent = idleButtonLabel;
             }
         });
         
@@ -1669,10 +2096,22 @@ TERMS OF USE
         });
         btnBackToRecover1.addEventListener('click', () => {
             renderRecoverShareInputsFromCache();
+            document.querySelectorAll('#recover-shares-container .share-input-container')
+                .forEach((_container, index) => validateShareInline(index + 1));
             showPage('recover1', 'Recover Wallet');
         });
 
-        btnRecoverWallet.addEventListener('click', async () => {
+        function clearParsedRecoveryShares(shares) {
+            shares.forEach((share) => {
+                DuraShare.clearSensitiveArray(share.wordShares);
+                DuraShare.clearSensitiveArray(share.checksumShares);
+                DuraShare.clearSensitiveArray(share.columnChecksumShares);
+                share.globalIntegrityCheckShare = 0;
+                share.shareNumber = 0;
+            });
+        }
+
+        async function handleRecoverWallet() {
             const k = parseInt(document.querySelector('input[name="recover-k"]:checked').value, 10);
             const shares = [];
             const shareContainers = document.querySelectorAll('#recover-shares-container .share-input-container');
@@ -1762,8 +2201,6 @@ TERMS OF USE
                             const checksumParse = parseShareValue(raw, { allowNumeric: true });
                             if (!checksumParse.ok) {
                                 markInputInvalid(checksumInput, formatParseError(checksumInput.dataset.fieldLabel, checksumParse), { rowHighlight: true });
-                                uiErrors.add('Fix the highlighted optional checksum fields before continuing.');
-                                rowHadError = true;
                             } else {
                                 clearInputErrorState(checksumInput);
                                 share.checksumShares[rowIndex] = checksumParse.value;
@@ -1777,6 +2214,7 @@ TERMS OF USE
                 if (share.wordShares.length !== recoverWordCount) {
                     uiErrors.add('Every word field is required for recovery.');
                     parsingError = true;
+                    clearParsedRecoveryShares([share]);
                     continue;
                 }
 
@@ -1791,8 +2229,6 @@ TERMS OF USE
                     const columnParse = parseShareValue(raw, { allowNumeric: true });
                     if (!columnParse.ok) {
                         markInputInvalid(columnInput, formatParseError(columnInput.dataset.fieldLabel, columnParse), { rowHighlight: true });
-                        uiErrors.add('Fix the highlighted optional checksum fields before continuing.');
-                        rowHadError = true;
                     } else {
                         clearInputErrorState(columnInput);
                         share.columnChecksumShares[col] = columnParse.value;
@@ -1804,8 +2240,6 @@ TERMS OF USE
                     const globalIntegrityCheckParse = parseShareValue(gicRaw, { allowNumeric: true });
                     if (!globalIntegrityCheckParse.ok) {
                         markInputInvalid(globalIntegrityCheckShareInput, formatParseError(globalIntegrityCheckShareInput.dataset.fieldLabel, globalIntegrityCheckParse), { rowHighlight: true });
-                        uiErrors.add('Fix the highlighted optional checksum fields before continuing.');
-                        rowHadError = true;
                     } else {
                         clearInputErrorState(globalIntegrityCheckShareInput);
                         share.globalIntegrityCheckShare = globalIntegrityCheckParse.value;
@@ -1816,6 +2250,7 @@ TERMS OF USE
 
                 if (rowHadError) {
                     parsingError = true;
+                    clearParsedRecoveryShares([share]);
                     continue;
                 }
 
@@ -1823,25 +2258,65 @@ TERMS OF USE
             }
 
             if (uiErrors.size > 0) {
+                clearParsedRecoveryShares(shares);
                 await showErrorModal('Input Error', Array.from(uiErrors).join('\n'));
                 return;
             }
 
             if (parsingError || shares.length !== k) {
+                clearParsedRecoveryShares(shares);
                 await showErrorModal('Input Error', 'Please fix the highlighted fields before attempting recovery again.');
                 return;
             }
 
+            const checksumOutcomes = [];
+            const matOutcomes = [];
+            shareContainers.forEach((_container, index) => {
+                const validation = validateShareInline(index + 1);
+                if (!validation) return;
+                checksumOutcomes.push(...validation.checksumOutcomes);
+                matOutcomes.push(...validation.matOutcomes);
+            });
+            const optionalValidation = {
+                checksums: summarizeValidationOutcomes(checksumOutcomes),
+                mat: summarizeValidationOutcomes(matOutcomes)
+            };
+            const recoveryShares = shares.map((share) => ({
+                shareNumber: share.shareNumber,
+                shareIndex: share.shareIndex,
+                wordShares: share.wordShares
+            }));
+
             // 2. CALL UNIFIED RECOVERY & VALIDATION
             try {
-                const report = await DuraShare.recoverAndValidate(shares, recoverWordCount, BIP39_WORDLIST);
+                const report = await DuraShare.recoverAndValidate(recoveryShares, recoverWordCount, BIP39_WORDLIST);
                 
                 // 3. DISPLAY RESULTS
-                await displayValidationResults(report, shares);
+                await displayValidationResults(report, optionalValidation);
 
             } catch (error) {
                 // Catches errors from the UI gathering phase (e.g., parsing)
                 await showErrorModal('Input Error', error.message);
+            } finally {
+                clearParsedRecoveryShares(shares);
+            }
+        }
+
+        let recoveryInProgress = false;
+        btnRecoverWallet.addEventListener('click', async () => {
+            if (recoveryInProgress) return;
+            recoveryInProgress = true;
+            const idleButtonLabel = btnRecoverWallet.textContent;
+            btnRecoverWallet.disabled = true;
+            btnRecoverWallet.setAttribute('aria-busy', 'true');
+            btnRecoverWallet.textContent = 'Recovering… Please wait';
+            try {
+                await handleRecoverWallet();
+            } finally {
+                recoveryInProgress = false;
+                btnRecoverWallet.disabled = false;
+                btnRecoverWallet.removeAttribute('aria-busy');
+                btnRecoverWallet.textContent = idleButtonLabel;
             }
         });
 
@@ -1872,119 +2347,38 @@ TERMS OF USE
          * Processes the report from the recovery function and updates the UI accordingly.
          * Implements intelligent error cascading and surgical error messages.
          * @param {Object} report - The report object from `recoverAndValidate`.
-         * @param {Array<Object>} shares - The array of share objects from the UI, needed for context.
+         * @param {Object} optionalValidation - Aggregate local checksum and MAT outcomes.
          */
-        async function displayValidationResults(report, shares) {
+        async function displayValidationResults(report, optionalValidation) {
             const { recoveredMnemonic, errors } = report;
-            
-            // Clear any previous error highlights
-            clearAllErrorHighlights();
 
-            // CASE 0: Per-share validation errors (with attribution)
-            if (errors.shareValidation) {
-                const rowErrors = errors.shareValidation.rowErrors || [];
-                const columnErrors = errors.shareValidation.columnErrors || [];
-                const globalErrors = errors.shareValidation.globalErrors || [];
-                rowErrors.forEach(({ shareIndex, rowIndex }) => {
-                    if (Number.isInteger(shareIndex) && Number.isInteger(rowIndex)) {
-                        highlightShareRow(shareIndex, rowIndex);
-                    }
-                });
-                columnErrors.forEach(({ shareIndex, columnIndex }) => {
-                    if (Number.isInteger(shareIndex) && Number.isInteger(columnIndex)) {
-                        highlightShareColumn(shareIndex, columnIndex);
-                    }
-                });
-                globalErrors.forEach(({ shareIndex }) => {
-                    if (Number.isInteger(shareIndex)) {
-                        highlightShareGlobal(shareIndex);
-                    }
-                });
-                await showErrorModal('Recovery Failed', errors.shareValidation.message || 'Share validation failed.');
-                return;
-            }
-
-            // CASE 1: Generic/structural errors (highest priority)
             if (errors.generic) {
                 await showErrorModal('Recovery Failed', errors.generic);
                 return;
             }
 
-            const rowErrors = errors.row && errors.row.length > 0 ? errors.row : (errors.failedRows || []);
-            const hasRowErrors = Array.isArray(rowErrors) && rowErrors.length > 0;
-            const hasGlobalError = errors.global || (errors.globalIntegrityCheckError && errors.globalIntegrityCheckError.failed);
-
-            // CASE 2: Path mismatch (recovered secrets inconsistent — no per-share attribution)
-            if ((errors.rowPathMismatch && errors.rowPathMismatch.length > 0) || errors.globalPathMismatch) {
-                await showErrorModal(
-                    'Recovery Failed - Path Mismatch',
-                    'Recovered checksums do not match the recovered words. Re-check every entered value on your share sheets, or leave optional checksum fields blank.'
-                );
-                return;
-            }
-
-            // CASE 3: Row errors after interpolation (no per-share attribution)
-            if (hasRowErrors) {
+            if (!recoveredMnemonic) {
                 await showErrorModal(
                     'Recovery Failed',
-                    'Recovered row checksums do not match the recovered words. Re-check word and row (C) values on your sheets.'
+                    'Recovery could not produce a complete seed phrase. Re-check all required Share fields.'
                 );
                 return;
             }
 
-            if (errors.column && errors.column.length > 0) {
-                await showErrorModal(
-                    'Recovery Failed',
-                    'Recovered column checksums do not match the recovered words. Re-check column (Col) values on your sheets.'
-                );
-                return;
-            }
-
-            // CASE 4: Global integrity after interpolation
-            if (hasGlobalError) {
-                await showErrorModal(
-                    'Recovery Failed',
-                    'Recovered GIC does not match the recovered words. Re-check GIC and word values, or leave GIC blank if not on your sheet.'
-                );
-                return;
-            }
-
-            // CASE 5: BIP39 failed but DuraShare checks passed (show seed anyway)
-            if (errors.bip39) {
-                let errorMessage = 'BIP39 checksum invalid.\n\n';
-                errorMessage += 'The recovered words may have errors in the final word, or the shares were created from a manually-calculated seed.\n\n';
-                errorMessage += `Recovered seed:\n${recoveredMnemonic}`;
-                
-                const confirmed = await showConfirmationModal(
-                    'BIP39 Checksum Invalid',
-                    errorMessage
-                );
-                if (confirmed && recoveredMnemonic) {
-                    snapshotShareInputs();
-                    persistRecoverShareInputsToCache();
-                    displayRecoveredMnemonic(recoveredMnemonic, true);
-                    clearRecoverFlowShareInputs();
-                    report.recoveredMnemonic = null;
-                    report.recoveredIndices = null;
-                    showPage('recover2', 'Recover Wallet');
-                }
-                return;
-            }
-
-            // CASE 6: SUCCESS - All checks passed
-            if (recoveredMnemonic) {
-                snapshotShareInputs();
-                persistRecoverShareInputsToCache();
-                displayRecoveredMnemonic(recoveredMnemonic, false);
-                clearRecoverFlowShareInputs();
-                report.recoveredMnemonic = null;
-                report.recoveredIndices = null;
-                showPage('recover2', 'Recover Wallet');
-                return;
-            }
-
-            // CASE 7: Unexpected error
-            await showErrorModal('Unknown Error', 'An unexpected error occurred during recovery.');
+            snapshotShareInputs();
+            persistRecoverShareInputsToCache();
+            displayRecoveredMnemonic(recoveredMnemonic, {
+                rbt: report.validation?.rbt || { status: 'not-checked' },
+                bip39: report.validation?.bip39 || {
+                    status: errors.bip39 ? 'fail' : 'pass'
+                },
+                checksums: optionalValidation.checksums,
+                mat: optionalValidation.mat
+            });
+            clearRecoverFlowShareInputs();
+            report.recoveredMnemonic = null;
+            report.recoveredIndices = null;
+            showPage('recover2', 'Recover Wallet');
         }
 
         /**
@@ -2348,7 +2742,7 @@ TERMS OF USE
                 row.className = 'seed-word-row';
                 const label = document.createElement('label');
                 label.htmlFor = `word-${i}`;
-                label.textContent = `${i}.`;
+                label.textContent = `${String(i).padStart(2, '0')}.`;
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.id = `word-${i}`;
@@ -2374,6 +2768,165 @@ TERMS OF USE
          * @param {number} shareIndex - The index of the share to generate (1-based).
          * @returns {HTMLElement} The fully constructed div element for the share input.
          */
+        function appendRecoveryMatKeyInput(grid, {
+            shareIndex,
+            columnIndex,
+            part,
+            kind,
+            keyIndex,
+            label,
+            value
+        }) {
+            const item = document.createElement('div');
+            item.className = 'manifest-key-item';
+            const inputId = `recover-mat-key-${shareIndex}-${columnIndex}-${part}-${kind}-${keyIndex}`;
+            const inputLabel = document.createElement('label');
+            inputLabel.htmlFor = inputId;
+            inputLabel.textContent = label;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'mono';
+            input.id = inputId;
+            input.inputMode = 'numeric';
+            input.maxLength = 4;
+            input.value = value || '';
+            input.dataset.matKey = 'true';
+            input.dataset.columnIndex = String(columnIndex);
+            input.dataset.part = part;
+            input.dataset.keyKind = kind;
+            input.dataset.keyIndex = String(keyIndex);
+            const manifestLabel = part === 'secondary'
+                ? 'Share Manifest B'
+                : 'Share Manifest / Share Manifest A';
+            input.dataset.fieldLabel =
+                `Share ${shareIndex} ${manifestLabel} MAT ${columnIndex === 0 ? 'A' : 'B'} ${label}`;
+            initializeRecoveryInputTracking(input);
+            input.addEventListener('input', () => {
+                if (part === 'secondary' && input.value.trim() !== '') {
+                    recoverFlowCache[shareIndex - 1].splitKeyStarted = true;
+                }
+                clearInputErrorState(input);
+            });
+            input.addEventListener('blur', () => {
+                validateShareInline(shareIndex);
+            });
+            item.appendChild(inputLabel);
+            item.appendChild(input);
+            grid.appendChild(item);
+        }
+
+        function appendRecoveryMatKeyPart(parent, {
+            shareIndex,
+            columnIndex,
+            part,
+            title,
+            keyCache,
+            rowCount
+        }) {
+            const partContainer = document.createElement('div');
+            partContainer.className = 'recovery-mat-key-part';
+            if (title) {
+                const heading = document.createElement('h5');
+                heading.textContent = title;
+                partContainer.appendChild(heading);
+            }
+            const grid = document.createElement('div');
+            grid.className = 'manifest-key-grid';
+            for (let weight = 0; weight < 3; weight++) {
+                appendRecoveryMatKeyInput(grid, {
+                    shareIndex,
+                    columnIndex,
+                    part,
+                    kind: 'weight',
+                    keyIndex: weight,
+                    label: `u${weight + 1}`,
+                    value: keyCache.weights[weight]
+                });
+            }
+            for (let row = 0; row < rowCount; row++) {
+                appendRecoveryMatKeyInput(grid, {
+                    shareIndex,
+                    columnIndex,
+                    part,
+                    kind: 'pad',
+                    keyIndex: row,
+                    label: `b${row + 1}`,
+                    value: keyCache.rowPads[row]
+                });
+            }
+            partContainer.appendChild(grid);
+            parent.appendChild(partContainer);
+        }
+
+        function appendRecoveryManifestPanel(parent, {
+            shareIndex,
+            part,
+            title,
+            description,
+            shareCache,
+            rowCount
+        }) {
+            const panel = document.createElement('section');
+            panel.className = 'manifest-share-section recovery-manifest-panel';
+            const heading = document.createElement('h4');
+            heading.textContent = title;
+            panel.appendChild(heading);
+            const hint = document.createElement('p');
+            hint.className = 'recover-hint';
+            hint.textContent = description;
+            panel.appendChild(hint);
+            for (let columnIndex = 0; columnIndex < 2; columnIndex++) {
+                appendRecoveryMatKeyPart(panel, {
+                    shareIndex,
+                    columnIndex,
+                    part,
+                    title: `MAT ${columnIndex === 0 ? 'A' : 'B'} Keys`,
+                    keyCache: shareCache.matKeys[columnIndex][part],
+                    rowCount
+                });
+            }
+            parent.appendChild(panel);
+        }
+
+        function buildRecoveryMatKeySection(shareIndex, shareCache, rowCount) {
+            const details = document.createElement('details');
+            details.className = 'recovery-mat-keys';
+            details.open = Boolean(shareCache.manifestOpen);
+            const summary = document.createElement('summary');
+            summary.textContent = `Manifest Keys for Share Input #${shareIndex} — optional`;
+            details.appendChild(summary);
+            const content = document.createElement('div');
+            content.className = 'recovery-mat-keys-content';
+            const instructions = document.createElement('p');
+            instructions.className = 'recover-hint';
+            instructions.textContent = 'Check the title printed on your Manifest. For a Whole-Key Share Manifest, use the first panel only. For Split-Key Share Manifest A and Share Manifest B, enter both panels. One Split-Key Manifest alone cannot perform MAT validation.';
+            content.appendChild(instructions);
+            appendRecoveryManifestPanel(content, {
+                shareIndex,
+                part: 'primary',
+                title: 'Share Manifest / Share Manifest A',
+                description: 'Enter a complete Whole-Key Share Manifest here, or enter Share Manifest A when you also have Share Manifest B.',
+                shareCache,
+                rowCount
+            });
+            appendRecoveryManifestPanel(content, {
+                shareIndex,
+                part: 'secondary',
+                title: 'Share Manifest B — Split-Key only',
+                description: 'Leave this panel empty for Whole-Key custody. Any entry here selects Split-Key validation for this Share until Start Over.',
+                shareCache,
+                rowCount
+            });
+            details.appendChild(content);
+            details.addEventListener('toggle', () => {
+                const cacheEntry = recoverFlowCache[shareIndex - 1];
+                if (cacheEntry) {
+                    cacheEntry.manifestOpen = details.open;
+                }
+            });
+            return details;
+        }
+
         function generateSingleRecoverShareInput(shareIndex) {
             const cacheIndex = shareIndex - 1;
             const shareCache = recoverFlowCache[cacheIndex];
@@ -2416,24 +2969,34 @@ TERMS OF USE
             shareNumberGroup.appendChild(inputX);
             container.appendChild(shareNumberGroup);
 
+            const valuesHeading = document.createElement('h4');
+            valuesHeading.style.marginTop = '25px';
+            valuesHeading.style.marginBottom = '10px';
+            valuesHeading.style.color = 'var(--text-muted)';
+            valuesHeading.style.fontWeight = '600';
+            valuesHeading.textContent = 'Share Values (Y)';
+            container.appendChild(valuesHeading);
+
             const seedGrid = document.createElement('div');
-            seedGrid.style.display = 'grid';
-            seedGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-            seedGrid.style.gap = '15px';
+            seedGrid.className = 'share-word-list';
+            seedGrid.style.setProperty('--share-columns', '6');
 
             const totalWords = recoverWordCount;
             const wordsPerChecksum = 3;
             const numChecksums = totalWords / wordsPerChecksum;
+            const matSlotKeys = ['mat-a', 'mat-b'];
+            const matLabelPrefixes = ['MAT A', 'MAT B'];
+            const cachedMatTags = Array.isArray(shareCache.matTags) ? shareCache.matTags : [[], []];
+            const matColumnCount = 2;
 
             let wordCounter = 0;
-            let inputIndex = 0;
             for (let i = 1; i <= numChecksums; i++) {
                 for (let j = 0; j < wordsPerChecksum; j++) {
                     const row = document.createElement('div');
-                    row.className = 'seed-word-row';
+                    row.className = 'share-word-item';
                     const label = document.createElement('label');
                     const wordNumber = (i - 1) * wordsPerChecksum + j + 1;
-                    label.textContent = `${wordNumber}.`;
+                    label.textContent = `W${wordNumber}`;
                     const input = document.createElement('input');
                     input.type = 'text';
                     input.className = 'mono';
@@ -2457,12 +3020,11 @@ TERMS OF USE
                     row.appendChild(input);
                     seedGrid.appendChild(row);
                     wordCounter++;
-                    inputIndex++;
                 }
                 const row = document.createElement('div');
-                row.className = 'seed-word-row';
+                row.className = 'share-word-item';
                 const label = document.createElement('label');
-                label.textContent = `C${i}.`;
+                label.textContent = `RC${i}`;
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'mono';
@@ -2486,14 +3048,42 @@ TERMS OF USE
                 row.appendChild(input);
                 seedGrid.appendChild(row);
                 wordCounter++;
-                inputIndex++;
+
+                for (let matColumn = 0; matColumn < matColumnCount; matColumn++) {
+                    const matRow = document.createElement('div');
+                    matRow.className = 'share-word-item';
+                    const matLabel = document.createElement('label');
+                    matLabel.textContent = `${matLabelPrefixes[matColumn]}${i}`;
+                    const matInput = document.createElement('input');
+                    matInput.type = 'text';
+                    matInput.className = 'mono';
+                    matInput.id = buildRecoveryFieldId(shareIndex, i - 1, matSlotKeys[matColumn]);
+                    matInput.inputMode = 'numeric';
+                    matInput.maxLength = 4;
+                    matInput.dataset.shareIndex = String(shareIndex);
+                    matInput.dataset.rowIndex = String(i - 1);
+                    matInput.dataset.slot = matSlotKeys[matColumn];
+                    matInput.dataset.allowNumeric = 'true';
+                    matInput.dataset.fieldLabel = buildRecoveryFieldLabel(shareIndex, i - 1, matSlotKeys[matColumn]);
+                    matInput.value = (cachedMatTags[matColumn] && cachedMatTags[matColumn][i - 1]) || '';
+                    initializeRecoveryInputTracking(matInput);
+                    matInput.addEventListener('input', () => {
+                        clearInputErrorState(matInput);
+                    });
+                    matInput.addEventListener('blur', () => {
+                        validateShareInline(shareIndex);
+                    });
+                    matRow.appendChild(matLabel);
+                    matRow.appendChild(matInput);
+                    seedGrid.appendChild(matRow);
+                }
             }
 
             for (let col = 0; col < 3; col++) {
                 const row = document.createElement('div');
-                row.className = 'seed-word-row';
+                row.className = 'share-word-item';
                 const label = document.createElement('label');
-                label.textContent = `Col${col + 1}.`;
+                label.textContent = `CC${col + 1}`;
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'mono';
@@ -2517,9 +3107,9 @@ TERMS OF USE
             }
 
             const gicRow = document.createElement('div');
-            gicRow.className = 'seed-word-row';
+            gicRow.className = 'share-word-item';
             const gicLabel = document.createElement('label');
-            gicLabel.textContent = 'GIC.';
+            gicLabel.textContent = 'GIC';
             const gicInput = document.createElement('input');
             gicInput.type = 'text';
             gicInput.className = 'mono';
@@ -2541,6 +3131,7 @@ TERMS OF USE
             seedGrid.appendChild(gicRow);
 
             container.appendChild(seedGrid);
+            container.appendChild(buildRecoveryMatKeySection(shareIndex, shareCache, numChecksums));
             return container;
         }
 
@@ -2565,17 +3156,53 @@ TERMS OF USE
                     if (!cacheEntry.columnChecksums) {
                         cacheEntry.columnChecksums = ['', '', ''];
                     }
-                    const wordInputs = container.querySelectorAll('.seed-word-row input:not([data-slot="column-checksum"])');
-                    wordInputs.forEach((input, wordIndex) => {
+                    if (!Array.isArray(cacheEntry.matTags) || cacheEntry.matTags.length !== 2) {
+                        cacheEntry.matTags = [[], []];
+                    }
+                    const arithmeticInputs = container.querySelectorAll('input[data-slot^="word-"], input[data-slot="checksum"]');
+                    arithmeticInputs.forEach((input, wordIndex) => {
                         if (wordIndex < cacheEntry.words.length) {
                             cacheEntry.words[wordIndex] = input.value;
                         }
+                    });
+                    const matAInputs = container.querySelectorAll('input[data-slot="mat-a"]');
+                    const matBInputs = container.querySelectorAll('input[data-slot="mat-b"]');
+                    matAInputs.forEach((input, rowIndex) => {
+                        cacheEntry.matTags[0][rowIndex] = input.value;
+                    });
+                    matBInputs.forEach((input, rowIndex) => {
+                        cacheEntry.matTags[1][rowIndex] = input.value;
                     });
                     for (let col = 0; col < 3; col++) {
                         const columnInput = container.querySelector(`input[data-slot="column-checksum"][data-column-index="${col}"]`);
                         if (columnInput) {
                             cacheEntry.columnChecksums[col] = columnInput.value;
                         }
+                    }
+                    const manifestDetails = container.querySelector('.recovery-mat-keys');
+                    if (manifestDetails) {
+                        cacheEntry.manifestOpen = manifestDetails.open;
+                    }
+                    container.querySelectorAll('input[data-mat-key="true"]').forEach((input) => {
+                        const columnIndex = Number(input.dataset.columnIndex);
+                        const part = input.dataset.part;
+                        const kind = input.dataset.keyKind;
+                        const keyIndex = Number(input.dataset.keyIndex);
+                        const keyCache = cacheEntry.matKeys?.[columnIndex]?.[part];
+                        if (!keyCache) return;
+                        if (kind === 'weight' && keyIndex >= 0 && keyIndex < 3) {
+                            keyCache.weights[keyIndex] = input.value;
+                        }
+                        if (kind === 'pad' && keyIndex >= 0 && keyIndex < MAX_RECOVERY_ROWS) {
+                            keyCache.rowPads[keyIndex] = input.value;
+                        }
+                    });
+                    if (Array.from(
+                        container.querySelectorAll(
+                            'input[data-mat-key="true"][data-part="secondary"]'
+                        )
+                    ).some(input => input.value.trim() !== '')) {
+                        cacheEntry.splitKeyStarted = true;
                     }
                 }
             });
@@ -2593,10 +3220,13 @@ TERMS OF USE
                 recoverSharesContainer.appendChild(shareInputBlock);
             }
 
-            const recoverWordInputs = recoverSharesContainer.querySelectorAll('.seed-word-row input');
+            const recoverWordInputs = recoverSharesContainer.querySelectorAll('.share-word-item input');
             if (recoverWordInputs.length > 0) {
                 const lastRecoverWordInput = recoverWordInputs[recoverWordInputs.length - 1];
                 attachTabAdvance(lastRecoverWordInput, btnRecoverWallet);
+            }
+            for (let i = 1; i <= numShares; i++) {
+                validateShareInline(i);
             }
         }
 
@@ -2626,6 +3256,15 @@ TERMS OF USE
                 validateInputAsUserTypes(input);
             });
             input.addEventListener('keydown', handleAutocompleteKeydown);
+            input.addEventListener('blur', () => {
+                // Let a suggestion's click handler run first, then ensure the floating
+                // list cannot remain over unrelated controls after focus has moved on.
+                setTimeout(() => {
+                    if (currentAutocompleteInput === input) {
+                        hideAutocomplete();
+                    }
+                }, 0);
+            });
             attachValidationListener(input); // Also attach the blur validation
         }
 
@@ -2910,39 +3549,238 @@ TERMS OF USE
             }
         }
 
-        /**
-         * Highlights the Global Integrity Check (GIC) field for a specific share container.
-         * Used for pre-flight validation where the faulty share is known.
-         * @param {number} shareIndex - The 1-based index of the share container.
-         */
-        function highlightShareGlobal(shareIndex) {
-            const input = document.getElementById(`recover-share-${shareIndex}-gic`);
-            if (!input) return;
-            markInputInvalid(input, input.dataset.fieldLabel || 'Global Integrity Check (GIC) mismatch', { rowHighlight: true });
+        function parseOptionalMatInput(input) {
+            const raw = (input?.value || '').trim();
+            if (raw === '') return { state: 'empty' };
+            if (!/^\d{1,4}$/.test(raw)) {
+                markInputInvalid(input, `${input.dataset.fieldLabel || 'MAT field'}: Invalid value`);
+                return { state: 'invalid' };
+            }
+            const value = Number(raw);
+            if (!Number.isInteger(value) || value < 0 || value >= FIELD_PRIME) {
+                markInputInvalid(input, `${input.dataset.fieldLabel || 'MAT field'}: Invalid value`);
+                return { state: 'invalid' };
+            }
+            return { state: 'valid', value };
         }
 
-        /**
-         * Clears row-level highlights for a specific share/row.
-         */
-        function clearShareRowHighlight(shareIndex, rowIndex) {
-            const container = document.getElementById(`share-container-${shareIndex}`);
-            if (!container) return;
-            const inputs = container.querySelectorAll(`input[data-row-index="${rowIndex}"]`);
-            inputs.forEach(input => {
-                if (input.getAttribute('data-row-highlight') === 'true') {
-                    clearInputErrorState(input);
+        function validateRecoveryMatSyntax(container) {
+            let hasInvalid = false;
+            container.querySelectorAll(
+                'input[data-slot="mat-a"], input[data-slot="mat-b"], input[data-mat-key="true"]'
+            ).forEach((input) => {
+                if (parseOptionalMatInput(input).state === 'invalid') {
+                    hasInvalid = true;
                 }
             });
+            return hasInvalid;
         }
 
-        /**
-         * Clears Global Integrity Check (GIC) highlight for a specific share.
-         */
-        function clearShareGlobalHighlight(shareIndex) {
-            const input = document.getElementById(`recover-share-${shareIndex}-gic`);
-            if (input && input.getAttribute('data-row-highlight') === 'true') {
-                clearInputErrorState(input);
+        function getRecoveryMatKeyInput(container, columnIndex, part, kind, keyIndex) {
+            return container.querySelector(
+                `input[data-mat-key="true"][data-column-index="${columnIndex}"]` +
+                `[data-part="${part}"][data-key-kind="${kind}"][data-key-index="${keyIndex}"]`
+            );
+        }
+
+        function readRecoveryMatKeyPart(container, columnIndex, part, rowCount) {
+            const weights = new Array(3);
+            const rowPads = new Array(rowCount);
+            const weightInputs = [];
+            const padInputs = [];
+            const weightStates = [];
+            const padStates = [];
+            let weightsComplete = true;
+            let hasInvalid = false;
+            for (let weight = 0; weight < 3; weight++) {
+                const input = getRecoveryMatKeyInput(container, columnIndex, part, 'weight', weight);
+                const parsed = parseOptionalMatInput(input);
+                weightInputs.push(input);
+                weightStates.push(parsed.state);
+                if (parsed.state === 'valid') {
+                    weights[weight] = parsed.value;
+                } else {
+                    weightsComplete = false;
+                    hasInvalid = hasInvalid || parsed.state === 'invalid';
+                }
             }
+            for (let row = 0; row < rowCount; row++) {
+                const input = getRecoveryMatKeyInput(container, columnIndex, part, 'pad', row);
+                const parsed = parseOptionalMatInput(input);
+                padInputs.push(input);
+                padStates.push(parsed.state);
+                if (parsed.state === 'valid') {
+                    rowPads[row] = parsed.value;
+                } else {
+                    hasInvalid = hasInvalid || parsed.state === 'invalid';
+                }
+            }
+            return {
+                weights,
+                rowPads,
+                weightInputs,
+                padInputs,
+                weightStates,
+                padStates,
+                weightsComplete,
+                hasInvalid
+            };
+        }
+
+        function applyMatAuditStates(audit, tags, keyParts) {
+            audit.matchedRows.forEach((row) => {
+                markInputValid(tags.inputs[row]);
+                keyParts.forEach(part => markInputValid(part.padInputs[row]));
+            });
+            audit.failedRows.forEach((row) => {
+                markInputInvalid(tags.inputs[row], 'MAT check mismatch');
+                keyParts.forEach(part => markInputInvalid(part.padInputs[row], 'MAT check mismatch'));
+            });
+            const weightInputs = keyParts.flatMap(part => part.weightInputs);
+            if (audit.matchingRank >= 3) {
+                weightInputs.forEach(input => markInputValid(input));
+            } else if (audit.failedRows.length > 0) {
+                weightInputs.forEach(input => markInputInvalid(input, 'MAT weights could not be established'));
+            }
+        }
+
+        function validateRecoveryMatInline(
+            shareIndex,
+            wordShares,
+            rowCount,
+            availableRows = Array(rowCount).fill(true)
+        ) {
+            const container = document.getElementById(`share-container-${shareIndex}`);
+            const outcomes = Array(rowCount * 2).fill('blank');
+            if (!container) return { hasWarning: false, outcomes };
+            const hasSecondaryInput = Array.from(
+                container.querySelectorAll('input[data-mat-key="true"][data-part="secondary"]')
+            ).some(input => input.value.trim() !== '');
+            const cacheEntry = recoverFlowCache[shareIndex - 1];
+            if (hasSecondaryInput && cacheEntry) {
+                cacheEntry.splitKeyStarted = true;
+            }
+            const usesSplitKey = Boolean(hasSecondaryInput || cacheEntry?.splitKeyStarted);
+            let hasWarning = false;
+            for (let columnIndex = 0; columnIndex < 2; columnIndex++) {
+                const outcomeOffset = columnIndex * rowCount;
+                const slot = columnIndex === 0 ? 'mat-a' : 'mat-b';
+                const tagInputs = Array.from(container.querySelectorAll(`input[data-slot="${slot}"]`));
+                const tags = new Array(rowCount);
+                const tagStates = new Array(rowCount);
+                for (let row = 0; row < rowCount; row++) {
+                    const parsed = parseOptionalMatInput(tagInputs[row]);
+                    tagStates[row] = parsed.state;
+                    if (parsed.state === 'valid' && availableRows[row]) {
+                        tags[row] = parsed.value;
+                    } else if (parsed.state === 'invalid') {
+                        outcomes[outcomeOffset + row] = 'fail';
+                        hasWarning = true;
+                    }
+                }
+                let combinedKey = null;
+                let keyParts = [];
+                try {
+                    const primary = readRecoveryMatKeyPart(
+                        container,
+                        columnIndex,
+                        'primary',
+                        rowCount
+                    );
+                    keyParts = [primary];
+                    hasWarning = hasWarning || primary.hasInvalid;
+                    if (usesSplitKey) {
+                        const secondary = readRecoveryMatKeyPart(
+                            container,
+                            columnIndex,
+                            'secondary',
+                            rowCount
+                        );
+                        keyParts.push(secondary);
+                        hasWarning = hasWarning || secondary.hasInvalid;
+                        const hasInvalidWeights = keyParts.some(part =>
+                            part.weightStates.includes('invalid')
+                        );
+                        for (let row = 0; row < rowCount; row++) {
+                            const hasInvalidPad = keyParts.some(part =>
+                                part.padStates[row] === 'invalid'
+                            );
+                            if (
+                                tagStates[row] === 'valid' &&
+                                availableRows[row] &&
+                                (hasInvalidWeights || hasInvalidPad)
+                            ) {
+                                outcomes[outcomeOffset + row] = 'fail';
+                            }
+                        }
+                        if (!primary.weightsComplete || !secondary.weightsComplete) continue;
+                        const paddedPrimary = {
+                            weights: [...primary.weights],
+                            rowPads: primary.rowPads.map(value => Number.isInteger(value) ? value : 0)
+                        };
+                        const paddedSecondary = {
+                            weights: [...secondary.weights],
+                            rowPads: secondary.rowPads.map(value => Number.isInteger(value) ? value : 0)
+                        };
+                        try {
+                            combinedKey = DuraShare.recombineMatKeySets(
+                                paddedPrimary,
+                                paddedSecondary,
+                                rowCount
+                            );
+                        } finally {
+                            DuraShare.clearSensitiveArray(paddedPrimary.weights);
+                            DuraShare.clearSensitiveArray(paddedPrimary.rowPads);
+                            DuraShare.clearSensitiveArray(paddedSecondary.weights);
+                            DuraShare.clearSensitiveArray(paddedSecondary.rowPads);
+                        }
+                        for (let row = 0; row < rowCount; row++) {
+                            if (
+                                !Number.isInteger(primary.rowPads[row]) ||
+                                !Number.isInteger(secondary.rowPads[row])
+                            ) {
+                                combinedKey.rowPads[row] = undefined;
+                            }
+                        }
+                    } else {
+                        const hasInvalidWeights = primary.weightStates.includes('invalid');
+                        for (let row = 0; row < rowCount; row++) {
+                            if (
+                                tagStates[row] === 'valid' &&
+                                availableRows[row] &&
+                                (hasInvalidWeights || primary.padStates[row] === 'invalid')
+                            ) {
+                                outcomes[outcomeOffset + row] = 'fail';
+                            }
+                        }
+                        if (!primary.weightsComplete) continue;
+                        combinedKey = {
+                            weights: primary.weights,
+                            rowPads: primary.rowPads
+                        };
+                    }
+                    const audit = DuraShare.auditMatColumn(wordShares, tags, combinedKey);
+                    applyMatAuditStates(audit, { inputs: tagInputs }, keyParts);
+                    audit.matchedRows.forEach((row) => {
+                        outcomes[outcomeOffset + row] = 'pass';
+                    });
+                    audit.failedRows.forEach((row) => {
+                        outcomes[outcomeOffset + row] = 'fail';
+                    });
+                    hasWarning = hasWarning || audit.failedRows.length > 0;
+                } finally {
+                    keyParts.forEach((part) => {
+                        DuraShare.clearSensitiveArray(part.weights);
+                        DuraShare.clearSensitiveArray(part.rowPads);
+                    });
+                    DuraShare.clearSensitiveArray(tags);
+                    if (combinedKey && usesSplitKey) {
+                        DuraShare.clearSensitiveArray(combinedKey.weights);
+                        DuraShare.clearSensitiveArray(combinedKey.rowPads);
+                    }
+                }
+            }
+            return { hasWarning, outcomes };
         }
 
         /**
@@ -2950,7 +3788,7 @@ TERMS OF USE
          */
         function validateShareInline(shareIndex) {
             const container = document.getElementById(`share-container-${shareIndex}`);
-            if (!container) return;
+            if (!container) return null;
 
             // STEP 1: Clear ALL highlights for this share (fresh start)
             const allInputs = container.querySelectorAll('input');
@@ -2959,15 +3797,20 @@ TERMS OF USE
             // Derive row count from DOM
             const checksumInputs = container.querySelectorAll('input[data-slot="checksum"]');
             const rowCount = checksumInputs.length;
-            if (!rowCount) return;
+            if (!rowCount) return null;
 
             // STEP 2: Parse Validation - highlight individual fields with invalid values
             const parseErrors = new Set();
             allInputs.forEach(input => {
+                const slot = input.dataset.slot || '';
+                if (slot === 'mat-a' || slot === 'mat-b' || input.dataset.matKey === 'true') {
+                    clearInputErrorState(input);
+                    return;
+                }
                 const value = (input.value || '').trim();
                 // a) if empty, skip (no error for empty fields)
                 if (value === '') return;
-                
+
                 // b) if not valid (not 0-2052 AND not BIP39 word), highlight just that field
                 const parseResult = parseShareValue(value, { allowNumeric: true });
                 if (!parseResult.ok) {
@@ -2977,62 +3820,185 @@ TERMS OF USE
                 }
             });
 
-            const allWordInputs = container.querySelectorAll('input[data-slot^="word-"]');
-            const anyWordEmpty = Array.from(allWordInputs).some(inp => (inp?.value || '').trim() === '');
-            const anyWordParseError = Array.from(allWordInputs).some(inp => parseErrors.has(inp));
-            if (anyWordEmpty || anyWordParseError) {
-                return;
-            }
-
+            const allWordInputs = Array.from(
+                container.querySelectorAll('input[data-slot^="word-"]')
+            );
+            const wordValues = new Array(allWordInputs.length);
+            allWordInputs.forEach((input, index) => {
+                const raw = (input.value || '').trim();
+                if (raw === '' || parseErrors.has(input)) return;
+                wordValues[index] = parseShareValue(raw, { allowNumeric: true }).value;
+            });
+            const availableRows = Array.from({ length: rowCount }, (_, row) => {
+                const base = row * WORDS_PER_ROW;
+                return wordValues
+                    .slice(base, base + WORDS_PER_ROW)
+                    .every(value => Number.isInteger(value));
+            });
+            const allWordsComplete = availableRows.every(Boolean);
+            const matSyntaxWarning = validateRecoveryMatSyntax(container);
+            container.dataset.matWarning = matSyntaxWarning ? 'true' : 'false';
             const rowTotalInline = computeRowTotal(rowCount);
             const share = {
                 shareNumber: 0,
-                wordShares: [],
+                wordShares: wordValues,
                 checksumShares: new Array(rowCount),
                 columnChecksumShares: [undefined, undefined, undefined],
                 globalIntegrityCheckShare: undefined
             };
+            const matWordValues = wordValues.map(value => Number.isInteger(value) ? value : 0);
+            const checksumOutcomes = [];
+            let matOutcomes = Array(rowCount * 2).fill('blank');
+            let gicFail = false;
+            let gicContextInvalid = false;
+            let matHasWarning = false;
 
-            Array.from(allWordInputs).forEach(inp => {
-                share.wordShares.push(parseShareValue(inp.value, { allowNumeric: true }).value);
-            });
-            for (let row = 0; row < rowCount; row++) {
-                const checksumInput = container.querySelector(`input[data-row-index="${row}"][data-slot="checksum"]`);
-                const raw = (checksumInput?.value || '').trim();
-                if (raw !== '' && !parseErrors.has(checksumInput)) {
+            try {
+                const matValidation = validateRecoveryMatInline(
+                    shareIndex,
+                    matWordValues,
+                    rowCount,
+                    availableRows
+                );
+                matHasWarning = matValidation.hasWarning;
+                matOutcomes = matValidation.outcomes;
+                container.dataset.matWarning = matSyntaxWarning || matHasWarning ? 'true' : 'false';
+                for (let row = 0; row < rowCount; row++) {
+                    const checksumInput = container.querySelector(`input[data-row-index="${row}"][data-slot="checksum"]`);
+                    const raw = (checksumInput?.value || '').trim();
+                    let outcome = 'blank';
+                    if (raw === '') {
+                        checksumOutcomes.push(outcome);
+                        continue;
+                    }
+                    if (parseErrors.has(checksumInput)) {
+                        checksumOutcomes.push('fail');
+                        continue;
+                    }
                     share.checksumShares[row] = parseShareValue(raw, { allowNumeric: true }).value;
+                    if (!availableRows[row]) {
+                        checksumOutcomes.push(outcome);
+                        continue;
+                    }
+                    const checksum = share.checksumShares[row];
+                    const base = row * WORDS_PER_ROW;
+                    const expected = modAddUi(
+                        modAddUi(
+                            modAddUi(wordValues[base], wordValues[base + 1]),
+                            wordValues[base + 2]
+                        ),
+                        row + 1
+                    );
+                    if (checksum === expected) {
+                        markInputValid(checksumInput);
+                        outcome = 'pass';
+                    } else {
+                        highlightShareRow(shareIndex, row);
+                        outcome = 'fail';
+                    }
+                    checksumOutcomes.push(outcome);
                 }
-            }
-            for (let col = 0; col < 3; col++) {
-                const columnInput = container.querySelector(`input[data-slot="column-checksum"][data-column-index="${col}"]`);
-                const raw = (columnInput?.value || '').trim();
-                if (raw !== '' && !parseErrors.has(columnInput)) {
-                    share.columnChecksumShares[col] = parseShareValue(raw, { allowNumeric: true }).value;
-                }
-            }
-            const globalInput = container.querySelector(`#recover-share-${shareIndex}-gic`);
-            const gicRaw = (globalInput?.value || '').trim();
-            if (gicRaw !== '' && !parseErrors.has(globalInput)) {
-                share.globalIntegrityCheckShare = parseShareValue(gicRaw, { allowNumeric: true }).value;
-            }
-            const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
-            const parsedShareNumber = shareNumberInput
-                ? parseShareValue(shareNumberInput.value, { allowNumeric: true })
-                : { ok: false };
-            if (!parsedShareNumber.ok) {
-                if (gicRaw !== '') {
-                    markInputInvalid(shareNumberInput, 'Enter a valid share number (X) to verify GIC.', { rowHighlight: false });
-                }
-                return;
-            }
-            share.shareNumber = parsedShareNumber.value;
 
-            const audit = DuraShare.auditOptionalChecksums(share, rowCount, rowTotalInline);
-            audit.rowFails.forEach((row) => highlightShareRow(shareIndex, row));
-            audit.colFails.forEach((col) => highlightShareColumn(shareIndex, col));
-            if (audit.gicFail && globalInput) {
-                markInputInvalid(globalInput, 'Global integrity check mismatch', { rowHighlight: true });
+                for (let col = 0; col < 3; col++) {
+                    const columnInput = container.querySelector(`input[data-slot="column-checksum"][data-column-index="${col}"]`);
+                    const raw = (columnInput?.value || '').trim();
+                    let outcome = 'blank';
+                    if (raw === '') {
+                        checksumOutcomes.push(outcome);
+                        continue;
+                    }
+                    if (parseErrors.has(columnInput)) {
+                        checksumOutcomes.push('fail');
+                        continue;
+                    }
+                    share.columnChecksumShares[col] = parseShareValue(raw, { allowNumeric: true }).value;
+                    const columnComplete = Array.from(
+                        { length: rowCount },
+                        (_, row) => wordValues[row * WORDS_PER_ROW + col]
+                    ).every(value => Number.isInteger(value));
+                    if (!columnComplete) {
+                        checksumOutcomes.push(outcome);
+                        continue;
+                    }
+                    const columnChecksum = share.columnChecksumShares[col];
+                    let columnSum = 0;
+                    for (let row = 0; row < rowCount; row++) {
+                        columnSum = modAddUi(
+                            columnSum,
+                            wordValues[row * WORDS_PER_ROW + col]
+                        );
+                    }
+                    if (modAddUi(columnSum, COLUMN_TAGS[col]) === columnChecksum) {
+                        markInputValid(columnInput);
+                        outcome = 'pass';
+                    } else {
+                        highlightShareColumn(shareIndex, col);
+                        outcome = 'fail';
+                    }
+                    checksumOutcomes.push(outcome);
+                }
+
+                const globalInput = container.querySelector(`#recover-share-${shareIndex}-gic`);
+                const gicRaw = (globalInput?.value || '').trim();
+                let gicOutcome = 'blank';
+                if (gicRaw !== '' && parseErrors.has(globalInput)) {
+                    gicOutcome = 'fail';
+                } else if (gicRaw !== '') {
+                    share.globalIntegrityCheckShare = parseShareValue(
+                        gicRaw,
+                        { allowNumeric: true }
+                    ).value;
+                }
+
+                if (allWordsComplete && Number.isInteger(share.globalIntegrityCheckShare)) {
+                    const shareNumberInput = container.querySelector(`#recover-x-${shareIndex}`);
+                    const parsedShareNumber = shareNumberInput
+                        ? parseShareValue(shareNumberInput.value, { allowNumeric: true })
+                        : { ok: false };
+                    if (!parsedShareNumber.ok) {
+                        gicContextInvalid = true;
+                        markInputInvalid(
+                            shareNumberInput,
+                            'Enter a valid share number (X) to verify GIC.',
+                            { rowHighlight: false }
+                        );
+                    } else {
+                        share.shareNumber = parsedShareNumber.value;
+                        const audit = DuraShare.auditOptionalChecksums(
+                            share,
+                            rowCount,
+                            rowTotalInline
+                        );
+                        gicFail = audit.gicFail;
+                        if (gicFail && globalInput) {
+                            markInputInvalid(
+                                globalInput,
+                                'Global integrity check mismatch',
+                                { rowHighlight: true }
+                            );
+                            gicOutcome = 'fail';
+                        } else if (globalInput) {
+                            markInputValid(globalInput);
+                            gicOutcome = 'pass';
+                        }
+                    }
+                }
+                checksumOutcomes.push(gicOutcome);
+                container.dataset.optionalWarning = (
+                    checksumOutcomes.includes('fail') ||
+                    gicContextInvalid ||
+                    matSyntaxWarning ||
+                    matHasWarning
+                ) ? 'true' : 'false';
+            } finally {
+                DuraShare.clearSensitiveArray(matWordValues);
+                DuraShare.clearSensitiveArray(share.wordShares);
+                DuraShare.clearSensitiveArray(share.checksumShares);
+                DuraShare.clearSensitiveArray(share.columnChecksumShares);
+                share.globalIntegrityCheckShare = 0;
+                share.shareNumber = 0;
             }
+            return { checksumOutcomes, matOutcomes };
         }
 
         // ==========================================================================
@@ -3045,12 +4011,17 @@ TERMS OF USE
          * Displays a custom confirmation modal and returns a promise that resolves on user action.
          * @param {string} title - The title to display in the modal.
          * @param {string} text - The body text to display in the modal.
+         * @param {Object} [options] - Optional button labels.
          * @returns {Promise<boolean>} A promise that resolves to `true` if confirmed, `false` otherwise.
          */
-        function showConfirmationModal(title, text) {
+        function showConfirmationModal(title, text, options = {}) {
             modalTitle.textContent = title;
             modalText.textContent = text;
+            modalConfirmBtn.textContent = options.confirmLabel || 'Confirm';
+            modalCancelBtn.textContent = options.cancelLabel || 'Cancel';
+            modalCancelBtn.style.display = 'inline-flex';
             modal.style.display = 'flex';
+            window.requestAnimationFrame(() => modalCancelBtn.focus());
             return new Promise((resolve) => {
                 modalResolve = resolve;
             });
@@ -3079,12 +4050,15 @@ TERMS OF USE
             modal.style.display = 'none';
             // Reset modal to its default confirmation state after use
             modalConfirmBtn.textContent = 'Confirm';
-            modalCancelBtn.style.display = 'inline-block';
+            modalCancelBtn.textContent = 'Cancel';
+            modalCancelBtn.style.display = 'inline-flex';
         });
 
         modalCancelBtn.addEventListener('click', () => {
             if (modalResolve) modalResolve(false);
             modal.style.display = 'none';
+            modalConfirmBtn.textContent = 'Confirm';
+            modalCancelBtn.textContent = 'Cancel';
         });
 
         function appendShareMetadataLine(metadataEl, label, value) {
@@ -3096,14 +4070,33 @@ TERMS OF USE
             metadataEl.appendChild(p);
         }
 
-        function appendShareWordItem(listEl, labelText, fieldValue) {
+        function formatMatFieldValue(value) {
+            if (!Number.isInteger(value) || value < 0 || value >= FIELD_PRIME) {
+                throw new Error('MAT values must be integers between 0 and 2052.');
+            }
+            return String(value).padStart(4, '0');
+        }
+
+        function appendShareWordItem(listEl, labelText, fieldValue, options = {}) {
             const item = document.createElement('div');
             item.className = 'share-word-item';
+
+            if (options.hidden) {
+                item.style.visibility = 'hidden';
+            }
+
             const label = document.createElement('label');
             label.textContent = labelText;
             const code = document.createElement('code');
             code.className = 'mono';
-            code.textContent = formatShareFieldValue(fieldValue);
+            if (options.literal) {
+                code.textContent = String(fieldValue);
+            } else if (options.mat) {
+                code.textContent = formatMatFieldValue(fieldValue);
+                code.dataset.matValue = 'true';
+            } else {
+                code.textContent = formatShareFieldValue(fieldValue);
+            }
             item.appendChild(label);
             item.appendChild(code);
             listEl.appendChild(item);
@@ -3112,18 +4105,27 @@ TERMS OF USE
         function buildShareWordList(share, rowCountDisplay) {
             const list = document.createElement('div');
             list.className = 'share-word-list';
+            const matColumnCount = Array.isArray(share.matTags) ? share.matTags.length : 0;
+            list.style.setProperty('--share-columns', String(4 + matColumnCount));
             let wordCounter = 0;
             for (let i = 0; i < rowCountDisplay; i++) {
                 for (let j = 0; j < 3; j++) {
-                    appendShareWordItem(list, `${wordCounter + 1}.`, share.wordShares[wordCounter]);
+                    appendShareWordItem(list, `W${wordCounter + 1}`, share.wordShares[wordCounter]);
                     wordCounter++;
                 }
-                appendShareWordItem(list, `C${i + 1}.`, share.checksumShares[i]);
+                appendShareWordItem(list, `RC${i + 1}`, share.checksumShares[i]);
+                for (let matColumn = 0; matColumn < matColumnCount; matColumn++) {
+                    const label = `MAT ${matColumn === 0 ? 'A' : 'B'}${i + 1}`;
+                    appendShareWordItem(list, label, share.matTags[matColumn][i], { mat: true });
+                }
             }
             for (let col = 0; col < 3; col++) {
-                appendShareWordItem(list, `Col${col + 1}.`, share.columnChecksumShares[col]);
+                appendShareWordItem(list, `CC${col + 1}`, share.columnChecksumShares[col]);
             }
-            appendShareWordItem(list, 'GIC.', share.globalIntegrityCheckShare);
+            appendShareWordItem(list, 'GIC', share.globalIntegrityCheckShare);
+            for (let matColumn = 0; matColumn < matColumnCount; matColumn++) {
+                appendShareWordItem(list, 'MAT', '—', { literal: true, hidden: true });
+            }
             return list;
         }
 
@@ -3139,6 +4141,7 @@ TERMS OF USE
             appendShareMetadataLine(metadataDiv, 'Creation Date', metadata.date);
             appendShareMetadataLine(metadataDiv, 'Scheme', metadata.scheme);
             appendShareMetadataLine(metadataDiv, 'Share Number (X)', share.shareNumber);
+            appendShareMetadataLine(metadataDiv, 'MAT', getMatModeLabel(metadata.matMode));
             parent.appendChild(metadataDiv);
 
             const valuesHeading = document.createElement('h4');
@@ -3153,6 +4156,109 @@ TERMS OF USE
             wordContainer.className = 'share-word-container';
             wordContainer.appendChild(buildShareWordList(share, rowCountDisplay));
             parent.appendChild(wordContainer);
+        }
+
+        function getManifestTitle(manifest) {
+            if (manifest.kind === 'split-a') return 'Share Manifest A';
+            if (manifest.kind === 'split-b') return 'Share Manifest B';
+            return 'Share Manifest';
+        }
+
+        function getMatModeLabel(matMode) {
+            if (matMode === 'single') return 'Single';
+            if (matMode === 'dual') return 'Dual';
+            return 'None';
+        }
+
+        function getMatCustodyLabel(matCustody) {
+            if (matCustody === 'split') return 'Split-Key';
+            if (matCustody === 'whole') return 'Whole-Key';
+            return 'None';
+        }
+
+        function appendManifestKeyItem(grid, labelText, value) {
+            const item = document.createElement('div');
+            item.className = 'manifest-key-item';
+            const label = document.createElement('label');
+            label.textContent = labelText;
+            const code = document.createElement('code');
+            code.className = 'mono';
+            code.textContent = formatMatFieldValue(value);
+            code.dataset.manifestKey = 'true';
+            item.appendChild(label);
+            item.appendChild(code);
+            grid.appendChild(item);
+        }
+
+        function buildManifestCard(manifest, metadata, n) {
+            const card = document.createElement('div');
+            card.className = 'component-card manifest-card';
+            card.dataset.manifestKind = manifest.kind;
+
+            const title = document.createElement('h3');
+            title.textContent = getManifestTitle(manifest);
+            card.appendChild(title);
+            card.appendChild(document.createElement('hr'));
+
+            const warning = document.createElement('div');
+            warning.className = 'alert alert-error';
+            const warningStrong = document.createElement('strong');
+            warningStrong.textContent = manifest.matMode === 'none'
+                ? 'STORE SEPARATELY FROM THE SHARES.'
+                : 'SECRET MAT KEY MATERIAL — STORE SEPARATELY FROM EVERY SHARE.';
+            warning.appendChild(warningStrong);
+            card.appendChild(warning);
+
+            const metadataDiv = document.createElement('div');
+            metadataDiv.className = 'share-metadata';
+            appendShareMetadataLine(metadataDiv, 'Wallet Identifier', metadata.identifier);
+            appendShareMetadataLine(metadataDiv, 'Creation Date', metadata.date);
+            appendShareMetadataLine(metadataDiv, 'Scheme', metadata.scheme);
+            appendShareMetadataLine(metadataDiv, 'Word Count', metadata.wordCount);
+            appendShareMetadataLine(metadataDiv, 'BIP39 Language', 'English');
+            appendShareMetadataLine(metadataDiv, 'MAT', getMatModeLabel(manifest.matMode));
+            appendShareMetadataLine(metadataDiv, 'MAT Key Custody', getMatCustodyLabel(manifest.matCustody));
+            card.appendChild(metadataDiv);
+
+            manifest.shareKeys.forEach((shareEntry) => {
+                const shareSection = document.createElement('div');
+                shareSection.className = 'manifest-share-section';
+                shareSection.dataset.shareNumber = String(shareEntry.shareNumber);
+
+                const shareTitle = document.createElement('h4');
+                shareTitle.textContent = `Share ${shareEntry.shareNumber} of ${n}`;
+                shareSection.appendChild(shareTitle);
+
+                const location = document.createElement('p');
+                location.textContent = 'Custodian / Storage Location: ________________________________________';
+                shareSection.appendChild(location);
+
+                if (shareEntry.columns.length === 0) {
+                    const noKeys = document.createElement('p');
+                    noKeys.textContent = 'No MAT key material for this Share.';
+                    shareSection.appendChild(noKeys);
+                }
+
+                shareEntry.columns.forEach((column) => {
+                    const columnTitle = document.createElement('h4');
+                    const columnLabel = `MAT ${column.column === 1 ? 'A' : 'B'} Keys`;
+                    columnTitle.textContent = columnLabel;
+                    shareSection.appendChild(columnTitle);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'manifest-key-grid';
+                    column.weights.forEach((value, index) => {
+                        appendManifestKeyItem(grid, `u${index + 1}`, value);
+                    });
+                    column.rowPads.forEach((value, index) => {
+                        appendManifestKeyItem(grid, `b${index + 1}`, value);
+                    });
+                    shareSection.appendChild(grid);
+                });
+                card.appendChild(shareSection);
+            });
+
+            return card;
         }
 
         function buildPrintShareWarning(n) {
@@ -3261,7 +4367,7 @@ TERMS OF USE
          * @param {Array<Object>} shares - The array of generated share data.
          * @param {Object} metadata - The wallet metadata from the form.
          */
-        function displayShares(shares, metadata) {
+        function displayShares(shares, metadata, manifests = []) {
             const outputContainer = document.getElementById('shares-output');
             const printContainer = document.getElementById('print-output');
 
@@ -3286,58 +4392,236 @@ TERMS OF USE
                 printCard.appendChild(manualRecoveryTemplate.cloneNode(true));
                 printContainer.appendChild(printCard);
             });
+
+            manifests.forEach((manifest) => {
+                outputContainer.appendChild(buildManifestCard(manifest, metadata, n));
+            });
+        }
+
+        const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+
+        function createRecoveryStatusItem(kind, titleText, status, copyText) {
+            const item = document.createElement('section');
+            item.className = 'recovery-validation-item recovery-status-item';
+            item.dataset.validationKind = kind;
+            item.dataset.status = status;
+
+            const title = document.createElement('h4');
+            title.textContent = titleText;
+
+            const statusValue = document.createElement('strong');
+            statusValue.className = `recovery-status-value ${status}`;
+            statusValue.textContent = status === 'pass'
+                ? 'PASS'
+                : (status === 'fail' ? 'FAIL' : 'NOT CHECKED');
+
+            const copy = document.createElement('p');
+            copy.textContent = copyText;
+
+            item.appendChild(title);
+            item.appendChild(statusValue);
+            item.appendChild(copy);
+            return item;
+        }
+
+        function appendDonutPattern(defs, patternId, category) {
+            const pattern = document.createElementNS(SVG_NAMESPACE, 'pattern');
+            pattern.setAttribute('id', patternId);
+            pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+            pattern.setAttribute('width', '8');
+            pattern.setAttribute('height', '8');
+
+            const background = document.createElementNS(SVG_NAMESPACE, 'rect');
+            background.setAttribute('width', '8');
+            background.setAttribute('height', '8');
+            background.setAttribute(
+                'fill',
+                category === 'pass'
+                    ? 'var(--success-green)'
+                    : (category === 'fail' ? 'var(--error-red)' : 'var(--validation-blank)')
+            );
+            pattern.appendChild(background);
+
+            if (category === 'fail') {
+                const hatch = document.createElementNS(SVG_NAMESPACE, 'path');
+                hatch.setAttribute('d', 'M-2 2 L2 -2 M0 8 L8 0 M6 10 L10 6');
+                hatch.setAttribute('stroke', 'var(--bg-main)');
+                hatch.setAttribute('stroke-width', '1.5');
+                pattern.appendChild(hatch);
+            } else if (category === 'blank') {
+                const dot = document.createElementNS(SVG_NAMESPACE, 'circle');
+                dot.setAttribute('cx', '4');
+                dot.setAttribute('cy', '4');
+                dot.setAttribute('r', '1.5');
+                dot.setAttribute('fill', 'var(--bg-main)');
+                pattern.appendChild(dot);
+            }
+
+            defs.appendChild(pattern);
+        }
+
+        function createRecoveryDonutItem(kind, titleText, summary, copyText) {
+            const item = document.createElement('section');
+            item.className = 'recovery-validation-item recovery-donut-item';
+            item.dataset.validationKind = kind;
+            item.dataset.blank = String(summary.blank);
+            item.dataset.pass = String(summary.pass);
+            item.dataset.fail = String(summary.fail);
+            item.dataset.total = String(summary.total);
+
+            const title = document.createElement('h4');
+            title.textContent = titleText;
+            item.appendChild(title);
+
+            const layout = document.createElement('div');
+            layout.className = 'recovery-donut-layout';
+
+            const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
+            svg.classList.add('recovery-donut');
+            svg.setAttribute('viewBox', '0 0 120 120');
+            svg.setAttribute('role', 'img');
+            svg.setAttribute('focusable', 'false');
+            svg.setAttribute(
+                'aria-label',
+                `${titleText}: ${summary.pass} pass, ${summary.fail} fail, ${summary.blank} blank, ${summary.total} total.`
+            );
+
+            const svgTitle = document.createElementNS(SVG_NAMESPACE, 'title');
+            svgTitle.textContent =
+                `${titleText}: ${summary.pass} pass, ${summary.fail} fail, ${summary.blank} blank.`;
+            svg.appendChild(svgTitle);
+
+            const defs = document.createElementNS(SVG_NAMESPACE, 'defs');
+            ['blank', 'pass', 'fail'].forEach((category) => {
+                appendDonutPattern(defs, `recovery-${kind}-${category}`, category);
+            });
+            svg.appendChild(defs);
+
+            let offset = 0;
+            ['blank', 'pass', 'fail'].forEach((category) => {
+                const count = summary[category];
+                if (count === 0 || summary.total === 0) return;
+                const percentage = (count / summary.total) * 100;
+                const segment = document.createElementNS(SVG_NAMESPACE, 'circle');
+                segment.setAttribute('cx', '60');
+                segment.setAttribute('cy', '60');
+                segment.setAttribute('r', '42');
+                segment.setAttribute('fill', 'none');
+                segment.setAttribute('stroke', `url(#recovery-${kind}-${category})`);
+                segment.setAttribute('stroke-width', '18');
+                segment.setAttribute('pathLength', '100');
+                segment.setAttribute('stroke-dasharray', `${percentage} ${100 - percentage}`);
+                segment.setAttribute('stroke-dashoffset', String(-offset));
+                segment.setAttribute('transform', 'rotate(-90 60 60)');
+                segment.dataset.category = category;
+                svg.appendChild(segment);
+                offset += percentage;
+            });
+
+            const centerCount = document.createElementNS(SVG_NAMESPACE, 'text');
+            centerCount.classList.add('recovery-donut-center-count');
+            centerCount.setAttribute('x', '60');
+            centerCount.setAttribute('y', '59');
+            centerCount.textContent = `${summary.pass + summary.fail}/${summary.total}`;
+            svg.appendChild(centerCount);
+
+            const centerLabel = document.createElementNS(SVG_NAMESPACE, 'text');
+            centerLabel.classList.add('recovery-donut-center-label');
+            centerLabel.setAttribute('x', '60');
+            centerLabel.setAttribute('y', '73');
+            centerLabel.textContent = 'checked';
+            svg.appendChild(centerLabel);
+            layout.appendChild(svg);
+
+            const legend = document.createElement('ul');
+            legend.className = 'recovery-donut-legend';
+            ['blank', 'pass', 'fail'].forEach((category) => {
+                const row = document.createElement('li');
+                row.dataset.category = category;
+                const swatch = document.createElement('span');
+                swatch.className = `recovery-legend-swatch ${category}`;
+                swatch.setAttribute('aria-hidden', 'true');
+                const label = document.createElement('span');
+                const labelText = category === 'blank'
+                    ? 'Blank / not checked'
+                    : (category === 'pass' ? 'Pass' : 'Fail');
+                label.textContent = `${labelText}: ${summary[category]}`;
+                row.appendChild(swatch);
+                row.appendChild(label);
+                legend.appendChild(row);
+            });
+            layout.appendChild(legend);
+            item.appendChild(layout);
+
+            const copy = document.createElement('p');
+            copy.style.marginTop = '12px';
+            copy.textContent = copyText;
+            item.appendChild(copy);
+            return item;
+        }
+
+        function renderRecoveryValidationSummary(validation) {
+            const container = document.getElementById('recovery-validation-summary');
+            if (!container) return;
+            container.replaceChildren();
+
+            container.appendChild(createRecoveryStatusItem(
+                'rbt',
+                'Recovery Binding Tag (RBT)',
+                validation.rbt.status,
+                'RBT verification is not implemented in this HTML version. No session-binding conclusion is available.'
+            ));
+
+            const bip39Passed = validation.bip39.status === 'pass';
+            container.appendChild(createRecoveryStatusItem(
+                'bip39',
+                'BIP39 Checksum',
+                bip39Passed ? 'pass' : 'fail',
+                bip39Passed
+                    ? 'The candidate is a well-formed BIP39 mnemonic. This does not identify the intended wallet or sharing session.'
+                    : 'The candidate is not a valid BIP39 mnemonic. Review the required Share Numbers and word values.'
+            ));
+
+            container.appendChild(createRecoveryDonutItem(
+                'checksums',
+                'Share Checksums',
+                validation.checksums,
+                'RC, CC, and GIC test each entered Share against itself. They detect blank, damaged, or mistyped derived fields, but do not bind Shares to one session.'
+            ));
+
+            container.appendChild(createRecoveryDonutItem(
+                'mat',
+                'Manual Authentication (MAT)',
+                validation.mat,
+                'Each unit is one MAT tag-row. A row is checked only when its tag and the required Manifest key material are complete.'
+            ));
         }
 
         /**
-         * Dynamically generates and displays the recovered mnemonic on Page 4.
-         * @param {string} mnemonic - The recovered BIP39 mnemonic string.
-         * @param {boolean} [showWarning=false] - If true, displays a permanent warning.
+         * Dynamically generates and displays a candidate mnemonic plus independent validation.
+         * @param {string} mnemonic - The candidate BIP39 mnemonic string.
+         * @param {Object} validation - Structured RBT, BIP39, checksum, and MAT outcomes.
          */
-        function displayRecoveredMnemonic(mnemonic, showWarning = false) {
+        function displayRecoveredMnemonic(mnemonic, validation) {
             const words = mnemonic.split(' ');
-            const container = document.querySelector('#pageRecover2 .share-word-list');
-            const pageContainer = document.getElementById('pageRecover2');
-            if (!container || !pageContainer) return;
+            const container = document.querySelector('#pageRecover2 .seed-word-inputs');
+            if (!container) return;
 
-            // Clear previous results and warnings
             container.replaceChildren();
-            const existingWarning = pageContainer.querySelector('.alert-error');
-            if (existingWarning) {
-                existingWarning.remove();
-            }
-
-            if (showWarning) {
-                const warningDiv = document.createElement('div');
-                warningDiv.className = 'alert alert-error';
-                const warningStrong = document.createElement('strong');
-                warningStrong.textContent = 'WARNING: INVALID SEED.';
-                warningDiv.appendChild(warningStrong);
-                warningDiv.appendChild(document.createTextNode(
-                    ' This recovery phrase has an incorrect BIP39 checksum. DO NOT use it to store funds.'
-                ));
-                // Insert warning before the component card containing the seed phrase
-                const targetCard = pageContainer.querySelector('.component-card:nth-of-type(2)');
-                if(targetCard) {
-                    targetCard.insertAdjacentElement('beforebegin', warningDiv);
-                }
-            }
+            renderRecoveryValidationSummary(validation);
 
             words.forEach((word, index) => {
-                const item = document.createElement('div');
-                item.className = 'share-word-item';
+                const row = document.createElement('div');
+                row.className = 'seed-word-row';
                 const label = document.createElement('label');
-                label.textContent = `${index + 1}.`;
+                label.textContent = `${String(index + 1).padStart(2, '0')}.`;
                 const code = document.createElement('code');
                 code.className = 'mono';
                 code.textContent = word;
-                item.appendChild(label);
-                item.appendChild(code);
-                container.appendChild(item);
+                row.appendChild(label);
+                row.appendChild(code);
+                container.appendChild(row);
             });
-
-            // Adjust grid columns based on word count for better layout
-            const columns = 3;
-            container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
         }
 
         // ==========================================================================
@@ -3491,12 +4775,7 @@ TERMS OF USE
             }
 
             createFlowWordCache = Array(24).fill('');
-            recoverFlowCache = Array(MAX_SHARES).fill(null).map(() => ({
-                shareNumber: '',
-                words: Array(32).fill(''),
-                columnChecksums: ['', '', ''],
-                globalIntegrityCheckShare: ''
-            }));
+            recoverFlowCache = Array(MAX_SHARES).fill(null).map(() => createEmptyRecoveryCacheEntry());
 
             if (typeof manualRecoveryShareCache !== 'undefined') {
                 Object.keys(manualRecoveryShareCache).forEach(key => {
@@ -3602,6 +4881,16 @@ TERMS OF USE
             const WORDS_PER_ROW = 3;
             const COLUMN_TAGS = [10, 20, 30];
             const COLUMN_TOTAL = 60;
+            const MAT_MODES = Object.freeze({
+                NONE: 'none',
+                SINGLE: 'single',
+                DUAL: 'dual'
+            });
+            const MAT_CUSTODY = Object.freeze({
+                NONE: 'none',
+                WHOLE: 'whole',
+                SPLIT: 'split'
+            });
 
             function computeRowTotal(rowCount) {
                 return (rowCount * (rowCount + 1)) / 2;
@@ -3650,31 +4939,29 @@ TERMS OF USE
             // ==========================================================================
             // SECURITY UTILITIES
             // ==========================================================================
-            // Constant-Time Guarantees:
-            // All comparison functions in this section are designed to prevent timing
-            // side-channel attacks. Their constant-time properties are guaranteed by
-            // construction, not empirical testing:
-            // - Uses only constant-time primitives (XOR, OR, AND)
-            // - No conditional branching on secret data
-            // - Fixed iteration counts independent of input values
-            //
-            // This matches Bitcoin Core's security model: constant-time by design,
-            // verified through code review and static analysis, not runtime measurements.
-            //
-            // JavaScript's timing APIs (performance.now()) are too coarse and variable
-            // to reliably validate constant-time properties empirically. JIT optimization,
-            // OS scheduling, and garbage collection introduce noise that exceeds typical
-            // timing differences from side-channel vulnerabilities.
+            // JavaScript engines do not provide hard constant-time guarantees because JIT
+            // compilation, garbage collection, and runtime representation are outside this
+            // code's control. These helpers avoid early exits for valid canonical inputs.
+            // Callers must still validate types and ranges before comparing security data.
             
             /**
-             * Constant-time equality comparison for field elements.
-             * Prevents timing attacks by avoiding early exit on mismatch.
-             * Uses bitwise XOR to compare values without branching on bit differences.
+             * Best-effort branchless equality comparison for canonical GF(2053) elements.
+             * Invalid or non-canonical values always fail closed before the 32-bit XOR.
              * @param {number} a - First value to compare
              * @param {number} b - Second value to compare
              * @returns {boolean} true if values are equal, false otherwise
              */
             function constantTimeEqual(a, b) {
+                if (
+                    !Number.isInteger(a) ||
+                    !Number.isInteger(b) ||
+                    a < 0 ||
+                    b < 0 ||
+                    a >= FIELD_PRIME ||
+                    b >= FIELD_PRIME
+                ) {
+                    return false;
+                }
                 const diff = a ^ b;
                 return diff === 0;
             }
@@ -3812,6 +5099,582 @@ TERMS OF USE
              */
             function getRandomFieldElement() {
                 return getRandomIntInclusive(FIELD_PRIME - 1);
+            }
+
+            // ==========================================================================
+            // MANUAL AUTHENTICATION LAYER (MAT)
+            // ==========================================================================
+            function normalizeMatMode(value) {
+                const mode = value || MAT_MODES.NONE;
+                if (![MAT_MODES.NONE, MAT_MODES.SINGLE, MAT_MODES.DUAL].includes(mode)) {
+                    throw new Error('MAT mode must be none, single, or dual.');
+                }
+                return mode;
+            }
+
+            function normalizeMatCustody(value, matMode) {
+                if (matMode === MAT_MODES.NONE) {
+                    return MAT_CUSTODY.NONE;
+                }
+                const custody = value || MAT_CUSTODY.WHOLE;
+                if (![MAT_CUSTODY.WHOLE, MAT_CUSTODY.SPLIT].includes(custody)) {
+                    throw new Error('MAT custody must be whole or split when MAT is enabled.');
+                }
+                return custody;
+            }
+
+            function getMatColumnCount(matMode) {
+                if (matMode === MAT_MODES.SINGLE) return 1;
+                if (matMode === MAT_MODES.DUAL) return 2;
+                return 0;
+            }
+
+            function normalizeMatKeySet(keySet, rowCount, label = 'MAT key set') {
+                if (!Number.isInteger(rowCount) || rowCount <= 0) {
+                    throw new Error('MAT row count must be a positive integer.');
+                }
+                if (!keySet || !Array.isArray(keySet.weights) || keySet.weights.length !== 3) {
+                    throw new Error(`${label} must contain exactly three Share Weights.`);
+                }
+                if (!Array.isArray(keySet.rowPads) || keySet.rowPads.length !== rowCount) {
+                    throw new Error(`${label} must contain exactly ${rowCount} Row Pads.`);
+                }
+                const normalized = { weights: [], rowPads: [] };
+                try {
+                    keySet.weights.forEach((value, index) => {
+                        normalized.weights.push(
+                            normalizeShareValue(value, `${label} weight u${index + 1}`)
+                        );
+                    });
+                    keySet.rowPads.forEach((value, index) => {
+                        normalized.rowPads.push(
+                            normalizeShareValue(value, `${label} Row Pad b${index + 1}`)
+                        );
+                    });
+                    return normalized;
+                } catch (error) {
+                    clearSensitiveArray(normalized.weights);
+                    clearSensitiveArray(normalized.rowPads);
+                    throw error;
+                }
+            }
+
+            function computeMatTag(wordRow, weights, rowPad) {
+                if (!Array.isArray(wordRow) || wordRow.length !== WORDS_PER_ROW) {
+                    throw new Error('A MAT row must contain exactly three word-share values.');
+                }
+                if (!Array.isArray(weights) || weights.length !== WORDS_PER_ROW) {
+                    throw new Error('A MAT key must contain exactly three Share Weights.');
+                }
+                let total = normalizeShareValue(rowPad, 'MAT Row Pad');
+                for (let i = 0; i < WORDS_PER_ROW; i++) {
+                    const wordValue = normalizeShareValue(wordRow[i], `MAT word value ${i + 1}`);
+                    const weight = normalizeShareValue(weights[i], `MAT Share Weight u${i + 1}`);
+                    total = modAdd(total, modMul(weight, wordValue));
+                }
+                return total;
+            }
+
+            function computeMatTags(wordShares, keySet) {
+                if (!Array.isArray(wordShares) || wordShares.length === 0 || wordShares.length % WORDS_PER_ROW !== 0) {
+                    throw new Error('MAT requires a non-empty word-share array divisible into rows of three.');
+                }
+                const rowCount = wordShares.length / WORDS_PER_ROW;
+                const normalizedKeySet = normalizeMatKeySet(keySet, rowCount);
+                const tags = [];
+                try {
+                    for (let row = 0; row < rowCount; row++) {
+                        const base = row * WORDS_PER_ROW;
+                        const wordRow = wordShares.slice(base, base + WORDS_PER_ROW);
+                        try {
+                            tags.push(computeMatTag(
+                                wordRow,
+                                normalizedKeySet.weights,
+                                normalizedKeySet.rowPads[row]
+                            ));
+                        } finally {
+                            clearSensitiveArray(wordRow);
+                        }
+                    }
+                    return tags;
+                } catch (error) {
+                    clearSensitiveArray(tags);
+                    throw error;
+                } finally {
+                    clearMatKeySet(normalizedKeySet);
+                }
+            }
+
+            function computeMatRowRank(wordShares, rowIndices) {
+                const matrix = [];
+                try {
+                    rowIndices.forEach((rowIndex) => {
+                        const base = rowIndex * WORDS_PER_ROW;
+                        matrix.push([
+                            normalizeShareValue(wordShares[base], `MAT row ${rowIndex + 1} word 1`),
+                            normalizeShareValue(wordShares[base + 1], `MAT row ${rowIndex + 1} word 2`),
+                            normalizeShareValue(wordShares[base + 2], `MAT row ${rowIndex + 1} word 3`)
+                        ]);
+                    });
+                    let rank = 0;
+                    for (let column = 0; column < WORDS_PER_ROW && rank < matrix.length; column++) {
+                        let pivot = rank;
+                        while (pivot < matrix.length && matrix[pivot][column] === 0) {
+                            pivot++;
+                        }
+                        if (pivot === matrix.length) continue;
+                        [matrix[rank], matrix[pivot]] = [matrix[pivot], matrix[rank]];
+                        const inverse = modInv(matrix[rank][column]);
+                        for (let col = column; col < WORDS_PER_ROW; col++) {
+                            matrix[rank][col] = modMul(matrix[rank][col], inverse);
+                        }
+                        for (let row = 0; row < matrix.length; row++) {
+                            if (row === rank || matrix[row][column] === 0) continue;
+                            const factor = matrix[row][column];
+                            for (let col = column; col < WORDS_PER_ROW; col++) {
+                                matrix[row][col] = modSub(
+                                    matrix[row][col],
+                                    modMul(factor, matrix[rank][col])
+                                );
+                            }
+                        }
+                        rank++;
+                        if (rank === WORDS_PER_ROW) break;
+                    }
+                    return rank;
+                } finally {
+                    matrix.forEach(row => clearSensitiveArray(row));
+                    matrix.length = 0;
+                }
+            }
+
+            function auditMatColumn(wordShares, tags, keySet) {
+                if (!Array.isArray(wordShares) || wordShares.length === 0 || wordShares.length % WORDS_PER_ROW !== 0) {
+                    throw new Error('MAT audit requires complete word-share rows.');
+                }
+                const rowCount = wordShares.length / WORDS_PER_ROW;
+                if (!keySet || !Array.isArray(keySet.weights) || keySet.weights.length !== WORDS_PER_ROW) {
+                    throw new Error('MAT audit requires exactly three Share Weights.');
+                }
+                if (!Array.isArray(keySet.rowPads) || keySet.rowPads.length !== rowCount) {
+                    throw new Error(`MAT audit requires ${rowCount} Row Pad slots.`);
+                }
+                if (!Array.isArray(tags) || tags.length !== rowCount) {
+                    throw new Error(`MAT audit requires ${rowCount} tag slots.`);
+                }
+                const normalizedWeights = [];
+                const matchedRows = [];
+                const failedRows = [];
+                const checkedRows = [];
+                try {
+                    wordShares.forEach((value, index) => {
+                        normalizeShareValue(value, `MAT audit word ${index + 1}`);
+                    });
+                    keySet.weights.forEach((value, index) => {
+                        normalizedWeights.push(
+                            normalizeShareValue(value, `MAT audit weight u${index + 1}`)
+                        );
+                    });
+                    for (let row = 0; row < rowCount; row++) {
+                        const tag = tags[row];
+                        const rowPad = keySet.rowPads[row];
+                        const normalizedTag = tag === undefined
+                            ? undefined
+                            : normalizeShareValue(tag, `MAT audit row ${row + 1} tag`);
+                        const normalizedPad = rowPad === undefined
+                            ? undefined
+                            : normalizeShareValue(rowPad, `MAT audit row ${row + 1} pad`);
+                        if (normalizedTag === undefined || normalizedPad === undefined) continue;
+                        const base = row * WORDS_PER_ROW;
+                        const wordRow = wordShares.slice(base, base + WORDS_PER_ROW);
+                        let expectedTag;
+                        try {
+                            expectedTag = computeMatTag(wordRow, normalizedWeights, normalizedPad);
+                        } finally {
+                            clearSensitiveArray(wordRow);
+                        }
+                        checkedRows.push(row);
+                        if (constantTimeEqual(expectedTag, normalizedTag)) {
+                            matchedRows.push(row);
+                        } else {
+                            failedRows.push(row);
+                        }
+                        expectedTag = 0;
+                    }
+                    return {
+                        checkedRows,
+                        matchedRows,
+                        failedRows,
+                        matchingRank: computeMatRowRank(wordShares, matchedRows)
+                    };
+                } finally {
+                    clearSensitiveArray(normalizedWeights);
+                }
+            }
+
+            function generateMatKeySet(rowCount) {
+                if (!Number.isInteger(rowCount) || rowCount <= 0) {
+                    throw new Error('MAT row count must be a positive integer.');
+                }
+                const weights = [
+                    getRandomFieldElement(),
+                    getRandomFieldElement(),
+                    getRandomFieldElement()
+                ];
+                const rowPads = [];
+                for (let row = 0; row < rowCount; row++) {
+                    rowPads.push(getRandomFieldElement());
+                }
+                return { weights, rowPads };
+            }
+
+            function clearMatKeySet(keySet) {
+                if (!keySet) return;
+                clearSensitiveArray(keySet.weights);
+                clearSensitiveArray(keySet.rowPads);
+            }
+
+            function splitMatKeySet(keySet, rowCount) {
+                const normalized = normalizeMatKeySet(keySet, rowCount);
+                const keyA = { weights: [], rowPads: [] };
+                const keyB = { weights: [], rowPads: [] };
+                try {
+                    normalized.weights.forEach((value) => {
+                        const mask = getRandomFieldElement();
+                        keyA.weights.push(mask);
+                        keyB.weights.push(modSub(value, mask));
+                    });
+                    normalized.rowPads.forEach((value) => {
+                        const mask = getRandomFieldElement();
+                        keyA.rowPads.push(mask);
+                        keyB.rowPads.push(modSub(value, mask));
+                    });
+                    return { keyA, keyB };
+                } catch (error) {
+                    clearMatKeySet(keyA);
+                    clearMatKeySet(keyB);
+                    throw error;
+                } finally {
+                    clearMatKeySet(normalized);
+                }
+            }
+
+            function recombineMatKeySets(keyA, keyB, rowCount) {
+                let normalizedA = null;
+                let normalizedB = null;
+                const combined = { weights: [], rowPads: [] };
+                try {
+                    normalizedA = normalizeMatKeySet(keyA, rowCount, 'Manifest A MAT key set');
+                    normalizedB = normalizeMatKeySet(keyB, rowCount, 'Manifest B MAT key set');
+                    normalizedA.weights.forEach((value, index) => {
+                        combined.weights.push(modAdd(value, normalizedB.weights[index]));
+                    });
+                    normalizedA.rowPads.forEach((value, index) => {
+                        combined.rowPads.push(modAdd(value, normalizedB.rowPads[index]));
+                    });
+                    return combined;
+                } catch (error) {
+                    clearMatKeySet(combined);
+                    throw error;
+                } finally {
+                    clearMatKeySet(normalizedA);
+                    clearMatKeySet(normalizedB);
+                }
+            }
+
+            function clearMatShareKeys(shareKeys) {
+                if (!Array.isArray(shareKeys)) return;
+                shareKeys.forEach((shareEntry) => {
+                    if (!shareEntry || !Array.isArray(shareEntry.columns)) return;
+                    shareEntry.columns.forEach((column) => clearMatKeySet(column));
+                    shareEntry.columns.length = 0;
+                });
+                shareKeys.length = 0;
+            }
+
+            function splitMatShareKeys(completeShareKeys, rowCount) {
+                const shareKeysA = [];
+                const shareKeysB = [];
+                try {
+                    completeShareKeys.forEach((shareEntry) => {
+                        const entryA = { shareNumber: shareEntry.shareNumber, columns: [] };
+                        const entryB = { shareNumber: shareEntry.shareNumber, columns: [] };
+                        shareKeysA.push(entryA);
+                        shareKeysB.push(entryB);
+                        shareEntry.columns.forEach((column) => {
+                            const { keyA, keyB } = splitMatKeySet(column, rowCount);
+                            entryA.columns.push({
+                                column: column.column,
+                                weights: keyA.weights,
+                                rowPads: keyA.rowPads
+                            });
+                            entryB.columns.push({
+                                column: column.column,
+                                weights: keyB.weights,
+                                rowPads: keyB.rowPads
+                            });
+                        });
+                    });
+                    return { shareKeysA, shareKeysB };
+                } catch (error) {
+                    clearMatShareKeys(shareKeysA);
+                    clearMatShareKeys(shareKeysB);
+                    throw error;
+                }
+            }
+
+            function recombineMatShareKeys(shareKeysA, shareKeysB, rowCount) {
+                if (!Array.isArray(shareKeysA) || !Array.isArray(shareKeysB) || shareKeysA.length !== shareKeysB.length) {
+                    throw new Error('Split MAT Manifests must contain matching Share entries.');
+                }
+                const combined = [];
+                try {
+                    for (let shareIndex = 0; shareIndex < shareKeysA.length; shareIndex++) {
+                        const entryA = shareKeysA[shareIndex];
+                        const entryB = shareKeysB[shareIndex];
+                        if (entryA.shareNumber !== entryB.shareNumber || entryA.columns.length !== entryB.columns.length) {
+                            throw new Error('Split MAT Manifest Share entries do not match.');
+                        }
+                        const combinedEntry = { shareNumber: entryA.shareNumber, columns: [] };
+                        combined.push(combinedEntry);
+                        for (let columnIndex = 0; columnIndex < entryA.columns.length; columnIndex++) {
+                            const columnA = entryA.columns[columnIndex];
+                            const columnB = entryB.columns[columnIndex];
+                            if (columnA.column !== columnB.column) {
+                                throw new Error('Split MAT Manifest column entries do not match.');
+                            }
+                            const keySet = recombineMatKeySets(columnA, columnB, rowCount);
+                            combinedEntry.columns.push({
+                                column: columnA.column,
+                                weights: keySet.weights,
+                                rowPads: keySet.rowPads
+                            });
+                        }
+                    }
+                    return combined;
+                } catch (error) {
+                    clearMatShareKeys(combined);
+                    throw error;
+                }
+            }
+
+            function verifyMatBindings(shares, shareKeys, expectedMatMode) {
+                if (expectedMatMode === undefined) {
+                    throw new Error('MAT verification requires an explicit expected MAT mode.');
+                }
+                const matMode = normalizeMatMode(expectedMatMode);
+                const expectedColumnCount = getMatColumnCount(matMode);
+                if (
+                    !Array.isArray(shares) ||
+                    !Array.isArray(shareKeys) ||
+                    shares.length === 0 ||
+                    shares.length !== shareKeys.length
+                ) {
+                    throw new Error('MAT Shares and Manifest entries must have matching lengths.');
+                }
+                for (let shareIndex = 0; shareIndex < shares.length; shareIndex++) {
+                    const share = shares[shareIndex];
+                    const keyEntry = shareKeys[shareIndex];
+                    if (!share || typeof share !== 'object' || !keyEntry || typeof keyEntry !== 'object') {
+                        throw new Error('MAT Share and Manifest entries must be objects.');
+                    }
+                    if (share.matMode !== matMode) {
+                        throw new Error('MAT Share mode does not match the expected MAT mode.');
+                    }
+                    if (!Number.isInteger(share.shareNumber) || share.shareNumber <= 0 || share.shareNumber >= FIELD_PRIME) {
+                        throw new Error(`MAT Share number must be between 1 and ${FIELD_PRIME - 1}.`);
+                    }
+                    if (
+                        !Number.isInteger(keyEntry.shareNumber) ||
+                        keyEntry.shareNumber <= 0 ||
+                        keyEntry.shareNumber >= FIELD_PRIME
+                    ) {
+                        throw new Error(`MAT Manifest Share number must be between 1 and ${FIELD_PRIME - 1}.`);
+                    }
+                    if (!Array.isArray(share.matTags) || !Array.isArray(keyEntry.columns)) {
+                        throw new Error('MAT Share tags and Manifest columns must be arrays.');
+                    }
+                    if (
+                        share.shareNumber !== keyEntry.shareNumber ||
+                        share.matTags.length !== expectedColumnCount ||
+                        keyEntry.columns.length !== expectedColumnCount
+                    ) {
+                        throw new Error('MAT Share and Manifest metadata do not match.');
+                    }
+                    for (let columnIndex = 0; columnIndex < expectedColumnCount; columnIndex++) {
+                        const column = keyEntry.columns[columnIndex];
+                        if (!column || column.column !== columnIndex + 1) {
+                            throw new Error('MAT Manifest columns must be complete and in canonical order.');
+                        }
+                        const expectedTags = computeMatTags(share.wordShares, column);
+                        const actualTags = share.matTags[columnIndex];
+                        try {
+                            if (!Array.isArray(actualTags) || expectedTags.length !== actualTags.length) {
+                                throw new Error('MAT tag column length mismatch.');
+                            }
+                            for (let row = 0; row < expectedTags.length; row++) {
+                                const actualTag = normalizeShareValue(
+                                    actualTags[row],
+                                    `MAT Share ${share.shareNumber} column ${columnIndex + 1} row ${row + 1} tag`
+                                );
+                                if (!constantTimeEqual(expectedTags[row], actualTag)) {
+                                    throw new Error(
+                                        `MAT consistency check failed for Share ${share.shareNumber}, ` +
+                                        `column ${columnIndex + 1}, row ${row + 1}.`
+                                    );
+                                }
+                            }
+                        } finally {
+                            clearSensitiveArray(expectedTags);
+                        }
+                    }
+                }
+                return true;
+            }
+
+            function cloneShareForMat(share, matMode) {
+                return {
+                    shareNumber: share.shareNumber,
+                    wordShares: [...share.wordShares],
+                    checksumShares: [...share.checksumShares],
+                    columnChecksumShares: [...share.columnChecksumShares],
+                    globalIntegrityCheckShare: share.globalIntegrityCheckShare,
+                    matMode,
+                    matTags: []
+                };
+            }
+
+            function generateMatArtifacts(shares, options = {}) {
+                if (!Array.isArray(shares) || shares.length === 0) {
+                    throw new Error('MAT generation requires at least one arithmetic Share.');
+                }
+                const matMode = normalizeMatMode(options.matMode);
+                const matCustody = normalizeMatCustody(options.matCustody, matMode);
+                const matColumnCount = getMatColumnCount(matMode);
+                const wordCount = shares[0].wordShares?.length;
+                if (!Number.isInteger(wordCount) || wordCount <= 0 || wordCount % WORDS_PER_ROW !== 0) {
+                    throw new Error('MAT generation requires complete word-share rows.');
+                }
+                const rowCount = wordCount / WORDS_PER_ROW;
+                const outputShares = shares.map((share) => {
+                    if (!Array.isArray(share.wordShares) || share.wordShares.length !== wordCount) {
+                        throw new Error('All Shares must contain the same number of word values.');
+                    }
+                    return cloneShareForMat(share, matMode);
+                });
+                const completeShareKeys = outputShares.map((share) => ({
+                    shareNumber: share.shareNumber,
+                    columns: []
+                }));
+                let splitShareKeysA = null;
+                let splitShareKeysB = null;
+
+                if (matColumnCount === 0) {
+                    return {
+                        shares: outputShares,
+                        manifests: [{
+                            kind: 'none',
+                            matMode,
+                            matCustody,
+                            shareKeys: completeShareKeys
+                        }]
+                    };
+                }
+
+                try {
+                    outputShares.forEach((share, shareIndex) => {
+                        for (let column = 1; column <= matColumnCount; column++) {
+                            const keySet = generateMatKeySet(rowCount);
+                            completeShareKeys[shareIndex].columns.push({
+                                column,
+                                weights: keySet.weights,
+                                rowPads: keySet.rowPads
+                            });
+                            share.matTags.push(computeMatTags(share.wordShares, keySet));
+                        }
+                    });
+
+                    verifyMatBindings(outputShares, completeShareKeys, matMode);
+
+                    if (matCustody === MAT_CUSTODY.WHOLE) {
+                        return {
+                            shares: outputShares,
+                            manifests: [{
+                                kind: 'whole',
+                                matMode,
+                                matCustody,
+                                shareKeys: completeShareKeys
+                            }]
+                        };
+                    }
+
+                    const splitKeys = splitMatShareKeys(completeShareKeys, rowCount);
+                    splitShareKeysA = splitKeys.shareKeysA;
+                    splitShareKeysB = splitKeys.shareKeysB;
+                    const reconstructedKeys = recombineMatShareKeys(splitShareKeysA, splitShareKeysB, rowCount);
+                    try {
+                        verifyMatBindings(outputShares, reconstructedKeys, matMode);
+                    } finally {
+                        clearMatShareKeys(reconstructedKeys);
+                    }
+                    clearMatShareKeys(completeShareKeys);
+                    return {
+                        shares: outputShares,
+                        manifests: [
+                            {
+                                kind: 'split-a',
+                                matMode,
+                                matCustody,
+                                shareKeys: splitShareKeysA
+                            },
+                            {
+                                kind: 'split-b',
+                                matMode,
+                                matCustody,
+                                shareKeys: splitShareKeysB
+                            }
+                        ]
+                    };
+                } catch (error) {
+                    clearMatShareKeys(completeShareKeys);
+                    clearMatShareKeys(splitShareKeysA);
+                    clearMatShareKeys(splitShareKeysB);
+                    clearSharingArtifacts({ shares: outputShares, manifests: [] });
+                    throw error;
+                }
+            }
+
+            function clearSharingArtifacts(artifacts) {
+                if (!artifacts) return;
+                if (Array.isArray(artifacts.shares)) {
+                    artifacts.shares.forEach((share) => {
+                        clearSensitiveArray(share.wordShares);
+                        clearSensitiveArray(share.checksumShares);
+                        clearSensitiveArray(share.columnChecksumShares);
+                        if (Array.isArray(share.matTags)) {
+                            share.matTags.forEach((tags) => clearSensitiveArray(tags));
+                            share.matTags.length = 0;
+                        }
+                        share.globalIntegrityCheckShare = 0;
+                    });
+                    artifacts.shares.length = 0;
+                }
+                if (Array.isArray(artifacts.manifests)) {
+                    artifacts.manifests.forEach((manifest) => clearMatShareKeys(manifest.shareKeys));
+                    artifacts.manifests.length = 0;
+                }
+            }
+
+            async function createSharingArtifacts(mnemonic, k, n, wordlist, options = {}) {
+                const arithmetic = await splitBip39(mnemonic, k, n, wordlist);
+                try {
+                    return generateMatArtifacts(arithmetic.shares, options);
+                } finally {
+                    // generateMatArtifacts returns independent output buffers. The arithmetic
+                    // source arrays are temporary owned scratch data and must never outlive
+                    // this wrapper, regardless of success or failure.
+                    clearSharingArtifacts({ shares: arithmetic.shares, manifests: [] });
+                }
             }
 
             // ==========================================================================
@@ -4105,7 +5968,10 @@ TERMS OF USE
                 const gic = share.globalIntegrityCheckShare;
                 const fromWords = modAdd(modAdd(modAdd(wordSum, rowTotal), COLUMN_TOTAL), shareNumber);
                 let gicOk = gic === fromWords;
-                const allRows = share.checksumShares.every((v) => Number.isInteger(v));
+                const allRows = Array.from(
+                    { length: rowCount },
+                    (_, row) => Number.isInteger(share.checksumShares[row])
+                ).every(Boolean);
                 const allCols = share.columnChecksumShares.every((v) => Number.isInteger(v));
                 if (allRows && !hasRowError) {
                     const fromRows = modAdd(modAdd(checksumSum, COLUMN_TOTAL), shareNumber);
@@ -4122,22 +5988,16 @@ TERMS OF USE
             }
 
             /**
-             * Performs structural validation on each share before attempting recovery.
+             * Performs structural validation on the irreducible Share inputs before recovery.
+             * RC, CC, GIC, and MAT are optional local diagnostics and never gate interpolation.
              */
             function validateSharesForRecovery(shares, wordCount) {
-                const rowCount = wordCount / WORDS_PER_ROW;
                 shares.forEach((share, index) => {
                     if (!Number.isInteger(share.shareNumber) || share.shareNumber <= 0 || share.shareNumber >= FIELD_PRIME) {
                         throw new Error(`Share #${index + 1} is missing a valid share number (1-${FIELD_PRIME - 1}).`);
                     }
                     if (!Array.isArray(share.wordShares) || share.wordShares.length !== wordCount) {
                         throw new Error(`Share #${share.shareNumber} does not contain ${wordCount} word values.`);
-                    }
-                    if (!Array.isArray(share.checksumShares) || share.checksumShares.length !== rowCount) {
-                        throw new Error(`Share #${share.shareNumber} has invalid row checksum storage.`);
-                    }
-                    if (!Array.isArray(share.columnChecksumShares) || share.columnChecksumShares.length !== 3) {
-                        throw new Error(`Share #${share.shareNumber} has invalid column checksum storage.`);
                     }
                 });
             }
@@ -4354,30 +6214,22 @@ TERMS OF USE
                 const report = {
                     recoveredMnemonic: null,
                     recoveredIndices: null,
-                    // Core error shape aligned with JS/PY libs
                     errors: {
-                        row: [],
-                        global: false,
                         bip39: false,
-                        generic: null,
-                        shareValidation: null,
-                        rowPathMismatch: [],
-                        globalPathMismatch: false,
-                        column: [],
-                        // Derived (UI helpers) - populated later
-                        failedRows: [],
-                        globalIntegrityCheckError: {
-                            failed: false,
-                            isNightmare: false
+                        generic: null
+                    },
+                    validation: {
+                        bip39: {
+                            status: 'not-checked'
+                        },
+                        rbt: {
+                            status: 'not-checked'
                         }
                     }
                 };
 
                 // Declare sensitive variables outside try block for cleanup in finally
                 let recoveredWords = [];
-                let recoveredChecks = [];
-                let recoveredColumnChecks = [];
-                let recoveredGlobalIntegrityCheck = 0;
 
                 try {
                     // 1. Pre-flight checks for input validity
@@ -4393,71 +6245,7 @@ TERMS OF USE
                     validateSharesForRecovery(shares, wordCount);
                     ensureShareNumbersDistinct(shares);
 
-                    const rowCount = wordCount / WORDS_PER_ROW;
-
-                    // 1b. Pre-flight per-share validation (STOP on mismatch)
-                    const shareValidation = {
-                        rowErrors: [],
-                        columnErrors: [],
-                        globalErrors: []
-                    };
-                    const rowTotal = computeRowTotal(rowCount);
-
-                    shares.forEach((share, index) => {
-                        const shareIndex = Number.isInteger(share.shareIndex) ? share.shareIndex : index + 1;
-                        const shareNumber = normalizeShareValue(share.shareNumber, `Share #${shareIndex} number`);
-                        if (shareNumber === 0) {
-                            throw new Error(`Share #${shareIndex} has an invalid share number (0).`);
-                        }
-
-                        const normalized = {
-                            shareNumber,
-                            wordShares: share.wordShares.map((v, i) =>
-                                normalizeShareValue(v, `Share #${shareIndex} word ${i + 1}`)
-                            ),
-                            checksumShares: [...share.checksumShares],
-                            columnChecksumShares: [...share.columnChecksumShares],
-                            globalIntegrityCheckShare: share.globalIntegrityCheckShare
-                        };
-
-                        const audit = auditOptionalChecksums(normalized, rowCount, rowTotal);
-                        audit.rowFails.forEach((rowIndex) => {
-                            shareValidation.rowErrors.push({ shareIndex, rowIndex });
-                        });
-                        audit.colFails.forEach((columnIndex) => {
-                            shareValidation.columnErrors.push({ shareIndex, columnIndex });
-                        });
-                        if (audit.gicFail) {
-                            shareValidation.globalErrors.push({ shareIndex });
-                        }
-                    });
-
-                    if (
-                        shareValidation.rowErrors.length > 0 ||
-                        shareValidation.columnErrors.length > 0 ||
-                        shareValidation.globalErrors.length > 0
-                    ) {
-                        const messages = [];
-                        if (shareValidation.rowErrors.length > 0) {
-                            messages.push('Row checksum mismatch detected. Fix the highlighted rows and retry.');
-                        }
-                        if (shareValidation.columnErrors.length > 0) {
-                            messages.push('Column checksum mismatch detected. Fix the highlighted column checksum fields and retry.');
-                        }
-                        if (shareValidation.globalErrors.length > 0) {
-                            messages.push('Printed global integrity value mismatch detected. Fix the highlighted GIC fields and retry.');
-                        }
-                        report.errors.shareValidation = {
-                            rowErrors: shareValidation.rowErrors,
-                            columnErrors: shareValidation.columnErrors,
-                            globalErrors: shareValidation.globalErrors,
-                            message: messages.join('\n')
-                        };
-                        report.errors.generic = report.errors.shareValidation.message;
-                        return report;
-                    }
-
-                    // 1c. Lagrange sanity check for share numbers
+                    // 1b. Lagrange sanity check for share numbers
                     const shareNumbers = shares.map(share => share.shareNumber);
                     const multipliers = computeLagrangeMultipliers(shareNumbers);
                     const sanityCheck = multipliers.reduce((acc, coef, idx) => {
@@ -4478,99 +6266,7 @@ TERMS OF USE
                         recoveredWords.push(lagrangeInterpolateAtZero(points));
                     }
 
-                    recoveredChecks = new Array(rowCount);
-                    for (let row = 0; row < rowCount; row++) {
-                        if (!shares.every((share) => Number.isInteger(share.checksumShares[row]))) {
-                            continue;
-                        }
-                        const points = shares.map((share) => ({
-                            x: mod(share.shareNumber),
-                            y: normalizeShareValue(share.checksumShares[row], `Checksum share C${row + 1} (share ${share.shareNumber})`)
-                        }));
-                        recoveredChecks[row] = lagrangeInterpolateAtZero(points);
-                    }
-
-                    recoveredColumnChecks = [undefined, undefined, undefined];
-                    for (let col = 0; col < 3; col++) {
-                        if (!shares.every((share) => Number.isInteger(share.columnChecksumShares[col]))) {
-                            continue;
-                        }
-                        const points = shares.map((share) => ({
-                            x: mod(share.shareNumber),
-                            y: normalizeShareValue(
-                                share.columnChecksumShares[col],
-                                `Column checksum Col${col + 1} (share ${share.shareNumber})`
-                            )
-                        }));
-                        recoveredColumnChecks[col] = lagrangeInterpolateAtZero(points);
-                    }
-
-                    const allGicProvided = shares.every((share) => Number.isInteger(share.globalIntegrityCheckShare));
-                    if (allGicProvided) {
-                        const globalIntegrityCheckPoints = shares.map((share) => ({
-                            x: mod(share.shareNumber),
-                            y: normalizeShareValue(
-                                share.globalIntegrityCheckShare,
-                                `Global Integrity Check (GIC) verification (share ${share.shareNumber})`
-                            )
-                        }));
-                        recoveredGlobalIntegrityCheck = lagrangeInterpolateAtZero(globalIntegrityCheckPoints);
-                    }
-
-                    const recomputedChecks = computeRowChecks(recoveredWords);
-                    const recomputedColumnChecks = computeColumnChecks(recoveredWords);
-                    const recomputedGlobalIntegrityCheck = computeGlobalIntegrityCheck(recoveredWords);
-
-                    for (let rowIdx = 0; rowIdx < rowCount; rowIdx++) {
-                        if (!Number.isInteger(recoveredChecks[rowIdx])) {
-                            continue;
-                        }
-                        const rowMismatch = !constantTimeEqual(recoveredChecks[rowIdx], recomputedChecks[rowIdx]);
-                        if (rowMismatch) {
-                            report.errors.rowPathMismatch.push(rowIdx);
-                            report.errors.row.push(rowIdx);
-                        }
-                    }
-
-                    for (let colIdx = 0; colIdx < 3; colIdx++) {
-                        if (!Number.isInteger(recoveredColumnChecks[colIdx])) {
-                            continue;
-                        }
-                        if (!constantTimeEqual(recoveredColumnChecks[colIdx], recomputedColumnChecks[colIdx])) {
-                            if (!report.errors.column) {
-                                report.errors.column = [];
-                            }
-                            report.errors.column.push(colIdx);
-                        }
-                    }
-
-                    if (allGicProvided) {
-                        const globalMismatch = !constantTimeEqual(recoveredGlobalIntegrityCheck, recomputedGlobalIntegrityCheck);
-                        if (globalMismatch) {
-                            report.errors.globalPathMismatch = true;
-                            report.errors.global = true;
-                        }
-                    }
-
-                    // Derive UI-friendly structures from core errors (keep UI decoupled)
-                    report.errors.failedRows = report.errors.row.map((rowIdx) => {
-                        const rowNumber = rowIdx + 1;
-                        return {
-                            rowNumber,
-                            wordPositions: [
-                                rowIdx * WORDS_PER_ROW + 1,
-                                rowIdx * WORDS_PER_ROW + 2,
-                                rowIdx * WORDS_PER_ROW + 3
-                            ],
-                            checksumLabel: `C${rowNumber}`
-                        };
-                    });
-                    report.errors.globalIntegrityCheckError = {
-                        failed: report.errors.global,
-                        isNightmare: report.errors.global && report.errors.row.length === 0
-                    };
-
-                    // 4. ALWAYS build the mnemonic (even if checksums failed)
+                    // 3. Always build a candidate mnemonic when recovered indices are valid.
                     // Check if indices are in BIP39 range
                     let canFormMnemonic = true;
                     for(let i = 0; i < recoveredWords.length; i++) {
@@ -4588,20 +6284,15 @@ TERMS OF USE
                         report.recoveredMnemonic = mnemonic;
                         report.recoveredIndices = [...recoveredWords];  // Store copy
 
-                    // 5. Validate BIP39 ONLY if all DuraShare checks passed
-                    if (
-                        report.errors.row.length === 0 &&
-                        !report.errors.global &&
-                        report.errors.rowPathMismatch.length === 0 &&
-                        !report.errors.globalPathMismatch &&
-                        (!report.errors.column || report.errors.column.length === 0)
-                    ) {
-                            try {
-                                await validateBIP39Mnemonic(mnemonic, wordlist);
-                            } catch (bip39Error) {
-                                report.errors.bip39 = true;
-                                // Keep the mnemonic even if BIP39 fails - user might need it for brute-forcing
-                            }
+                        // 4. BIP39 is an independent candidate-format check. Optional
+                        // Share diagnostics never suppress it.
+                        try {
+                            await validateBIP39Mnemonic(mnemonic, wordlist);
+                            report.validation.bip39.status = 'pass';
+                        } catch (bip39Error) {
+                            report.errors.bip39 = true;
+                            report.validation.bip39.status = 'fail';
+                            // Keep the candidate visible so the user can inspect and edit inputs.
                         }
                     }
 
@@ -4611,9 +6302,6 @@ TERMS OF USE
                 } finally {
                     // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
                     clearSensitiveArray(recoveredWords);
-                    clearSensitiveArray(recoveredChecks);
-                    clearSensitiveArray(recoveredColumnChecks);
-                    recoveredGlobalIntegrityCheck = 0;
                 }
 
                 return report;
@@ -4622,6 +6310,15 @@ TERMS OF USE
             // Expose public methods
             return {
                 splitBip39,
+                createSharingArtifacts,
+                generateMatArtifacts,
+                computeMatTag,
+                computeMatTags,
+                auditMatColumn,
+                splitMatKeySet,
+                recombineMatKeySets,
+                verifyMatBindings,
+                clearSharingArtifacts,
                 recoverAndValidate,
                 validateBIP39Mnemonic,
                 computeRowChecks,

@@ -74,6 +74,10 @@ function getWordlist() {
   return cachedWordlist;
 }
 
+export function getBip39WordlistForTest() {
+  return [...getWordlist()];
+}
+
 export function getDeterministicMnemonic(wordCount) {
   const allowedCounts = [12, 15, 18, 21, 24];
   if (!allowedCounts.includes(wordCount)) {
@@ -168,9 +172,47 @@ export async function selectScheme(page, scheme) {
   await page.click(`label[for="scheme-${scheme}"]`);
 }
 
+export async function selectMatMode(page, mode) {
+  await page.click(`label[for="mat-${mode}"]`);
+}
+
+export async function selectMatCustody(page, custody) {
+  await page.click(`label[for="mat-custody-${custody}"]`);
+}
+
+async function waitForGenerateOutcome(page, timeout = 12000) {
+  const outcome = await Promise.race([
+    page.waitForSelector('#pageCreate2', { state: 'visible', timeout }).then(() => 'create2'),
+    page.waitForSelector('#custom-modal', { state: 'visible', timeout }).then(() => 'modal')
+  ]);
+
+  if (outcome === 'modal') {
+    const title = (await page.textContent('#modal-title'))?.trim() || 'Generation Failed';
+    const text = (await page.textContent('#modal-text'))?.trim() || 'Unknown generation error';
+    await page.click('#modal-confirm');
+    throw new Error(`${title}: ${text}`);
+  }
+}
+
 export async function generateShares(page) {
-  await page.click('#btn-generate-shares');
-  await page.waitForSelector('#pageCreate2', { state: 'visible' });
+  // The last mnemonic field can briefly leave the autocomplete popover over the button.
+  // If pointer actionability proves no click was dispatched, activate the focused
+  // button once with the keyboard. Never force a coordinate click through an overlay.
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForSelector('#autocomplete-suggestions', { state: 'hidden', timeout: 1000 }).catch(() => {});
+  try {
+    await page.click('#btn-generate-shares', { timeout: 5000 });
+  } catch (error) {
+    if (!String(error?.message || '').includes('intercepts pointer events')) {
+      throw error;
+    }
+    await page.locator('#btn-generate-shares').focus();
+    await page.keyboard.press('Enter');
+  }
+
+  // Never retry after a dispatched click: generation may still be running and a
+  // second trigger would produce a different set of cryptographic artifacts.
+  await waitForGenerateOutcome(page);
   await page.waitForSelector('.share-card', { state: 'visible' });
 }
 
@@ -227,6 +269,7 @@ export async function extractShareData(page, shareIndex) {
   const words = [];
   const checksums = [];
   const columnChecksums = [];
+  const matTags = [[], []];
   let globalIntegrityCheck = null;
 
   for (const item of wordItems) {
@@ -236,10 +279,15 @@ export async function extractShareData(page, shareIndex) {
 
     if (label.startsWith('GIC')) {
       globalIntegrityCheck = code;
-    } else if (label.startsWith('Col')) {
+    } else if (label.startsWith('CC')) {
       columnChecksums.push(code);
-    } else if (label.startsWith('C')) {
+    } else if (label.startsWith('RC')) {
       checksums.push(code);
+    } else if (label.startsWith('MAT')) {
+      if (code !== '') {
+        const matColumn = label.includes('B') ? 1 : 0;
+        matTags[matColumn].push(code);
+      }
     } else {
       words.push(code);
     }
@@ -257,7 +305,8 @@ export async function extractShareData(page, shareIndex) {
     globalIntegrityCheck,
     words,
     checksums,
-    columnChecksums
+    columnChecksums,
+    matTags: matTags.filter(column => column.length > 0)
   };
 }
 
@@ -320,7 +369,7 @@ export async function recoverWallet(page) {
 }
 
 export async function getRecoveredMnemonic(page) {
-  const codeElements = await page.$$('#pageRecover2 .share-word-item code');
+  const codeElements = await page.$$('#pageRecover2 .seed-word-row code');
 
   const words = [];
   for (const element of codeElements) {
