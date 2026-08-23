@@ -10,12 +10,13 @@ import {
   navigateToRecover,
   setupRecovery,
   fillRecoveryShare,
-  modifyShareValue
+  modifyShareValue,
+  getRecoveredMnemonic
 } from './test-helpers.js';
 
 const MNEMONIC_12 = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
-test('row checksum mismatch triggers recovery failed modal', async ({ page }) => {
+test('row checksum mismatch is reported locally without blocking the candidate', async ({ page }) => {
   await openApp(page);
   await navigateToCreateShares(page);
   await select12Words(page);
@@ -36,13 +37,20 @@ test('row checksum mismatch triggers recovery failed modal', async ({ page }) =>
 
   await page.click('#btn-recover-wallet');
 
-  const modal = page.locator('#custom-modal:has-text("Recovery Failed")');
-  await expect(modal).toBeVisible();
-  await page.click('#modal-confirm');
-  await expect(modal).not.toBeVisible();
+  await expect(page.locator('#pageRecover2')).toBeVisible();
+  await expect(page.locator('#custom-modal')).not.toBeVisible();
+  const checksumSummary = page.locator('[data-validation-kind="checksums"]');
+  await expect(checksumSummary).toHaveAttribute('data-total', '16');
+  await expect(checksumSummary).toHaveAttribute('data-pass', '15');
+  await expect(checksumSummary).toHaveAttribute('data-fail', '1');
+  expect(await getRecoveredMnemonic(page)).toBe(MNEMONIC_12);
+
+  await page.click('#btn-back-to-recover1');
+  await expect(page.locator('#recover-share-1-row-0-checksum')).toHaveValue(share1.checksums[0]);
+  await expect(page.locator('#recover-share-1-row-0-checksum')).toHaveClass(/invalid/);
 });
 
-test('GIC binding mismatch triggers recovery failed modal', async ({ page }) => {
+test('GIC mismatch is one failed checksum unit and does not block the candidate', async ({ page }) => {
   await openApp(page);
   await navigateToCreateShares(page);
   await select12Words(page);
@@ -63,10 +71,13 @@ test('GIC binding mismatch triggers recovery failed modal', async ({ page }) => 
 
   await page.click('#btn-recover-wallet');
 
-  const modal = page.locator('#custom-modal:has-text("Recovery Failed")');
-  await expect(modal).toBeVisible();
-  await page.click('#modal-confirm');
-  await expect(modal).not.toBeVisible();
+  await expect(page.locator('#pageRecover2')).toBeVisible();
+  await expect(page.locator('#custom-modal')).not.toBeVisible();
+  const checksumSummary = page.locator('[data-validation-kind="checksums"]');
+  await expect(checksumSummary).toHaveAttribute('data-total', '16');
+  await expect(checksumSummary).toHaveAttribute('data-pass', '15');
+  await expect(checksumSummary).toHaveAttribute('data-fail', '1');
+  expect(await getRecoveredMnemonic(page)).toBe(MNEMONIC_12);
 });
 
 test('inline row checksum mismatch highlights the specific row before recover', async ({ page }) => {

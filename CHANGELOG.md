@@ -16,6 +16,18 @@ Protocol/spec changes belong in the canonical repo:
 - Smoke / field-draw scratch buffers and ceremony coefficient scratch (including canary abort paths) are best-effort cleared in `finally`.
 - Partial polynomial construction clears its own secret-bearing scratch if an RNG failure interrupts a draw.
 
+### Changed
+- Recovery now shows the interpolated candidate when all required Share inputs are valid, without a confirmation gate. RC/CC/GIC and MAT are reported as accessible, non-blocking blank/pass/fail summaries; BIP39 is always evaluated independently, and RBT is explicitly shown as not checked until this HTML version implements it.
+- CI and release workflows use minimally upgraded, SHA-pinned Node.js 24-native action releases; CI uses one Node.js 24 toolchain behind a stable `CI Gate` instead of version-specific required checks.
+- CodeQL advanced setup uses SHA-pinned CodeQL Action v4.37.7 on Node.js 24 instead of deprecated v3.
+
+### Added
+- Manual Authentication (MAT) work in progress: create single- or dual-column MAT shares with Whole-Key or Split-Key Manifests, and optionally audit complete tag/key rows during recovery.
+
+### Fixed
+- CI test reliability: run each GIC-binding scheme as an independent case and read each rendered Share card in one validated browser pass, preserving the same UI assertions without exceeding the per-test timeout.
+- CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.1 (development tooling only; no change to `durashare.html`).
+
 ## 0.5.0 - 2026-07-27
 
 HTML **v0.5.0** is the **arithmetic share-table subset** validated against frozen
