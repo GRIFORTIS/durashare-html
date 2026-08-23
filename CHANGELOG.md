@@ -7,6 +7,15 @@ Protocol/spec changes belong in the canonical repo:
 
 ## [Unreleased]
 
+### Security
+- Hard-stop CSPRNG smoke tests before share generation and manual sharding Random Again: require working `crypto.getRandomValues`, reject sentinel no-ops, constant-filled byte bursts, and identical consecutive bursts. Never fall back to `Math.random`.
+- Ceremony coefficient canary: refuse batches where all coefficients are identical (size ≥ 2) or any value repeats ≥ 6 times; no silent redraw — modal abort only.
+- Failures surface via the Secure Randomness Failed modal; shares are not displayed.
+- RNG failures use typed `RngHardStopError` (UI keys off `isRngHardStopError`, not message prefixes). Native `getRandomValues` throws are mapped to the same hard-stop.
+- Rejection sampling hard-stops after 8 consecutive rejected draws instead of allowing a broken provider to hang the ceremony.
+- Smoke / field-draw scratch buffers and ceremony coefficient scratch (including canary abort paths) are best-effort cleared in `finally`.
+- Partial polynomial construction clears its own secret-bearing scratch if an RNG failure interrupts a draw.
+
 ### Changed
 - Recovery now shows the interpolated candidate when all required Share inputs are valid, without a confirmation gate. RC/CC/GIC and MAT are reported as accessible, non-blocking blank/pass/fail summaries; BIP39 is always evaluated independently, and RBT is explicitly shown as not checked until this HTML version implements it.
 - CI and release workflows use minimally upgraded, SHA-pinned Node.js 24-native action releases; CI uses one Node.js 24 toolchain behind a stable `CI Gate` instead of version-specific required checks.
