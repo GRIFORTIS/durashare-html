@@ -10,7 +10,10 @@ import {
   extractShareData,
   setupRecovery,
   fillRecoveryShare,
-  createSyntheticShare
+  createSyntheticShare,
+  recoverWallet,
+  getRecoveredMnemonic,
+  getBip39WordlistForTest
 } from './test-helpers.js';
 
 /**
@@ -32,6 +35,7 @@ const MNEMONIC_12_ABANDON = 'abandon abandon abandon abandon abandon abandon aba
 const MNEMONIC_24_ABANDON = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art';
 const MNEMONIC_12_ZOO = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo abstract';
 const MNEMONIC_24_ZOO = 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo buddy';
+const BIP39_WORDLIST = getBip39WordlistForTest();
 
 function buildUniformShare(shareNumber, wordCount, wordValue) {
   return createSyntheticShare(
@@ -39,6 +43,10 @@ function buildUniformShare(shareNumber, wordCount, wordValue) {
     null,
     new Array(wordCount).fill(wordValue)
   );
+}
+
+function buildUniformMnemonic(wordCount, oneBasedWordIndex) {
+  return new Array(wordCount).fill(BIP39_WORDLIST[oneBasedWordIndex - 1]).join(' ');
 }
 
 test.describe('Edge Cases - Share Creation with Extreme Mnemonics', () => {
@@ -231,32 +239,17 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     await fillRecoveryShare(page, 2, share2);
     await fillRecoveryShare(page, 3, share4);
     
-    // Click recover button
-    await page.click('#btn-recover-wallet');
-    
-    // Wait for either modal or result page
-    const modal = page.locator('#custom-modal:has-text("BIP39 CHECKSUM INVALID")');
-    
-    // Check if modal appears
-    const modalVisible = await modal.isVisible({ timeout: 2000 }).catch(() => false);
-    
-    if (modalVisible) {
-      console.log('✅ BIP39 warning modal appeared');
-      await page.click('#modal-confirm');
-    }
-    
-    // Wait for result page
-    await page.waitForSelector('#pageRecover2', { state: 'visible' });
-    
-    // Verify warning is displayed (or recovery succeeded)
-    const warningAlert = page.locator('.alert.alert-error:has-text("WARNING: INVALID SEED")');
-    const hasWarning = await warningAlert.isVisible().catch(() => false);
-    
-    if (hasWarning) {
-      console.log('✅ Recovery completed with BIP39 warning (high values, 24-word)');
-    } else {
-      console.log('✅ Recovery completed successfully with high field values (24-word)');
-    }
+    await recoverWallet(page);
+
+    await expect(page.locator('[data-validation-kind="bip39"]')).toHaveAttribute(
+      'data-status',
+      'fail'
+    );
+    await expect(
+      page.locator('[data-validation-kind="bip39"] .recovery-status-value')
+    ).toHaveText('FAIL');
+    expect(await getRecoveredMnemonic(page)).toBe(buildUniformMnemonic(24, 2047));
+    console.log('✅ Recovery produced the expected candidate and explicit BIP39 FAIL (24-word)');
   });
   
   test('recover 12-word 3-of-5 with high field values (shares 1,2,4)', async ({ page }) => {
@@ -280,32 +273,17 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     await fillRecoveryShare(page, 2, share2);
     await fillRecoveryShare(page, 3, share4);
     
-    // Click recover button
-    await page.click('#btn-recover-wallet');
-    
-    // Wait for either modal or result page
-    const modal = page.locator('#custom-modal:has-text("BIP39 CHECKSUM INVALID")');
-    
-    // Check if modal appears
-    const modalVisible = await modal.isVisible({ timeout: 2000 }).catch(() => false);
-    
-    if (modalVisible) {
-      console.log('✅ BIP39 warning modal appeared');
-      await page.click('#modal-confirm');
-    }
-    
-    // Wait for result page
-    await page.waitForSelector('#pageRecover2', { state: 'visible' });
-    
-    // Verify warning is displayed (or recovery succeeded)
-    const warningAlert = page.locator('.alert.alert-error:has-text("WARNING: INVALID SEED")');
-    const hasWarning = await warningAlert.isVisible().catch(() => false);
-    
-    if (hasWarning) {
-      console.log('✅ Recovery completed with BIP39 warning (high values, 12-word)');
-    } else {
-      console.log('✅ Recovery completed successfully with high field values (12-word)');
-    }
+    await recoverWallet(page);
+
+    await expect(page.locator('[data-validation-kind="bip39"]')).toHaveAttribute(
+      'data-status',
+      'fail'
+    );
+    await expect(
+      page.locator('[data-validation-kind="bip39"] .recovery-status-value')
+    ).toHaveText('FAIL');
+    expect(await getRecoveredMnemonic(page)).toBe(buildUniformMnemonic(12, 2047));
+    console.log('✅ Recovery produced the expected candidate and explicit BIP39 FAIL (12-word)');
   });
   
   test('recover 24-word 3-of-5 with field max value 2052 testing BigInt (shares 1,2,4)', async ({ page }) => {
@@ -334,34 +312,19 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
     
     console.log('⚠️  Testing with share 2 = 2052 (field maximum, beyond BIP39 range)');
     console.log('   Lagrange coefficients: (687, 2051, 1369)');
-    console.log('   Expected recovered value: 1797 (valid BIP39)');
-    
-    // Click recover button
-    await page.click('#btn-recover-wallet');
-    
-    // Wait for either modal or result page
-    const modal = page.locator('#custom-modal:has-text("BIP39 CHECKSUM INVALID")');
-    
-    // Check if modal appears
-    const modalVisible = await modal.isVisible({ timeout: 2000 }).catch(() => false);
-    
-    if (modalVisible) {
-      console.log('✅ BIP39 warning modal appeared (expected - share values exceed BIP39 range)');
-      await page.click('#modal-confirm');
-    }
-    
-    // Wait for result page
-    await page.waitForSelector('#pageRecover2', { state: 'visible' });
-    
-    // Verify warning is displayed (or recovery succeeded)
-    const warningAlert = page.locator('.alert.alert-error:has-text("WARNING: INVALID SEED")');
-    const hasWarning = await warningAlert.isVisible().catch(() => false);
-    
-    if (hasWarning) {
-      console.log('✅ Recovery completed with BIP39 warning (field max 2052 handled correctly)');
-    } else {
-      console.log('✅ Recovery completed successfully - BigInt multiplication handled correctly!');
-    }
+    console.log('   Expected recovered value: 1800 (BIP39 checksum fails)');
+
+    await recoverWallet(page);
+
+    await expect(page.locator('[data-validation-kind="bip39"]')).toHaveAttribute(
+      'data-status',
+      'fail'
+    );
+    await expect(
+      page.locator('[data-validation-kind="bip39"] .recovery-status-value')
+    ).toHaveText('FAIL');
+    expect(await getRecoveredMnemonic(page)).toBe(buildUniformMnemonic(24, 1800));
+    console.log('✅ Field maximum interpolation produced the expected candidate and BIP39 FAIL');
     
     console.log('✅ Field maximum (2052) and large Lagrange coefficients validated');
   });

@@ -20,7 +20,7 @@ import {
 test('create shares with invalid BIP39 checksum shows error modal', async ({ page }) => {
   // Valid mnemonic except last word changed to "apple"
   const invalidMnemonic = 'abandon zoo enhance young join maximum fancy call minimum code spider olive alcohol system also share birth profit horn bargain beauty media rapid apple';
-  
+
   console.log('Phase 1: Opening app and navigating to Create Shares...');
   await openApp(page);
   await navigateToCreateShares(page);
@@ -59,7 +59,7 @@ test('create shares with invalid BIP39 checksum shows error modal', async ({ pag
   console.log('✅ Test passed! Invalid BIP39 blocked correctly.');
 });
 
-test('recovery with modified data shows BIP39 warning', async ({ page }) => {
+test('recovery with modified data reports BIP39 failure independently', async ({ page }) => {
   // Same test mnemonic
   const originalMnemonic = 'abandon zoo enhance young join maximum fancy call minimum code spider olive alcohol system also share birth profit horn bargain beauty media rapid tattoo';
   
@@ -77,11 +77,9 @@ test('recovery with modified data shows BIP39 warning', async ({ page }) => {
   const share1 = await extractShareData(page, 0);
   const share2 = await extractShareData(page, 1);
   
-  // MODIFY: +1 mod 2053 on share 1 row 1 (word col 0), matching row/col/GIC deltas for v0.5.0 checks
+  // MODIFY: change one Share word without changing its optional checks.
+  // BIP39 and the affected local Share checks must report independently.
   share1.words[0] = modifyShareValue(share1.words[0]);
-  share1.checksums[0] = modifyShareValue(share1.checksums[0]);
-  share1.columnChecksums[0] = modifyShareValue(share1.columnChecksums[0]);
-  share1.globalIntegrityCheck = modifyShareValue(share1.globalIntegrityCheck);
 
   console.log('Modified share 1:', {
     globalIntegrityCheck: share1.globalIntegrityCheck,
@@ -100,29 +98,28 @@ test('recovery with modified data shows BIP39 warning', async ({ page }) => {
   await fillRecoveryShare(page, 1, share1);
   await fillRecoveryShare(page, 2, share2);
   
-  // PHASE 4: Recover and Check for BIP39 Warning
+  // PHASE 4: Recover and Check the independent BIP39 result
   console.log('Phase 4: Recovering wallet...');
   
   // Click recover button
   await page.click('#btn-recover-wallet');
   
-  // Wait for BIP39 checksum invalid modal to appear
-  const modal = await page.locator('#custom-modal:has-text("BIP39 CHECKSUM INVALID")');
-  await expect(modal).toBeVisible();
-  
-  console.log('✅ BIP39 checksum invalid modal displayed');
-  
-  // Click CONFIRM button to proceed
-  await page.click('#modal-confirm');
-  
-  // Wait for result page to be visible
+  // The result appears directly; optional failures and BIP39 do not gate it.
   await page.waitForSelector('#pageRecover2', { state: 'visible' });
-  
-  // Check for BIP39 warning message on the result page
-  const warningAlert = await page.locator('.alert.alert-error:has-text("WARNING: INVALID SEED")');
-  await expect(warningAlert).toBeVisible();
-  
-  console.log('✅ BIP39 warning correctly displayed on result page');
+  await expect(page.locator('#custom-modal')).not.toBeVisible();
+  await expect(page.locator('[data-validation-kind="bip39"]')).toHaveAttribute(
+    'data-status',
+    'fail'
+  );
+  await expect(page.locator('[data-validation-kind="bip39"] .recovery-status-value')).toHaveText(
+    'FAIL'
+  );
+  const checksumSummary = page.locator('[data-validation-kind="checksums"]');
+  await expect(checksumSummary).toHaveAttribute('data-total', '24');
+  await expect(checksumSummary).toHaveAttribute('data-pass', '21');
+  await expect(checksumSummary).toHaveAttribute('data-fail', '3');
+
+  console.log('✅ BIP39 and local Share failures displayed independently');
   
   // Verify the recovered mnemonic is different from original
   const recoveredMnemonic = await getRecoveredMnemonic(page);
@@ -186,7 +183,7 @@ test('inline GIC validation uses entered share numbers', async ({ page }) => {
   await expect(page.locator('#recover-share-2-gic')).not.toHaveClass(/invalid/);
 });
 
-test('pre-flight row checksum failure highlights specific share row', async ({ page }) => {
+test('malformed optional checksum is a failed unit without blocking recovery', async ({ page }) => {
   const originalMnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
 
   await openApp(page);
@@ -199,7 +196,7 @@ test('pre-flight row checksum failure highlights specific share row', async ({ p
   const share1 = await extractShareData(page, 0);
   const share2 = await extractShareData(page, 1);
 
-  share1.checksums[0] = modifyShareValue(share1.checksums[0]);
+  share1.checksums[0] = 'not-a-value';
 
   await navigateToRecover(page);
   await setupRecovery(page, 12, 2);
@@ -208,13 +205,19 @@ test('pre-flight row checksum failure highlights specific share row', async ({ p
 
   await page.click('#btn-recover-wallet');
 
-  const modal = await page.locator('#custom-modal:has-text("Recovery Failed")');
-  await expect(modal).toBeVisible();
+  await expect(page.locator('#pageRecover2')).toBeVisible();
+  await expect(page.locator('#custom-modal')).not.toBeVisible();
+  const checksumSummary = page.locator('[data-validation-kind="checksums"]');
+  await expect(checksumSummary).toHaveAttribute('data-total', '16');
+  await expect(checksumSummary).toHaveAttribute('data-pass', '15');
+  await expect(checksumSummary).toHaveAttribute('data-fail', '1');
 
-  const share1Row = page.locator('#share-container-1 input[data-row-index="0"].invalid');
-  const share2Row = page.locator('#share-container-2 input[data-row-index="0"].invalid');
-  await expect(share1Row.first()).toBeVisible();
-  await expect(share2Row).toHaveCount(0);
+  await page.click('#btn-back-to-recover1');
+  await expect(page.locator('#recover-share-1-row-0-checksum')).toHaveValue('not-a-value');
+  await expect(page.locator('#recover-share-1-row-0-checksum')).toHaveClass(/invalid/);
+  await expect(
+    page.locator('#share-container-2 input[data-row-index="0"][data-slot="checksum"].invalid')
+  ).toHaveCount(0);
 });
 
 test('2-of-3: all-zero random coefficients still split and recover', async ({ page }) => {

@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import { expect } from '@playwright/test';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -72,6 +73,10 @@ function getWordlist() {
   }
   cachedWordlist = JSON.parse(`[${match[1]}]`);
   return cachedWordlist;
+}
+
+export function getBip39WordlistForTest() {
+  return [...getWordlist()];
 }
 
 export function getDeterministicMnemonic(wordCount) {
@@ -168,9 +173,47 @@ export async function selectScheme(page, scheme) {
   await page.click(`label[for="scheme-${scheme}"]`);
 }
 
+export async function selectMatMode(page, mode) {
+  await page.click(`label[for="mat-${mode}"]`);
+}
+
+export async function selectMatCustody(page, custody) {
+  await page.click(`label[for="mat-custody-${custody}"]`);
+}
+
+async function waitForGenerateOutcome(page, timeout = 12000) {
+  const outcome = await Promise.race([
+    page.waitForSelector('#pageCreate2', { state: 'visible', timeout }).then(() => 'create2'),
+    page.waitForSelector('#custom-modal', { state: 'visible', timeout }).then(() => 'modal')
+  ]);
+
+  if (outcome === 'modal') {
+    const title = (await page.textContent('#modal-title'))?.trim() || 'Generation Failed';
+    const text = (await page.textContent('#modal-text'))?.trim() || 'Unknown generation error';
+    await page.click('#modal-confirm');
+    throw new Error(`${title}: ${text}`);
+  }
+}
+
 export async function generateShares(page) {
-  await page.click('#btn-generate-shares');
-  await page.waitForSelector('#pageCreate2', { state: 'visible' });
+  // The last mnemonic field can briefly leave the autocomplete popover over the button.
+  // If pointer actionability proves no click was dispatched, activate the focused
+  // button once with the keyboard. Never force a coordinate click through an overlay.
+  await page.keyboard.press('Escape').catch(() => {});
+  await page.waitForSelector('#autocomplete-suggestions', { state: 'hidden', timeout: 1000 }).catch(() => {});
+  try {
+    await page.click('#btn-generate-shares', { timeout: 5000 });
+  } catch (error) {
+    if (!String(error?.message || '').includes('intercepts pointer events')) {
+      throw error;
+    }
+    await page.locator('#btn-generate-shares').focus();
+    await page.keyboard.press('Enter');
+  }
+
+  // Never retry after a dispatched click: generation may still be running and a
+  // second trigger would produce a different set of cryptographic artifacts.
+  await waitForGenerateOutcome(page);
   await page.waitForSelector('.share-card', { state: 'visible' });
 }
 
@@ -209,37 +252,68 @@ function extractNumericFromShareText(text) {
  * Extract share data from a share card (v0.5.0 table: words, row checksums, Col1–3, GIC).
  */
 export async function extractShareData(page, shareIndex) {
-  const shareCards = await page.$$('.share-card');
-  const shareCard = shareCards[shareIndex];
+  const shareCard = page.locator('#shares-output > .share-card').nth(shareIndex);
+  await expect(
+    shareCard,
+    `Rendered Share card ${shareIndex + 1} should be visible`
+  ).toBeVisible();
 
-  if (!shareCard) {
-    throw new Error(`Share card ${shareIndex} not found`);
-  }
+  const renderedCard = await shareCard.evaluate((card) => {
+    const metadataTexts = Array.from(card.querySelectorAll('.share-metadata p'))
+      .map(element => element.textContent);
+    const items = Array.from(card.querySelectorAll('.share-word-item'))
+      .map((item, itemIndex) => {
+        const label = item.querySelector('label');
+        const code = item.querySelector('code');
+        if (!label || !code) {
+          throw new Error(
+            `Rendered Share item ${itemIndex + 1} is missing its label or value`
+          );
+        }
+        const labelText = label.textContent;
+        const codeText = code.textContent;
+        if (!labelText?.trim() || !codeText?.trim()) {
+          throw new Error(
+            `Rendered Share item ${itemIndex + 1} has an empty label or value`
+          );
+        }
+        return {
+          label: labelText,
+          codeText
+        };
+      });
+    return { metadataTexts, items };
+  });
 
-  const metadataTexts = await shareCard.$$eval('.share-metadata p', elements =>
-    elements.map(el => el.textContent)
+  const shareNumberLine = renderedCard.metadataTexts.find(text =>
+    text?.includes('Share Number (X):')
   );
+  const shareNumberMatch = shareNumberLine?.match(/:\s*(\d+)/);
+  if (!shareNumberMatch) {
+    throw new Error(`Share card ${shareIndex + 1} is missing its rendered Share Number`);
+  }
+  const shareNumber = shareNumberMatch[1];
 
-  const shareNumberLine = metadataTexts.find(text => text.includes('Share Number (X):'));
-  const shareNumber = shareNumberLine.match(/:\s*(\d+)/)[1];
-
-  const wordItems = await shareCard.$$('.share-word-item');
   const words = [];
   const checksums = [];
   const columnChecksums = [];
+  const matTags = [[], []];
   let globalIntegrityCheck = null;
 
-  for (const item of wordItems) {
-    const label = await item.$eval('label', el => el.textContent);
-    const codeText = await item.$eval('code', el => el.textContent);
+  for (const { label, codeText } of renderedCard.items) {
     const code = extractNumericFromShareText(codeText);
 
-    if (label.startsWith('GIC')) {
+    if (label?.startsWith('GIC')) {
       globalIntegrityCheck = code;
-    } else if (label.startsWith('Col')) {
+    } else if (label?.startsWith('CC')) {
       columnChecksums.push(code);
-    } else if (label.startsWith('C')) {
+    } else if (label?.startsWith('RC')) {
       checksums.push(code);
+    } else if (label?.startsWith('MAT')) {
+      if (code !== '') {
+        const matColumn = label.includes('B') ? 1 : 0;
+        matTags[matColumn].push(code);
+      }
     } else {
       words.push(code);
     }
@@ -257,7 +331,8 @@ export async function extractShareData(page, shareIndex) {
     globalIntegrityCheck,
     words,
     checksums,
-    columnChecksums
+    columnChecksums,
+    matTags: matTags.filter(column => column.length > 0)
   };
 }
 
@@ -320,13 +395,20 @@ export async function recoverWallet(page) {
 }
 
 export async function getRecoveredMnemonic(page) {
-  const codeElements = await page.$$('#pageRecover2 .share-word-item code');
+  const mnemonicCard = page.locator('#pageRecover2 .seed-word-inputs').locator('..');
+  await expect(mnemonicCard, 'Candidate mnemonic card should be visible').toBeVisible();
 
-  const words = [];
-  for (const element of codeElements) {
-    const text = await element.textContent();
-    words.push(text.trim());
-  }
+  const codeElements = mnemonicCard.locator('.seed-word-row code');
+  await expect(codeElements.first(), 'First candidate mnemonic word should be visible').toBeVisible();
+  const words = await codeElements.evaluateAll(elements =>
+    elements.map((element, index) => {
+      const text = element.textContent?.trim();
+      if (!text) {
+        throw new Error(`Candidate mnemonic word ${index + 1} is empty`);
+      }
+      return text;
+    })
+  );
 
   return words.join(' ');
 }

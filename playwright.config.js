@@ -48,8 +48,9 @@ if (useSystemChrome) {
 export default defineConfig({
   testDir: './tests',
   
-  // Run tests in files in parallel
-  fullyParallel: true,
+  // Keep this security-critical browser suite deterministic. Parallel system-Chrome
+  // workers can exhaust local browser resources and strand otherwise completed runs.
+  fullyParallel: false,
   
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: isCI,
@@ -57,8 +58,8 @@ export default defineConfig({
   // No retries - fail fast
   retries: 0,
   
-  // Opt out of parallel tests on CI
-  workers: isCI ? 1 : undefined,
+  // Use the same proven execution model locally and in CI.
+  workers: 1,
   
   // Local runs: console output (fast feedback, no ambiguity).
   // CI runs: HTML report (artifact upload).
