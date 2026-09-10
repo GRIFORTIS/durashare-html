@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to verify (e.g., v0.4.1)'
+        description: 'Draft or published release tag to verify (e.g., v0.6.0)'
         required: true
         type: string
 
@@ -15,12 +15,13 @@ permissions:
   actions: read
 
 env:
-  # Need a tag that contains previous_versions/v0.5.0/ (first present at v0.6.0).
-  SPEC_REPO_REF: v0.6.0
+  # Immutable oracle for current v0.7.0 vectors; this tag also retains the
+  # archived v0.5.0 vectors used by recovery-compatibility tests.
+  SPEC_REPO_REF: v0.7.0
 
 jobs:
   verify:
-    name: Verify published release
+    name: Verify release
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
