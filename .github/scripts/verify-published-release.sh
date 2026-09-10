@@ -1,20 +1,44 @@
 #!/usr/bin/env bash
-# Fail-closed verification for a published GitHub Release (local sign + uploaded assets).
+# Fail-closed verification for a draft or published GitHub Release.
 set -euo pipefail
 
-TAG="${TAG:?TAG is required (e.g. v0.4.1)}"
+TAG="${TAG:?TAG is required (e.g. v0.6.0)}"
 REPO="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
 RELEASE_ROOT="${RELEASE_ROOT:-$GITHUB_WORKSPACE}"
 WORKDIR="${VERIFY_WORKDIR:-$RUNNER_TEMP/release-verify}"
 EXPECTED_FP="7921FD5694508DA4020E671F4CFE6248C57F15DF"
 
-REQUIRED_CHECKS=(
-  "Secret Scanning"
-  "Test on Node.js 18.x"
-  "Test on Node.js 20.x"
-  "Test on Node.js 22.x"
-  "Analyze JavaScript"
+if [[ "$TAG" == v0.5.* ]]; then
+  COMMIT_REQUIRED_CHECKS=(
+    "Secret Scanning"
+    "Test on Node.js 18.x"
+    "Test on Node.js 20.x"
+    "Test on Node.js 22.x"
+    "Analyze JavaScript"
+  )
+else
+  COMMIT_REQUIRED_CHECKS=(
+    "Secret Scanning"
+    "CI Gate"
+    "Analyze JavaScript"
+  )
+fi
+PR_REQUIRED_CHECKS=(
+  "CodeQL"
 )
+
+latest_check_conclusion() {
+  local checks_file="$1"
+  local context="$2"
+  jq -r --arg n "$context" '
+    [.check_runs[] | select(.name == $n)]
+    | if length == 0 then
+        "missing"
+      else
+        (sort_by(.completed_at // .started_at // "") | last | .conclusion // "pending")
+      end
+  ' "$checks_file"
+}
 
 mkdir -p "$WORKDIR"
 cd "$WORKDIR"
@@ -39,20 +63,73 @@ echo "Tag ${TAG} -> commit ${COMMIT_SHA}"
 
 echo "==> Verifying required CI checks on tag commit"
 CHECK_RUNS_JSON="$(mktemp)"
-gh api "repos/${REPO}/commits/${COMMIT_SHA}/check-runs" --paginate >"$CHECK_RUNS_JSON"
-for ctx in "${REQUIRED_CHECKS[@]}"; do
-  ok="$(jq -r --arg n "$ctx" '
-    ([.check_runs[] | select(.name == $n and .conclusion == "success")] | length) > 0
-  ' "$CHECK_RUNS_JSON")"
-  if [[ "$ok" != "true" ]]; then
-    echo "Required check not successful: ${ctx} (no successful run on this commit)" >&2
+gh api "repos/${REPO}/commits/${COMMIT_SHA}/check-runs?per_page=100" >"$CHECK_RUNS_JSON"
+for ctx in "${COMMIT_REQUIRED_CHECKS[@]}"; do
+  conclusion="$(latest_check_conclusion "$CHECK_RUNS_JSON" "$ctx")"
+  if [[ "$conclusion" != "success" ]]; then
+    echo "Required check not successful on tag commit: ${ctx} (${conclusion})" >&2
     exit 1
   fi
   echo "  OK: ${ctx}"
 done
 
-echo "==> Downloading release assets"
-gh release download "$TAG" --repo "$REPO" --dir "$WORKDIR/assets"
+echo "==> Verifying tag-specific CI workflow"
+TAG_CI_RUNS_JSON="$(mktemp)"
+gh api \
+  "repos/${REPO}/actions/workflows/ci.yml/runs?branch=${TAG}&event=push&per_page=100" \
+  >"$TAG_CI_RUNS_JSON"
+tag_ci_conclusion="$(jq -r --arg tag "$TAG" --arg sha "$COMMIT_SHA" '
+  [.workflow_runs[]
+    | select(.head_branch == $tag and .head_sha == $sha and .event == "push")]
+  | if length == 0 then
+      "missing"
+    else
+      (sort_by(.run_started_at // .created_at // "") | last | .conclusion // "pending")
+    end
+' "$TAG_CI_RUNS_JSON")"
+if [[ "$tag_ci_conclusion" != "success" ]]; then
+  echo "Tag-specific CI is not successful for ${TAG}: ${tag_ci_conclusion}" >&2
+  exit 1
+fi
+echo "  OK: CI workflow for ${TAG}"
+
+echo "==> Verifying PR-only required checks"
+ASSOCIATED_PRS_JSON="$(mktemp)"
+gh api \
+  -H "Accept: application/vnd.github+json" \
+  "repos/${REPO}/commits/${COMMIT_SHA}/pulls" \
+  >"$ASSOCIATED_PRS_JSON"
+PR_HEAD_SHA="$(jq -r --arg sha "$COMMIT_SHA" '
+  [.[] | select(
+    .merge_commit_sha == $sha and
+    .merged_at != null and
+    .base.ref == "main"
+  )]
+  | sort_by(.merged_at)
+  | last
+  | .head.sha // empty
+' "$ASSOCIATED_PRS_JSON")"
+if [[ -z "$PR_HEAD_SHA" ]]; then
+  COMMIT_JSON="$(mktemp)"
+  gh api "repos/${REPO}/commits/${COMMIT_SHA}" >"$COMMIT_JSON"
+  parent_count="$(jq -r '.parents | length' "$COMMIT_JSON")"
+  if [[ "$parent_count" == "2" ]]; then
+    PR_HEAD_SHA="$(jq -r '.parents[1].sha' "$COMMIT_JSON")"
+  else
+    echo "No merged main PR is associated with tag commit ${COMMIT_SHA}" >&2
+    exit 1
+  fi
+fi
+PR_CHECK_RUNS_JSON="$(mktemp)"
+gh api "repos/${REPO}/commits/${PR_HEAD_SHA}/check-runs?per_page=100" >"$PR_CHECK_RUNS_JSON"
+for ctx in "${PR_REQUIRED_CHECKS[@]}"; do
+  conclusion="$(latest_check_conclusion "$PR_CHECK_RUNS_JSON" "$ctx")"
+  if [[ "$conclusion" != "success" ]]; then
+    echo "Required PR check not successful: ${ctx} (${conclusion})" >&2
+    exit 1
+  fi
+  echo "  OK: ${ctx}"
+done
 
 EXPECTED_FILES=(
   durashare.html
@@ -62,11 +139,35 @@ EXPECTED_FILES=(
   CHECKSUMS.json
   CHECKSUMS.json.asc
 )
+
+echo "==> Resolving draft or published release"
+RELEASE_JSON="$(mktemp)"
+if ! gh release view "$TAG" \
+  --repo "$REPO" \
+  --json tagName,isDraft,assets \
+  >"$RELEASE_JSON"; then
+  echo "No draft or published GitHub Release found for ${TAG}" >&2
+  exit 1
+fi
+
+echo "==> Downloading release assets"
+mkdir -p assets
 for f in "${EXPECTED_FILES[@]}"; do
-  if [[ ! -f "assets/${f}" ]]; then
+  asset_count="$(jq -r --arg name "$f" '
+    [.assets[] | select(.name == $name)] | length
+  ' "$RELEASE_JSON")"
+  if [[ "$asset_count" != "1" ]]; then
     echo "Missing release asset: ${f}" >&2
     exit 1
   fi
+  asset_url="$(jq -r --arg name "$f" '
+    [.assets[] | select(.name == $name)] | first | .apiUrl
+  ' "$RELEASE_JSON")"
+  asset_id="${asset_url##*/}"
+  gh api \
+    -H "Accept: application/octet-stream" \
+    "repos/${REPO}/releases/assets/${asset_id}" \
+    >"assets/${f}"
 done
 
 echo "==> Importing GRIFORTIS public key"
