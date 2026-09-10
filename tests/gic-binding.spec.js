@@ -15,7 +15,7 @@ import {
 } from './test-helpers.js';
 
 const FIELD_PRIME = 2053;
-const COLUMN_TOTAL = 60;
+const COLUMN_TOTAL = 600;
 
 function mod(n) {
   return ((n % FIELD_PRIME) + FIELD_PRIME) % FIELD_PRIME;
@@ -35,7 +35,7 @@ const SCHEMES = [
   { name: '3of5', k: 3, n: 5 }
 ];
 
-test.describe('v0.5.0 GIC binding: words, row, and column paths agree', () => {
+test.describe('v0.7.0 GIC binding: words, row, and column paths agree', () => {
   for (const scheme of SCHEMES) {
     test(scheme.name, async ({ page }) => {
       await openApp(page);

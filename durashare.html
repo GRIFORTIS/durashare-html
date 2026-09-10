@@ -84,7 +84,7 @@ TERMS OF USE
 
     <style>
         /* ==========================================================================
-        GRIFORTIS - DESIGN SYSTEM (v0.5.0)
+        GRIFORTIS - DESIGN SYSTEM (v0.6.0)
         ==========================================================================
         */
 
@@ -420,119 +420,185 @@ TERMS OF USE
             color: var(--alert-info-text);
         }
 
-        .recovery-validation-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
-            margin-top: 1rem;
+        .recovery-meter-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 1.5rem;
         }
-        .recovery-validation-item {
+        .recovery-meter {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-card);
+            overflow: hidden;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            transition: box-shadow 0.2s;
+        }
+        .recovery-meter:hover {
+            box-shadow: 0 6px 16px var(--shadow-color);
+        }
+        .recovery-meter > summary {
+            padding: 24px;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            background: var(--input-bg);
+            min-height: auto;
+        }
+        .recovery-meter > summary::-webkit-details-marker {
+            display: none;
+        }
+        .rm-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .rm-titles {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .recovery-meter-title {
+            margin: 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+        .recovery-meter-state {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 0.03em;
+        }
+        .rm-chevron {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: var(--text-muted);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease;
+            margin-top: 4px;
+        }
+        .recovery-meter[open] .rm-chevron {
+            transform: rotate(180deg);
+        }
+        .recovery-meter-summary-copy {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .recovery-meter-state.confirmed, .recovery-meter-state.consistent { color: var(--success-green); }
+
+        .recovery-meter-state.plausible { color: var(--cyber-gold); }
+
+        .recovery-meter-state.mismatch, .recovery-meter-state.anomaly, .recovery-meter-state.low-confidence, .recovery-meter-state.problems { color: var(--error-red); }
+
+        .recovery-meter-state.not-assessed { color: var(--text-muted); }
+
+        .recovery-meter-details {
+            padding: 24px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-main);
+        }
+        .recovery-evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-auto-rows: 1fr;
+            gap: 16px;
+        }
+        .recovery-evidence-item {
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 10px;
-            padding: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            box-sizing: border-box;
             min-width: 0;
         }
-        .recovery-validation-item h4 {
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
-        .recovery-status-value {
-            display: inline-block;
-            font-weight: 900;
-            letter-spacing: 0.08em;
-            margin-bottom: 8px;
-        }
-        .recovery-status-value.pass {
-            color: var(--success-green);
-        }
-        .recovery-status-value.fail {
-            color: var(--error-red);
-        }
-        .recovery-status-value.not-checked {
-            color: var(--validation-blank);
-        }
-        .recovery-validation-item p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 0;
-        }
-        .recovery-donut-layout {
+        .re-header {
             display: flex;
-            align-items: center;
-            gap: 16px;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            min-height: 40px;
         }
-        .recovery-donut {
-            width: 112px;
-            height: 112px;
-            flex: 0 0 112px;
-        }
-        .recovery-donut-center-count {
-            fill: var(--text-main);
-            font-size: 17px;
-            font-weight: 800;
-            text-anchor: middle;
-        }
-        .recovery-donut-center-label {
-            fill: var(--text-muted);
-            font-size: 8px;
-            text-anchor: middle;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .recovery-donut-legend {
-            list-style: none;
-            padding: 0;
+        .recovery-evidence-item h4 {
             margin: 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            line-height: 1.3;
+        }
+        .recovery-evidence-status {
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .recovery-evidence-status.pass { background: rgba(0, 230, 118, 0.15); color: var(--success-green); }
+        .recovery-evidence-status.fail, .recovery-evidence-status.mixed { background: rgba(255, 68, 68, 0.15); color: var(--error-red); }
+        .recovery-evidence-status.blank { background: rgba(136, 136, 136, 0.15); color: var(--text-muted); }
+
+        .recovery-evidence-bar {
+            display: flex;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            background: rgba(128, 128, 128, 0.2);
+        }
+        .recovery-meter-bar {
+            height: 8px;
+            border-radius: 4px;
+        }
+        .recovery-evidence-segment {
+            flex-basis: 0;
             min-width: 0;
         }
-        .recovery-donut-legend li {
+        .recovery-evidence-segment.pass { background: var(--success-green); }
+        .recovery-evidence-segment.fail { background: var(--error-red); }
+        .recovery-evidence-segment.blank { background: var(--text-muted); }
+
+        .recovery-evidence-counts {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            color: var(--text-muted);
         }
-        .recovery-donut-legend li:last-child {
-            margin-bottom: 0;
-        }
-        .recovery-legend-swatch {
-            width: 14px;
-            height: 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            flex: 0 0 14px;
-            position: relative;
-        }
-        .recovery-legend-swatch.pass {
-            background-color: var(--success-green);
-        }
-        .recovery-legend-swatch.fail {
-            background-color: var(--error-red);
-        }
-        .recovery-legend-swatch.fail::after {
-            content: '×';
-            position: absolute;
-            inset: -5px 0 0 1px;
-            color: var(--brand-navy);
-            font-size: 16px;
-            font-weight: 900;
-            line-height: 14px;
-        }
-        .recovery-legend-swatch.blank {
-            background-color: var(--validation-blank);
-        }
-        .recovery-legend-swatch.blank::after {
-            content: '·';
-            position: absolute;
-            inset: -7px 0 0 2px;
-            color: var(--bg-main);
-            font-size: 20px;
-            font-weight: 900;
-            line-height: 14px;
+        .recovery-evidence-counts span.pass { color: var(--success-green); }
+        .recovery-evidence-counts span.fail { color: var(--error-red); }
+        .recovery-evidence-counts span.blank { color: var(--text-muted); }
+
+        .recovery-evidence-copy {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-top: auto;
+            padding-top: 8px;
         }
 
         @media (max-width: 720px) {
-            .recovery-validation-grid {
+            .recovery-evidence-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -675,6 +741,51 @@ TERMS OF USE
             align-items: center;
             justify-content: center;
         }
+        .digital-artifacts {
+            margin-top: 24px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 18px;
+        }
+        .digital-artifacts > h4 {
+            margin: 0 0 8px;
+        }
+        .digital-profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 14px;
+            margin-top: 14px;
+        }
+        .digital-profile {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            padding: 14px;
+            min-width: 0;
+        }
+        .digital-profile h5 {
+            margin: 0 0 12px;
+            color: var(--cyber-gold);
+            font-size: 1rem;
+        }
+        .digital-field {
+            margin-top: 10px;
+        }
+        .digital-field label {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        .digital-field code {
+            display: block;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            overflow-wrap: anywhere;
+            word-break: break-all;
+            line-height: 1.45;
+            user-select: all;
+        }
 
         /* Autocomplete & Validation Styles */
         #autocomplete-suggestions {
@@ -708,14 +819,13 @@ TERMS OF USE
         .validation-state-host {
             position: relative;
         }
-        .validation-state-host input {
-            padding-left: 34px;
-            padding-right: 34px;
+        .validation-state-host > label {
+            padding-right: 26px;
         }
         .validation-indicator {
             position: absolute;
-            right: 10px;
-            bottom: 10px;
+            right: 4px;
+            top: 1px;
             z-index: 1;
             font-family: system-ui, sans-serif;
             font-size: 1rem;
@@ -850,6 +960,29 @@ TERMS OF USE
             margin-top: 0;
             margin-bottom: 1.5rem;
             font-size: 1.25rem;
+        }
+        .recovery-payload-group {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 18px;
+            background: var(--input-bg);
+        }
+        .recovery-payload-status {
+            margin: 8px 0 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .recovery-payload-status.pass {
+            color: var(--success-green);
+        }
+        .recovery-payload-status.fail {
+            color: var(--error-red);
+        }
+        .payload-derived-label::after {
+            content: " (derived)";
+            color: var(--cyber-gold);
+            font-size: 0.72rem;
         }
         .manual-helper-share-inputs {
             display: grid;
@@ -1190,9 +1323,42 @@ TERMS OF USE
                     </div>
                 </div>
 
-                <!-- Section 1.4: Seed Phrase Input -->
+                <!-- Section 1.4: Wallet Recovery Context -->
                 <div class="component-card">
-                    <h2>4. Seed Phrase</h2>
+                    <h2>4. Wallet Recovery Context</h2>
+                    <p>These hints help identify the intended wallet after recovery and are repeated on every on-screen Share and Manifest. The payload carries only the coarse wallet/profile code; passphrase hints and RVA remain human-readable only.</p>
+                    <div class="form-group">
+                        <label for="wallet-profile">Wallet / Derivation Profile</label>
+                        <select id="wallet-profile">
+                            <option value="0">BIP44 — Legacy</option>
+                            <option value="1">BIP49 — Nested SegWit</option>
+                            <option value="2">BIP84 — Native SegWit</option>
+                            <option value="3">BIP86 — Taproot</option>
+                            <option value="4">Hardware Wallet Default</option>
+                            <option value="5" selected>Generic / Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="choice-group">
+                            <input type="checkbox" id="passphrase-required">
+                            <label for="passphrase-required">This wallet requires a BIP39 passphrase</label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="passphrase-hint-group" style="display: none;">
+                        <label for="passphrase-hint">Passphrase Hint / Reference (Optional)</label>
+                        <input type="text" id="passphrase-hint" maxlength="80" autocomplete="off" placeholder="Reference only — never enter the passphrase">
+                        <p class="recover-hint">Do not enter the passphrase itself. DuraShare never stores, shares, or recovers it.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="recovery-verification-address">Recovery Verification Address (RVA) / Verification Note (Optional)</label>
+                        <input type="text" id="recovery-verification-address" class="mono" autocomplete="off" spellcheck="false" placeholder="Optional free text">
+                        <p class="recover-hint">Free-text recovery context. DuraShare records it exactly as entered and does not validate or interpret it.</p>
+                    </div>
+                </div>
+
+                <!-- Section 1.5: Seed Phrase Input -->
+                <div class="component-card">
+                    <h2>5. Seed Phrase</h2>
                     <!-- Word Count Toggle -->
                     <div class="form-group" style="text-align: left;">
                         <div class="word-count-toggle" id="create-word-count-toggle">
@@ -1292,7 +1458,7 @@ TERMS OF USE
                         <li style="margin-bottom: 0.75em;">Use the multipliers to compute <code>Recovered = Σ(Y × λ) mod 2053</code> for each word and checksum row.</li>
                         <li style="margin-bottom: 0.75em;">Repeat for every row and finally verify the Global Integrity Check (GIC) to confirm the recovery.</li>
                     </ol>
-                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">After every row, add the three recovered word numbers plus the row number (1 for the first row, 2 for the second, and so on), modulo 2053, and confirm the result matches that row's checksum. Verify the three column checksums (CC1, CC2, CC3) by summing each column's words plus 10, 20, or 30 respectively. Finally, verify the GIC value in the bottom-right table cell before rebuilding the mnemonic.</p>
+                    <p style="margin-top: 1rem; font-size: 0.95rem; color: var(--text-muted);">After every row, add the three recovered word numbers plus the row number (1 for the first row, 2 for the second, and so on), modulo 2053, and confirm the result matches that row's checksum. Verify the three column checksums (CC1, CC2, CC3) by summing each column's words plus 100, 200, or 300 respectively. Finally, verify the GIC value in the bottom-right table cell before rebuilding the mnemonic.</p>
                 </div>
 
                 <div class="component-card">
@@ -1397,9 +1563,18 @@ TERMS OF USE
                     </div>
                 </div>
 
+                <div class="component-card">
+                    <h2>2. Manifest Session Header (Optional)</h2>
+                    <div class="form-group recovery-payload-group" style="margin-bottom: 0;">
+                        <label for="recover-manifest-header-payload">Manifest Header Payload Hex (SB)</label>
+                        <input type="text" id="recover-manifest-header-payload" class="mono" autocomplete="off" spellcheck="false" placeholder="Paste 5342… and leave the field">
+                        <p id="recover-manifest-header-status" class="recovery-payload-status"></p>
+                    </div>
+                </div>
+
                 <p class="recover-hint"><strong>Only the Share Number and Share words are required.</strong> Copy RC, CC, GIC, MAT A, and MAT B only when they appear on your Share. Leave every unavailable field empty. Manifest keys are entered in the optional section below each Share.</p>
 
-                <!-- Section 3.2: Dynamic Share Inputs -->
+                <!-- Section 3.3: Dynamic Share Inputs -->
                 <div id="recover-shares-container">
                     <!-- Share input blocks are dynamically inserted here by JS -->
                 </div>
@@ -1431,11 +1606,19 @@ TERMS OF USE
                     </div>
                 </div>
 
-                <!-- Independent Recovery Validation Summary -->
+                <!-- Independent Recovery Confidence and Backup Kit Health -->
                 <div class="component-card">
-                    <h3 style="margin-top: 0;">Validation Summary</h3>
-                    <p>These checks answer different questions. A failed or unavailable optional check does not hide the candidate phrase.</p>
-                    <div id="recovery-validation-summary" class="recovery-validation-grid"></div>
+                    <h3 style="margin-top: 0;">Recovery Assessment</h3>
+                    <p>Recovery Confidence identifies the candidate phrase. Backup Kit Health evaluates the stored artifacts. Neither optional check coverage nor kit problems hide the candidate phrase.</p>
+                    <div id="recovery-validation-summary" class="recovery-meter-layout"></div>
+                </div>
+
+                <div class="component-card">
+                    <h3 style="margin-top: 0;">Recovered Wallet Context</h3>
+                    <div id="recovery-payload-metadata" class="share-metadata"></div>
+                    <div class="alert alert-info" style="margin-top: 14px;">
+                        <strong>CHECK THE STORED ARTIFACTS:</strong> BIP39 passphrase requirement, passphrase hint/reference, exact derivation details, and RVA are human-readable fields and are not encoded in Share payloads. Review them on the Shares and Manifest before using this mnemonic.
+                    </div>
                 </div>
 
                 <!-- Recovered Seed Phrase Display -->
@@ -1483,7 +1666,7 @@ TERMS OF USE
             ========================================================================== -->
             <footer class="disclaimer">
                 <p style="text-align: center; font-weight: 600; margin: 0;">
-                    © 2025 GRIFORTIS. Released under the MIT License. v0.5.0
+                    © 2025 GRIFORTIS. Released under the MIT License. v0.6.0
                 </p>
             </footer>
         </main>
@@ -1549,8 +1732,8 @@ TERMS OF USE
         // (UI script scope vs. library module scope) for proper encapsulation.
         const WORDS_PER_ROW = 3;
         const FIELD_PRIME = 2053;
-        const COLUMN_TAGS = [10, 20, 30];
-        const COLUMN_TOTAL = 60;
+        const COLUMN_TAGS = [100, 200, 300];
+        const COLUMN_TOTAL = 600;
 
         function computeRowTotal(rowCount) {
             return (rowCount * (rowCount + 1)) / 2;
@@ -1603,6 +1786,11 @@ TERMS OF USE
 
         function createEmptyRecoveryCacheEntry() {
             return {
+                payloadText: '',
+                payloadMetadata: null,
+                payloadEvidenceMetadata: null,
+                auditEvidenceText: '',
+                auditEvidenceMetadata: null,
                 shareNumber: '',
                 words: Array(32).fill(''),
                 matTags: [[], []],
@@ -1618,6 +1806,11 @@ TERMS OF USE
         }
 
         let recoverFlowCache = Array(MAX_SHARES).fill(null).map(() => createEmptyRecoveryCacheEntry());
+        let recoveryPayloadPromises = Array(MAX_SHARES).fill(Promise.resolve());
+        let recoveryAuditPromises = Array(MAX_SHARES).fill(Promise.resolve());
+        let recoverManifestHeaderText = '';
+        let recoverManifestHeaderMetadata = null;
+        let recoverManifestHeaderPromise = Promise.resolve();
         let recoverWordCount = 24;
         const manualRecoveryShareCache = {};
 
@@ -1899,6 +2092,12 @@ TERMS OF USE
         const schemeExplanation = document.getElementById('scheme-explanation');
         const matModeRadios = document.querySelectorAll('input[name="mat-mode"]');
         const matCustodyOptions = document.getElementById('mat-custody-options');
+        const walletProfileSelect = document.getElementById('wallet-profile');
+        const passphraseRequiredInput = document.getElementById('passphrase-required');
+        const passphraseHintGroup = document.getElementById('passphrase-hint-group');
+        const passphraseHintInput = document.getElementById('passphrase-hint');
+        const recoveryVerificationAddressInput =
+            document.getElementById('recovery-verification-address');
         const btn12Words = document.getElementById('btn-12-words');
         const btn24Words = document.getElementById('btn-24-words');
         const btn15Words = document.getElementById('btn-15-words');
@@ -1910,6 +2109,10 @@ TERMS OF USE
 
         const recoverKRadios = document.querySelectorAll('input[name="recover-k"]');
         const recoverSharesContainer = document.getElementById('recover-shares-container');
+        const recoverManifestHeaderInput =
+            document.getElementById('recover-manifest-header-payload');
+        const recoverManifestHeaderStatus =
+            document.getElementById('recover-manifest-header-status');
         const recoverBtn12Words = document.getElementById('recover-btn-12-words');
         const recoverBtn24Words = document.getElementById('recover-btn-24-words');
         const recoverBtn15Words = document.getElementById('recover-btn-15-words');
@@ -2006,8 +2209,39 @@ TERMS OF USE
             }
         }
 
+        function updatePassphraseHintVisibility() {
+            const required = Boolean(passphraseRequiredInput?.checked);
+            if (passphraseHintGroup) {
+                passphraseHintGroup.style.display = required ? 'block' : 'none';
+            }
+            if (passphraseHintInput) {
+                passphraseHintInput.disabled = !required;
+            }
+        }
+
         matModeRadios.forEach(radio => radio.addEventListener('change', updateMatCustodyVisibility));
+        if (passphraseRequiredInput) {
+            passphraseRequiredInput.addEventListener('change', updatePassphraseHintVisibility);
+        }
+        if (recoverManifestHeaderInput) {
+            recoverManifestHeaderInput.addEventListener('input', () => {
+                recoverManifestHeaderText = recoverManifestHeaderInput.value;
+                recoverManifestHeaderMetadata = null;
+                clearInputErrorState(recoverManifestHeaderInput);
+                if (recoverManifestHeaderStatus) {
+                    recoverManifestHeaderStatus.className = 'recovery-payload-status';
+                    recoverManifestHeaderStatus.textContent =
+                        recoverManifestHeaderInput.value.trim() === ''
+                            ? ''
+                            : 'Leave this field to validate the SB payload.';
+                }
+            });
+            recoverManifestHeaderInput.addEventListener('blur', () => {
+                recoverManifestHeaderPromise = handleManifestHeaderBlur();
+            });
+        }
         updateMatCustodyVisibility();
+        updatePassphraseHintVisibility();
 
         let shareGenerationInProgress = false;
 
@@ -2031,6 +2265,15 @@ TERMS OF USE
                 const matCustody = matMode === 'none'
                     ? 'none'
                     : (document.querySelector('input[name="mat-custody"]:checked')?.value || 'whole');
+                const walletProfileCode = Number(walletProfileSelect?.value ?? 5);
+                const walletProfileLabel =
+                    walletProfileSelect?.selectedOptions?.[0]?.textContent?.trim() || 'Generic / Custom';
+                const passphraseRequired = Boolean(passphraseRequiredInput?.checked);
+                const passphraseHint = passphraseRequired
+                    ? (passphraseHintInput?.value || '').trim()
+                    : '';
+                const recoveryVerificationAddress =
+                    recoveryVerificationAddressInput?.value || '';
 
                 const words = [];
                 for (let i = 1; i <= createWordCount; i++) {
@@ -2049,7 +2292,11 @@ TERMS OF USE
                     k,
                     n,
                     BIP39_WORDLIST,
-                    { matMode, matCustody }
+                    {
+                        matMode,
+                        matCustody,
+                        walletProfileCode
+                    }
                 );
 
                 // 3. Drop seed copies we no longer need (shares stay on the next page).
@@ -2067,8 +2314,13 @@ TERMS OF USE
                     scheme,
                     wordCount: createWordCount,
                     matMode,
-                    matCustody
-                }, generatedArtifacts.manifests);
+                    matCustody,
+                    walletProfileCode,
+                    walletProfileLabel,
+                    passphraseRequired,
+                    passphraseHint,
+                    recoveryVerificationAddress
+                }, generatedArtifacts.manifests, generatedArtifacts.session);
 
                 showPage('create2', 'Create Shares');
 
@@ -2077,8 +2329,11 @@ TERMS OF USE
                     ? error.message
                     : 'Share generation failed.';
                 const isRngFailure = DuraShare.isRngHardStopError(error);
+                const isCryptoFailure = DuraShare.isCryptoHardStopError(error);
                 await showErrorModal(
-                    isRngFailure ? 'Secure Randomness Failed' : 'Generation Failed',
+                    isRngFailure
+                        ? 'Secure Randomness Failed'
+                        : (isCryptoFailure ? 'Cryptographic Runtime Failed' : 'Generation Failed'),
                     message
                 );
             } finally {
@@ -2119,6 +2374,12 @@ TERMS OF USE
         }
 
         async function handleRecoverWallet() {
+            await Promise.all([
+                ...recoveryPayloadPromises,
+                ...recoveryAuditPromises,
+                recoverManifestHeaderPromise
+            ]);
+            persistRecoverShareInputsToCache();
             const k = parseInt(document.querySelector('input[name="recover-k"]:checked').value, 10);
             const shares = [];
             const shareContainers = document.querySelectorAll('#recover-shares-container .share-input-container');
@@ -2131,6 +2392,14 @@ TERMS OF USE
             const uiErrors = new Set();
             const seenShareNumbers = new Map(); // shareNumber -> shareIndex
             let parsingError = false;
+            const payloadMetadata = recoverFlowCache
+                .slice(0, k)
+                .map(entry => entry.payloadMetadata);
+            const rbtPayloadMetadata = recoverFlowCache
+                .slice(0, k)
+                .map(entry =>
+                    entry.payloadEvidenceMetadata || entry.payloadMetadata
+                );
 
             for (let i = 0; i < k; i++) {
                 const container = shareContainers[i];
@@ -2286,7 +2555,20 @@ TERMS OF USE
             });
             const optionalValidation = {
                 checksums: summarizeValidationOutcomes(checksumOutcomes),
-                mat: summarizeValidationOutcomes(matOutcomes)
+                mat: summarizeValidationOutcomes(matOutcomes),
+                payloadIntegrity: summarizeValidationOutcomes(
+                    evaluatePayloadIntegrityOutcomes(shares)
+                ),
+                manifestHeader: evaluateManifestHeaderOutcome(k),
+                manifestAudit: summarizeValidationOutcomes(
+                    recoverFlowCache.slice(0, k).map(evaluateAuditEvidenceOutcome)
+                ),
+                recoveryContext: {
+                    wordCount: recoverWordCount,
+                    threshold: k,
+                    payloadMetadata,
+                    manifestHeaderMetadata: recoverManifestHeaderMetadata
+                }
             };
             const recoveryShares = shares.map((share) => ({
                 shareNumber: share.shareNumber,
@@ -2296,7 +2578,15 @@ TERMS OF USE
 
             // 2. CALL UNIFIED RECOVERY & VALIDATION
             try {
-                const report = await DuraShare.recoverAndValidate(recoveryShares, recoverWordCount, BIP39_WORDLIST);
+                const report = await DuraShare.recoverAndValidate(
+                    recoveryShares,
+                    recoverWordCount,
+                    BIP39_WORDLIST,
+                    {
+                        payloadMetadata: rbtPayloadMetadata,
+                        manifestHeaderMetadata: recoverManifestHeaderMetadata
+                    }
+                );
                 
                 // 3. DISPLAY RESULTS
                 await displayValidationResults(report, optionalValidation);
@@ -2375,12 +2665,21 @@ TERMS OF USE
             snapshotShareInputs();
             persistRecoverShareInputsToCache();
             displayRecoveredMnemonic(recoveredMnemonic, {
-                rbt: report.validation?.rbt || { status: 'not-checked' },
+                rbt: report.validation?.rbt || {
+                    status: 'not-checked',
+                    checkedProfiles: [],
+                    outcomes: [],
+                    hasConflict: false
+                },
                 bip39: report.validation?.bip39 || {
                     status: errors.bip39 ? 'fail' : 'pass'
                 },
                 checksums: optionalValidation.checksums,
-                mat: optionalValidation.mat
+                mat: optionalValidation.mat,
+                payloadIntegrity: optionalValidation.payloadIntegrity,
+                manifestHeader: optionalValidation.manifestHeader,
+                manifestAudit: optionalValidation.manifestAudit,
+                recoveryContext: optionalValidation.recoveryContext
             });
             clearRecoverFlowShareInputs();
             report.recoveredMnemonic = null;
@@ -2949,6 +3248,475 @@ TERMS OF USE
             return details;
         }
 
+        function recoveryCacheEntryHasManualData(entry) {
+            if (!entry) return false;
+            if (
+                entry.shareNumber.trim() !== '' ||
+                entry.globalIntegrityCheckShare.trim() !== '' ||
+                entry.words.some(value => String(value || '').trim() !== '') ||
+                entry.columnChecksums.some(value => String(value || '').trim() !== '') ||
+                entry.matTags.some(column =>
+                    column.some(value => String(value || '').trim() !== '')
+                )
+            ) {
+                return true;
+            }
+            return entry.matKeys.some(column =>
+                ['primary', 'secondary'].some(part => {
+                    const key = column[part];
+                    return key.weights.some(value => String(value || '').trim() !== '') ||
+                        key.rowPads.some(value => String(value || '').trim() !== '');
+                })
+            );
+        }
+
+        function setRecoveryConfigurationFromPayload(wordCount, threshold) {
+            recoverWordCount = wordCount;
+            const buttons = {
+                12: recoverBtn12Words,
+                15: recoverBtn15Words,
+                18: recoverBtn18Words,
+                21: recoverBtn21Words,
+                24: recoverBtn24Words
+            };
+            Object.entries(buttons).forEach(([count, button]) => {
+                if (!button) return;
+                const active = Number(count) === wordCount;
+                button.classList.toggle('btn-primary', active);
+                button.classList.toggle('btn-secondary', !active);
+            });
+            if ([15, 18, 21].includes(wordCount) && extraWordcountRecover) {
+                extraWordcountRecover.style.display = 'flex';
+                if (btnWordcountToggleRecover) {
+                    btnWordcountToggleRecover.textContent = 'Less';
+                }
+            }
+            const thresholdRadio = document.getElementById(`recover-k-${threshold}`);
+            if (!thresholdRadio) {
+                throw new Error(`Recovery threshold ${threshold} is not supported.`);
+            }
+            thresholdRadio.checked = true;
+        }
+
+        function payloadMetadataFromDecoded(decoded) {
+            return {
+                profile: decoded.profile,
+                protocolVersion: decoded.protocolVersion,
+                wordCount: decoded.wordCount,
+                walletProfileCode: decoded.walletProfileCode,
+                languageInput: decoded.languageInput,
+                threshold: decoded.threshold,
+                shareNumber: decoded.shareNumber,
+                sessionBatchIdHex: decoded.sessionBatchIdHex,
+                rbtHex: decoded.rbtHex,
+                auditHashHex: decoded.auditHashHex,
+                checksDerived: decoded.checksDerived
+            };
+        }
+
+        function populateRecoveryCacheFromPayload(cacheEntry, decoded, payloadText) {
+            const words = Array(32).fill('');
+            let cacheOffset = 0;
+            let wordOffset = 0;
+            for (let row = 0; row < decoded.wordCount / WORDS_PER_ROW; row++) {
+                for (let column = 0; column < WORDS_PER_ROW; column++) {
+                    words[cacheOffset++] = formatShareFieldValue(
+                        decoded.wordShares[wordOffset++]
+                    );
+                }
+                words[cacheOffset++] = formatShareFieldValue(
+                    decoded.checksumShares[row]
+                );
+            }
+            cacheEntry.payloadText = payloadText;
+            cacheEntry.payloadMetadata = payloadMetadataFromDecoded(decoded);
+            cacheEntry.payloadEvidenceMetadata = cacheEntry.payloadMetadata;
+            cacheEntry.shareNumber = String(decoded.shareNumber);
+            cacheEntry.words = words;
+            cacheEntry.columnChecksums = decoded.columnChecksumShares.map(
+                value => formatShareFieldValue(value)
+            );
+            cacheEntry.globalIntegrityCheckShare = formatShareFieldValue(
+                decoded.globalIntegrityCheckShare
+            );
+        }
+
+        function getPayloadStatusCopy(metadata) {
+            if (!metadata) return '';
+            const profileName = metadata.profile === 'full' ? 'Full' : 'Compact';
+            return metadata.checksDerived
+                ? `Valid ${profileName} payload. RC, CC, and GIC were derived from its word values.`
+                : `Valid ${profileName} payload. Transport and arithmetic checks passed.`;
+        }
+
+        async function handleRecoveryPayloadBlur(shareIndex, input) {
+            const cacheIndex = shareIndex - 1;
+            const cacheEntry = recoverFlowCache[cacheIndex];
+            const rawPayload = input.value;
+            const status = input.closest('.recovery-payload-group')
+                ?.querySelector('.recovery-payload-status');
+            cacheEntry.payloadText = rawPayload;
+            if (rawPayload.trim() === '') {
+                cacheEntry.payloadMetadata = null;
+                cacheEntry.payloadEvidenceMetadata = null;
+                clearInputErrorState(input);
+                if (status) {
+                    status.className =
+                        'recovery-payload-status recovery-share-payload-status';
+                    status.textContent = '';
+                }
+                refreshManifestEvidenceStatuses();
+                return;
+            }
+
+            cacheEntry.payloadEvidenceMetadata = null;
+            try {
+                const decoded = await DuraShare.decodeSharePayloadHex(rawPayload);
+                const metadata = payloadMetadataFromDecoded(decoded);
+                cacheEntry.payloadEvidenceMetadata = metadata;
+                persistRecoverShareInputsToCache();
+                const selectedThreshold = Number(
+                    document.querySelector('input[name="recover-k"]:checked')?.value
+                );
+                const configurationDiffers =
+                    decoded.wordCount !== recoverWordCount ||
+                    decoded.threshold !== selectedThreshold;
+                if (
+                    configurationDiffers &&
+                    recoverFlowCache.some(recoveryCacheEntryHasManualData)
+                ) {
+                    throw new Error(
+                        'This payload conflicts with the populated Recovery form. ' +
+                        'Clear the form before changing word count or threshold.'
+                    );
+                }
+
+                const proposedMetadata = recoverFlowCache.map(
+                    entry => entry.payloadMetadata
+                );
+                proposedMetadata[cacheIndex] = metadata;
+                DuraShare.validateRecoveryPayloadSet(proposedMetadata);
+
+                if (configurationDiffers) {
+                    setRecoveryConfigurationFromPayload(
+                        decoded.wordCount,
+                        decoded.threshold
+                    );
+                }
+                populateRecoveryCacheFromPayload(cacheEntry, decoded, rawPayload);
+                renderRecoverShareInputsFromCache();
+                const renderedInput = document.getElementById(
+                    `recover-payload-${shareIndex}`
+                );
+                if (renderedInput) {
+                    markInputValid(renderedInput);
+                    const renderedStatus = renderedInput.closest('.recovery-payload-group')
+                        ?.querySelector('.recovery-share-payload-status');
+                    if (renderedStatus) {
+                        renderedStatus.className =
+                            'recovery-payload-status recovery-share-payload-status pass';
+                        renderedStatus.textContent = getPayloadStatusCopy(metadata);
+                    }
+                }
+                refreshManifestEvidenceStatuses();
+            } catch (error) {
+                cacheEntry.payloadMetadata = null;
+                markInputInvalid(input, error.message);
+                if (status) {
+                    status.className =
+                        'recovery-payload-status recovery-share-payload-status fail';
+                    status.textContent = error.message;
+                }
+                refreshManifestEvidenceStatuses();
+            }
+        }
+
+        function validateManifestHeaderAgainstPayloads(headerMetadata) {
+            const payloads = recoverFlowCache
+                .map(entry => entry.payloadMetadata)
+                .filter(Boolean);
+            if (payloads.length === 0) {
+                return 'Valid SB payload. Waiting for a Share payload to cross-check the session.';
+            }
+            payloads.forEach((payload) => {
+                if (payload.wordCount !== headerMetadata.wordCount) {
+                    throw new Error('SB word count does not match the Share payload.');
+                }
+                const sameProfile = payload.profile === headerMetadata.profile;
+                if (sameProfile) {
+                    if (
+                        payload.sessionBatchIdHex !== headerMetadata.sessionBatchIdHex ||
+                        payload.rbtHex !== headerMetadata.rbtHex
+                    ) {
+                        throw new Error('SB session or RBT does not match the Share payload.');
+                    }
+                    return;
+                }
+                const fullId = headerMetadata.profile === 'full'
+                    ? headerMetadata.sessionBatchIdHex
+                    : payload.sessionBatchIdHex;
+                const compactId = headerMetadata.profile === 'compact'
+                    ? headerMetadata.sessionBatchIdHex
+                    : payload.sessionBatchIdHex;
+                if (!fullId.startsWith(compactId)) {
+                    throw new Error('SB and Share payload are not from the same session family.');
+                }
+            });
+            return `Valid ${headerMetadata.profile === 'full' ? 'Full' : 'Compact'} SB payload; session cross-check passed.`;
+        }
+
+        function validateAuditEvidenceAgainstShare(evidence, payloadMetadata) {
+            if (!payloadMetadata) {
+                throw new Error(
+                    'Cannot verify Manifest Audit evidence against an invalid Share payload.'
+                );
+            }
+            if (evidence.kind === 'hash') {
+                if (evidence.auditHashHex !== payloadMetadata.auditHashHex) {
+                    throw new Error('Manifest Audit Hash does not match the Share payload.');
+                }
+                return 'Manifest Audit Hash matches the Share payload.';
+            }
+            if (
+                evidence.profile !== payloadMetadata.profile ||
+                evidence.wordCount !== payloadMetadata.wordCount ||
+                evidence.threshold !== payloadMetadata.threshold ||
+                evidence.shareNumber !== payloadMetadata.shareNumber
+            ) {
+                throw new Error('SA metadata does not match the Share payload.');
+            }
+            const expectedCommitment = payloadMetadata.auditHashHex.slice(
+                0,
+                evidence.committedHashBytes * 2
+            );
+            if (evidence.committedHashHex !== expectedCommitment) {
+                throw new Error('SA Audit Hash does not match the Share payload.');
+            }
+            return `${evidence.profile === 'full' ? 'Full' : 'Compact'} SA payload matches the Share payload.`;
+        }
+
+        function resolveAuditEvidenceStatus(entry) {
+            if (!entry || entry.auditEvidenceText.trim() === '') {
+                return { state: '', message: '' };
+            }
+            if (!entry.auditEvidenceMetadata) {
+                return {
+                    state: 'fail',
+                    message: 'Manifest Audit evidence has not passed validation.'
+                };
+            }
+            if (entry.payloadText.trim() === '') {
+                return {
+                    state: '',
+                    message: 'Valid audit evidence format. Waiting for a Share payload to cross-check it.'
+                };
+            }
+            try {
+                return {
+                    state: 'pass',
+                    message: validateAuditEvidenceAgainstShare(
+                        entry.auditEvidenceMetadata,
+                        entry.payloadMetadata
+                    )
+                };
+            } catch (error) {
+                return {
+                    state: 'fail',
+                    message: error.message
+                };
+            }
+        }
+
+        function evaluatePayloadIntegrityOutcomes(shares) {
+            const activeEntries = recoverFlowCache.slice(0, shares.length);
+            const outcomes = activeEntries.map((entry) => {
+                if (entry.payloadText.trim() === '') {
+                    return 'blank';
+                }
+                return entry.payloadMetadata ? 'pass' : 'fail';
+            });
+            const metadata = activeEntries.map(entry => entry.payloadMetadata);
+            try {
+                DuraShare.validateRecoveryPayloadSet(
+                    metadata,
+                    shares,
+                    recoverWordCount
+                );
+            } catch (_error) {
+                activeEntries.forEach((entry, index) => {
+                    if (entry.payloadText.trim() !== '') {
+                        outcomes[index] = 'fail';
+                    }
+                });
+            }
+            return outcomes;
+        }
+
+        function evaluateManifestHeaderOutcome(activeShareCount) {
+            if (recoverManifestHeaderText.trim() === '') {
+                return {
+                    status: 'blank',
+                    reason: 'not-supplied'
+                };
+            }
+            if (!recoverManifestHeaderMetadata) {
+                return {
+                    status: 'fail',
+                    reason: 'invalid'
+                };
+            }
+            const hasSharePayload = recoverFlowCache
+                .slice(0, activeShareCount)
+                .some(entry => Boolean(entry.payloadMetadata));
+            if (!hasSharePayload) {
+                return {
+                    status: 'blank',
+                    reason: 'no-share-payload'
+                };
+            }
+            try {
+                validateManifestHeaderAgainstPayloads(recoverManifestHeaderMetadata);
+                return {
+                    status: 'pass',
+                    reason: 'matched'
+                };
+            } catch (_error) {
+                return {
+                    status: 'fail',
+                    reason: 'mismatch'
+                };
+            }
+        }
+
+        function evaluateAuditEvidenceOutcome(entry) {
+            const resolved = resolveAuditEvidenceStatus(entry);
+            if (resolved.state === 'pass' || resolved.state === 'fail') {
+                return resolved.state;
+            }
+            return 'blank';
+        }
+
+        function setEvidenceStatus(input, statusElement, message, state) {
+            if (!input || !statusElement) return;
+            clearInputErrorState(input);
+            const subtype = statusElement.classList.contains('recovery-audit-status')
+                ? ' recovery-audit-status'
+                : '';
+            if (state === 'pass') {
+                markInputValid(input);
+            }
+            if (state === 'fail') {
+                markInputInvalid(input, message);
+            }
+            statusElement.className =
+                `recovery-payload-status${subtype}${state ? ` ${state}` : ''}`;
+            statusElement.textContent = message;
+        }
+
+        function refreshManifestEvidenceStatuses() {
+            if (recoverManifestHeaderMetadata) {
+                try {
+                    const message = validateManifestHeaderAgainstPayloads(
+                        recoverManifestHeaderMetadata
+                    );
+                    setEvidenceStatus(
+                        recoverManifestHeaderInput,
+                        recoverManifestHeaderStatus,
+                        message,
+                        'pass'
+                    );
+                } catch (error) {
+                    setEvidenceStatus(
+                        recoverManifestHeaderInput,
+                        recoverManifestHeaderStatus,
+                        error.message,
+                        'fail'
+                    );
+                }
+            }
+            recoverFlowCache.forEach((entry, index) => {
+                if (entry.auditEvidenceText.trim() === '') return;
+                if (!entry.auditEvidenceMetadata) return;
+                const input = document.getElementById(`recover-audit-evidence-${index + 1}`);
+                const status = input?.closest('.recovery-payload-group')
+                    ?.querySelector('.recovery-audit-status');
+                const resolved = resolveAuditEvidenceStatus(entry);
+                setEvidenceStatus(input, status, resolved.message, resolved.state);
+            });
+        }
+
+        async function handleManifestHeaderBlur() {
+            recoverManifestHeaderText = recoverManifestHeaderInput?.value || '';
+            if (recoverManifestHeaderText.trim() === '') {
+                recoverManifestHeaderMetadata = null;
+                setEvidenceStatus(
+                    recoverManifestHeaderInput,
+                    recoverManifestHeaderStatus,
+                    '',
+                    ''
+                );
+                return;
+            }
+            try {
+                recoverManifestHeaderMetadata =
+                    DuraShare.decodeManifestHeaderPayloadHex(recoverManifestHeaderText);
+            } catch (error) {
+                recoverManifestHeaderMetadata = null;
+                setEvidenceStatus(
+                    recoverManifestHeaderInput,
+                    recoverManifestHeaderStatus,
+                    error.message,
+                    'fail'
+                );
+                return;
+            }
+            try {
+                const message = validateManifestHeaderAgainstPayloads(
+                    recoverManifestHeaderMetadata
+                );
+                setEvidenceStatus(
+                    recoverManifestHeaderInput,
+                    recoverManifestHeaderStatus,
+                    message,
+                    'pass'
+                );
+            } catch (error) {
+                setEvidenceStatus(
+                    recoverManifestHeaderInput,
+                    recoverManifestHeaderStatus,
+                    error.message,
+                    'fail'
+                );
+            }
+        }
+
+        async function handleAuditEvidenceBlur(shareIndex, input, status) {
+            const cacheEntry = recoverFlowCache[shareIndex - 1];
+            cacheEntry.auditEvidenceText = input.value;
+            if (input.value.trim() === '') {
+                cacheEntry.auditEvidenceMetadata = null;
+                setEvidenceStatus(input, status, '', '');
+                return;
+            }
+            try {
+                cacheEntry.auditEvidenceMetadata =
+                    DuraShare.decodeManifestAuditEvidenceHex(input.value);
+                const resolved = resolveAuditEvidenceStatus(cacheEntry);
+                setEvidenceStatus(input, status, resolved.message, resolved.state);
+            } catch (error) {
+                cacheEntry.auditEvidenceMetadata = null;
+                setEvidenceStatus(input, status, error.message, 'fail');
+                const liveStatus = document.querySelector(
+                    `#share-container-${shareIndex} .recovery-audit-status`
+                );
+                if (liveStatus) {
+                    liveStatus.className =
+                        'recovery-payload-status recovery-audit-status fail';
+                    liveStatus.textContent = error.message;
+                }
+            }
+        }
+
         function generateSingleRecoverShareInput(shareIndex) {
             const cacheIndex = shareIndex - 1;
             const shareCache = recoverFlowCache[cacheIndex];
@@ -2961,6 +3729,86 @@ TERMS OF USE
             const mainHeader = document.createElement('h3');
             mainHeader.textContent = `Share Input #${shareIndex}`;
             container.appendChild(mainHeader);
+
+            const payloadGroup = document.createElement('div');
+            payloadGroup.className = 'form-group recovery-payload-group';
+            const payloadLabel = document.createElement('label');
+            payloadLabel.htmlFor = `recover-payload-${shareIndex}`;
+            payloadLabel.textContent = 'Share Payload Hex (Full SF or Compact SC)';
+            const payloadInput = document.createElement('input');
+            payloadInput.type = 'text';
+            payloadInput.id = `recover-payload-${shareIndex}`;
+            payloadInput.className = 'mono';
+            payloadInput.placeholder = 'Paste 5346… (Full) or 5343… (Compact), then leave the field';
+            payloadInput.value = shareCache.payloadText || '';
+            payloadInput.autocomplete = 'off';
+            payloadInput.spellcheck = false;
+            payloadInput.dataset.fieldLabel = `Share Input #${shareIndex} payload`;
+            payloadInput.dataset.recoveryEvidence = 'share-payload';
+            const payloadStatus = document.createElement('p');
+            payloadStatus.className = shareCache.payloadMetadata
+                ? 'recovery-payload-status recovery-share-payload-status pass'
+                : 'recovery-payload-status recovery-share-payload-status';
+            payloadStatus.textContent = getPayloadStatusCopy(shareCache.payloadMetadata);
+            payloadInput.addEventListener('input', () => {
+                shareCache.payloadText = payloadInput.value;
+                shareCache.payloadMetadata = null;
+                shareCache.payloadEvidenceMetadata = null;
+                clearInputErrorState(payloadInput);
+                payloadStatus.className =
+                    'recovery-payload-status recovery-share-payload-status';
+                payloadStatus.textContent =
+                    payloadInput.value.trim() === ''
+                        ? ''
+                        : 'Leave this field to validate and import the payload.';
+            });
+            payloadInput.addEventListener('blur', () => {
+                recoveryPayloadPromises[cacheIndex] =
+                    handleRecoveryPayloadBlur(shareIndex, payloadInput);
+            });
+            payloadGroup.appendChild(payloadLabel);
+            payloadGroup.appendChild(payloadInput);
+            payloadGroup.appendChild(payloadStatus);
+            container.appendChild(payloadGroup);
+            if (shareCache.payloadMetadata) {
+                markInputValid(payloadInput);
+            }
+
+            const auditGroup = document.createElement('div');
+            auditGroup.className = 'form-group recovery-payload-group';
+            const auditLabel = document.createElement('label');
+            auditLabel.htmlFor = `recover-audit-evidence-${shareIndex}`;
+            auditLabel.textContent = 'Manifest Audit Hash or Share Audit Payload (Optional)';
+            const auditInput = document.createElement('input');
+            auditInput.type = 'text';
+            auditInput.id = `recover-audit-evidence-${shareIndex}`;
+            auditInput.className = 'mono';
+            auditInput.placeholder = 'Paste a 32-byte Audit Hash or 5341… SA payload';
+            auditInput.value = shareCache.auditEvidenceText || '';
+            auditInput.autocomplete = 'off';
+            auditInput.spellcheck = false;
+            auditInput.dataset.fieldLabel = `Share Input #${shareIndex} Manifest Audit evidence`;
+            auditInput.dataset.recoveryEvidence = 'manifest-audit';
+            const auditStatus = document.createElement('p');
+            auditStatus.className = 'recovery-payload-status recovery-audit-status';
+            auditInput.addEventListener('input', () => {
+                shareCache.auditEvidenceText = auditInput.value;
+                shareCache.auditEvidenceMetadata = null;
+                clearInputErrorState(auditInput);
+                auditStatus.className = 'recovery-payload-status recovery-audit-status';
+                auditStatus.textContent =
+                    auditInput.value.trim() === ''
+                        ? ''
+                        : 'Leave this field to validate the Manifest Audit evidence.';
+            });
+            auditInput.addEventListener('blur', () => {
+                recoveryAuditPromises[cacheIndex] =
+                    handleAuditEvidenceBlur(shareIndex, auditInput, auditStatus);
+            });
+            auditGroup.appendChild(auditLabel);
+            auditGroup.appendChild(auditInput);
+            auditGroup.appendChild(auditStatus);
+            container.appendChild(auditGroup);
 
             const shareNumberGroup = document.createElement('div');
             shareNumberGroup.className = 'form-group';
@@ -3006,6 +3854,9 @@ TERMS OF USE
             const totalWords = recoverWordCount;
             const wordsPerChecksum = 3;
             const numChecksums = totalWords / wordsPerChecksum;
+            const payloadChecksDerived = Boolean(
+                shareCache.payloadMetadata?.checksDerived
+            );
             const matSlotKeys = ['mat-a', 'mat-b'];
             const matLabelPrefixes = ['MAT A', 'MAT B'];
             const cachedMatTags = Array.isArray(shareCache.matTags) ? shareCache.matTags : [[], []];
@@ -3047,6 +3898,9 @@ TERMS OF USE
                 row.className = 'share-word-item';
                 const label = document.createElement('label');
                 label.textContent = `RC${i}`;
+                if (payloadChecksDerived) {
+                    label.classList.add('payload-derived-label');
+                }
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'mono';
@@ -3106,6 +3960,9 @@ TERMS OF USE
                 row.className = 'share-word-item';
                 const label = document.createElement('label');
                 label.textContent = `CC${col + 1}`;
+                if (payloadChecksDerived) {
+                    label.classList.add('payload-derived-label');
+                }
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.className = 'mono';
@@ -3132,6 +3989,9 @@ TERMS OF USE
             gicRow.className = 'share-word-item';
             const gicLabel = document.createElement('label');
             gicLabel.textContent = 'GIC';
+            if (payloadChecksDerived) {
+                gicLabel.classList.add('payload-derived-label');
+            }
             const gicInput = document.createElement('input');
             gicInput.type = 'text';
             gicInput.className = 'mono';
@@ -3163,6 +4023,10 @@ TERMS OF USE
         function persistRecoverShareInputsToCache() {
             const existingContainers = recoverSharesContainer.querySelectorAll('.share-input-container');
             existingContainers.forEach((container) => {
+                const payloadInput = container.querySelector('[id^="recover-payload-"]');
+                const auditEvidenceInput = container.querySelector(
+                    '[id^="recover-audit-evidence-"]'
+                );
                 const shareNumberInput = container.querySelector('[id^="recover-x-"]');
                 const globalIntegrityCheckShareInput = container.querySelector('[data-slot="gic"]');
                 if (!shareNumberInput) return;
@@ -3171,6 +4035,10 @@ TERMS OF USE
                 const cacheEntry = recoverFlowCache[shareIndex];
 
                 if (cacheEntry) {
+                    cacheEntry.payloadText = payloadInput ? payloadInput.value : '';
+                    cacheEntry.auditEvidenceText = auditEvidenceInput
+                        ? auditEvidenceInput.value
+                        : '';
                     cacheEntry.shareNumber = shareNumberInput.value;
                     cacheEntry.globalIntegrityCheckShare = globalIntegrityCheckShareInput
                         ? globalIntegrityCheckShareInput.value
@@ -3234,6 +4102,9 @@ TERMS OF USE
          * Rebuilds recover-flow share inputs from recoverFlowCache (does not read the DOM first).
          */
         function renderRecoverShareInputsFromCache() {
+            if (recoverManifestHeaderInput) {
+                recoverManifestHeaderInput.value = recoverManifestHeaderText;
+            }
             recoverSharesContainer.replaceChildren();
             const kValue = document.querySelector('input[name="recover-k"]:checked').value;
             const numShares = parseInt(kValue, 10);
@@ -3250,6 +4121,7 @@ TERMS OF USE
             for (let i = 1; i <= numShares; i++) {
                 validateShareInline(i);
             }
+            refreshManifestEvidenceStatuses();
         }
 
         /**
@@ -3814,7 +4686,11 @@ TERMS OF USE
 
             // STEP 1: Clear ALL highlights for this share (fresh start)
             const allInputs = container.querySelectorAll('input');
-            allInputs.forEach(input => clearInputErrorState(input));
+            allInputs.forEach(input => {
+                if (!input.dataset.recoveryEvidence) {
+                    clearInputErrorState(input);
+                }
+            });
 
             // Derive row count from DOM
             const checksumInputs = container.querySelectorAll('input[data-slot="checksum"]');
@@ -3824,6 +4700,9 @@ TERMS OF USE
             // STEP 2: Parse Validation - highlight individual fields with invalid values
             const parseErrors = new Set();
             allInputs.forEach(input => {
+                if (input.dataset.recoveryEvidence) {
+                    return;
+                }
                 const slot = input.dataset.slot || '';
                 if (slot === 'mat-a' || slot === 'mat-b' || input.dataset.matKey === 'true') {
                     clearInputErrorState(input);
@@ -4092,6 +4971,220 @@ TERMS OF USE
             metadataEl.appendChild(p);
         }
 
+        function appendWalletContext(metadataEl, metadata) {
+            appendShareMetadataLine(
+                metadataEl,
+                'Wallet / Derivation Profile',
+                metadata.walletProfileLabel
+            );
+            appendShareMetadataLine(
+                metadataEl,
+                'BIP39 Passphrase Required',
+                metadata.passphraseRequired ? 'Yes' : 'No'
+            );
+            if (metadata.passphraseRequired && metadata.passphraseHint) {
+                appendShareMetadataLine(
+                    metadataEl,
+                    'Passphrase Hint / Reference',
+                    metadata.passphraseHint
+                );
+            }
+            appendShareMetadataLine(
+                metadataEl,
+                'Recovery Verification Address (RVA)',
+                metadata.recoveryVerificationAddress || 'Not recorded'
+            );
+        }
+
+        function appendDigitalField(parent, labelText, bytes, fieldName) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'digital-field';
+            const label = document.createElement('label');
+            label.textContent = labelText;
+            const code = document.createElement('code');
+            code.className = 'mono';
+            code.dataset.digitalField = fieldName;
+            code.textContent = DuraShare.bytesToHex(bytes);
+            wrapper.appendChild(label);
+            wrapper.appendChild(code);
+            parent.appendChild(wrapper);
+        }
+
+        function buildDigitalProfileCard(titleText, profileName, fields) {
+            const card = document.createElement('section');
+            card.className = 'digital-profile';
+            card.dataset.profile = profileName;
+            const title = document.createElement('h5');
+            title.textContent = titleText;
+            card.appendChild(title);
+            fields.forEach((field) => {
+                appendDigitalField(
+                    card,
+                    field.label,
+                    field.bytes,
+                    field.name
+                );
+            });
+            return card;
+        }
+
+        function appendShareDigitalArtifacts(parent, share, metadata, session) {
+            if (!share.digital || !session?.full || !session?.compact) {
+                throw new Error('Share digital envelopes are missing.');
+            }
+            const section = document.createElement('section');
+            section.className = 'digital-artifacts share-digital-artifacts';
+            section.dataset.shareNumber = String(share.shareNumber);
+            const heading = document.createElement('h4');
+            heading.textContent = 'Digital Envelopes (Future QR Payloads)';
+            section.appendChild(heading);
+            const hint = document.createElement('p');
+            hint.className = 'recover-hint';
+            hint.textContent =
+                'Uppercase hexadecimal representation of the raw Payload bytes. ' +
+                'Future QR symbols must encode the raw bytes, not these visible characters.';
+            section.appendChild(hint);
+
+            const context = document.createElement('div');
+            context.className = 'share-metadata';
+            appendShareMetadataLine(context, 'BIP39 Language', 'English');
+            appendWalletContext(context, metadata);
+            section.appendChild(context);
+
+            const grid = document.createElement('div');
+            grid.className = 'digital-profile-grid';
+            grid.appendChild(buildDigitalProfileCard('Full', 'full', [
+                {
+                    label: 'Session Batch ID (8 bytes)',
+                    bytes: session.full.batchId,
+                    name: 'full-session-batch-id'
+                },
+                {
+                    label: 'Recovery Binding Tag (12 bytes)',
+                    bytes: session.full.rbt,
+                    name: 'full-rbt'
+                },
+                {
+                    label: 'Transport Hash (16 bytes)',
+                    bytes: share.digital.full.transportHash,
+                    name: 'full-transport-hash'
+                },
+                {
+                    label: `Share Payload (${share.digital.full.payload.length} bytes)`,
+                    bytes: share.digital.full.payload,
+                    name: 'full-share-payload'
+                }
+            ]));
+            grid.appendChild(buildDigitalProfileCard('Compact', 'compact', [
+                {
+                    label: 'Session Batch ID (4 bytes)',
+                    bytes: session.compact.batchId,
+                    name: 'compact-session-batch-id'
+                },
+                {
+                    label: 'Recovery Binding Tag (6 bytes)',
+                    bytes: session.compact.rbt,
+                    name: 'compact-rbt'
+                },
+                {
+                    label: `Share Payload (${share.digital.compact.payload.length} bytes)`,
+                    bytes: share.digital.compact.payload,
+                    name: 'compact-share-payload'
+                }
+            ]));
+            section.appendChild(grid);
+            parent.appendChild(section);
+        }
+
+        function appendManifestDigitalHeaders(parent, session) {
+            if (!session?.full || !session?.compact) {
+                throw new Error('Manifest digital header payloads are missing.');
+            }
+            const section = document.createElement('section');
+            section.className = 'digital-artifacts manifest-digital-headers';
+            const heading = document.createElement('h4');
+            heading.textContent = 'Digital Manifest Headers (Future QR Payloads)';
+            section.appendChild(heading);
+            const grid = document.createElement('div');
+            grid.className = 'digital-profile-grid';
+            grid.appendChild(buildDigitalProfileCard('Full', 'full', [
+                {
+                    label: 'Session Batch ID',
+                    bytes: session.full.batchId,
+                    name: 'manifest-full-session-batch-id'
+                },
+                {
+                    label: 'Recovery Binding Tag',
+                    bytes: session.full.rbt,
+                    name: 'manifest-full-rbt'
+                },
+                {
+                    label: `SB Payload (${session.full.manifestHeaderPayload.length} bytes)`,
+                    bytes: session.full.manifestHeaderPayload,
+                    name: 'manifest-full-header-payload'
+                }
+            ]));
+            grid.appendChild(buildDigitalProfileCard('Compact', 'compact', [
+                {
+                    label: 'Session Batch ID',
+                    bytes: session.compact.batchId,
+                    name: 'manifest-compact-session-batch-id'
+                },
+                {
+                    label: 'Recovery Binding Tag',
+                    bytes: session.compact.rbt,
+                    name: 'manifest-compact-rbt'
+                },
+                {
+                    label: `SB Payload (${session.compact.manifestHeaderPayload.length} bytes)`,
+                    bytes: session.compact.manifestHeaderPayload,
+                    name: 'manifest-compact-header-payload'
+                }
+            ]));
+            section.appendChild(grid);
+            parent.appendChild(section);
+        }
+
+        function appendManifestShareAudit(parent, share) {
+            if (!share?.digital?.full || !share?.digital?.compact) {
+                throw new Error('Manifest Share Audit data is missing.');
+            }
+            const section = document.createElement('section');
+            section.className = 'digital-artifacts manifest-digital-audit';
+            section.dataset.shareNumber = String(share.shareNumber);
+            const heading = document.createElement('h4');
+            heading.textContent = 'Digital Audit';
+            section.appendChild(heading);
+            const grid = document.createElement('div');
+            grid.className = 'digital-profile-grid';
+            grid.appendChild(buildDigitalProfileCard('Full', 'full', [
+                {
+                    label: 'Audit Hash (SHA-256)',
+                    bytes: share.digital.full.auditHash,
+                    name: 'full-audit-hash'
+                },
+                {
+                    label: `SA Payload (${share.digital.full.auditPayload.length} bytes)`,
+                    bytes: share.digital.full.auditPayload,
+                    name: 'full-audit-payload'
+                }
+            ]));
+            grid.appendChild(buildDigitalProfileCard('Compact', 'compact', [
+                {
+                    label: 'Audit Hash (SHA-256)',
+                    bytes: share.digital.compact.auditHash,
+                    name: 'compact-audit-hash'
+                },
+                {
+                    label: `SA Payload (${share.digital.compact.auditPayload.length} bytes)`,
+                    bytes: share.digital.compact.auditPayload,
+                    name: 'compact-audit-payload'
+                }
+            ]));
+            section.appendChild(grid);
+            parent.appendChild(section);
+        }
+
         function formatMatFieldValue(value) {
             if (!Number.isInteger(value) || value < 0 || value >= FIELD_PRIME) {
                 throw new Error('MAT values must be integers between 0 and 2052.');
@@ -4212,7 +5305,7 @@ TERMS OF USE
             grid.appendChild(item);
         }
 
-        function buildManifestCard(manifest, metadata, n) {
+        function buildManifestCard(manifest, metadata, n, shares, session) {
             const card = document.createElement('div');
             card.className = 'component-card manifest-card';
             card.dataset.manifestKind = manifest.kind;
@@ -4240,7 +5333,9 @@ TERMS OF USE
             appendShareMetadataLine(metadataDiv, 'BIP39 Language', 'English');
             appendShareMetadataLine(metadataDiv, 'MAT', getMatModeLabel(manifest.matMode));
             appendShareMetadataLine(metadataDiv, 'MAT Key Custody', getMatCustodyLabel(manifest.matCustody));
+            appendWalletContext(metadataDiv, metadata);
             card.appendChild(metadataDiv);
+            appendManifestDigitalHeaders(card, session);
 
             manifest.shareKeys.forEach((shareEntry) => {
                 const shareSection = document.createElement('div');
@@ -4277,6 +5372,10 @@ TERMS OF USE
                     });
                     shareSection.appendChild(grid);
                 });
+                const matchingShare = shares.find(
+                    share => share.shareNumber === shareEntry.shareNumber
+                );
+                appendManifestShareAudit(shareSection, matchingShare);
                 card.appendChild(shareSection);
             });
 
@@ -4367,7 +5466,7 @@ TERMS OF USE
             appendManualRecoveryListItem(
                 list,
                 'Verify Column Checksums:',
-                'Recover Col1, Col2, and Col3 the same way. For each column, sum that column\'s recovered words plus its tag (Col1 +10, Col2 +20, Col3 +30) mod 2053 and compare to the recovered column checksum.'
+                'Recover Col1, Col2, and Col3 the same way. For each column, sum that column\'s recovered words plus its tag (Col1 +100, Col2 +200, Col3 +300) mod 2053 and compare to the recovered column checksum.'
             );
             appendManualRecoveryListItem(
                 list,
@@ -4389,7 +5488,7 @@ TERMS OF USE
          * @param {Array<Object>} shares - The array of generated share data.
          * @param {Object} metadata - The wallet metadata from the form.
          */
-        function displayShares(shares, metadata, manifests = []) {
+        function displayShares(shares, metadata, manifests = [], session = null) {
             const outputContainer = document.getElementById('shares-output');
             const printContainer = document.getElementById('print-output');
 
@@ -4405,6 +5504,7 @@ TERMS OF USE
                 const screenCard = document.createElement('div');
                 screenCard.className = 'component-card share-card';
                 appendShareCardContent(screenCard, share, metadata, n, rowCountDisplay);
+                appendShareDigitalArtifacts(screenCard, share, metadata, session);
                 outputContainer.appendChild(screenCard);
 
                 const printCard = document.createElement('div');
@@ -4416,170 +5516,352 @@ TERMS OF USE
             });
 
             manifests.forEach((manifest) => {
-                outputContainer.appendChild(buildManifestCard(manifest, metadata, n));
+                outputContainer.appendChild(
+                    buildManifestCard(manifest, metadata, n, shares, session)
+                );
             });
         }
 
-        const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+        function validationSummaryFromStatus(status) {
+            const normalized = status === 'pass' || status === 'fail'
+                ? status
+                : 'blank';
+            return {
+                blank: normalized === 'blank' ? 1 : 0,
+                pass: normalized === 'pass' ? 1 : 0,
+                fail: normalized === 'fail' ? 1 : 0,
+                total: 1
+            };
+        }
 
-        function createRecoveryStatusItem(kind, titleText, status, copyText) {
+        function normalizeValidationSummary(summary) {
+            const normalized = {
+                blank: Number(summary?.blank) || 0,
+                pass: Number(summary?.pass) || 0,
+                fail: Number(summary?.fail) || 0,
+                total: Number(summary?.total) || 0
+            };
+            if (normalized.total === 0) {
+                normalized.blank = 1;
+                normalized.total = 1;
+            }
+            return normalized;
+        }
+
+        function getValidationSummaryStatus(summary) {
+            if (summary.pass > 0 && summary.fail > 0) return 'mixed';
+            if (summary.fail > 0) return 'fail';
+            if (summary.pass > 0) return 'pass';
+            return 'blank';
+        }
+
+        function createRecoveryEvidenceItem(
+            kind,
+            titleText,
+            rawSummary,
+            copyText,
+            labels = {}
+        ) {
+            const summary = normalizeValidationSummary(rawSummary);
+            const status = getValidationSummaryStatus(summary);
             const item = document.createElement('section');
-            item.className = 'recovery-validation-item recovery-status-item';
+            item.className = 'recovery-evidence-item';
             item.dataset.validationKind = kind;
             item.dataset.status = status;
-
-            const title = document.createElement('h4');
-            title.textContent = titleText;
-
-            const statusValue = document.createElement('strong');
-            statusValue.className = `recovery-status-value ${status}`;
-            statusValue.textContent = status === 'pass'
-                ? 'PASS'
-                : (status === 'fail' ? 'FAIL' : 'NOT CHECKED');
-
-            const copy = document.createElement('p');
-            copy.textContent = copyText;
-
-            item.appendChild(title);
-            item.appendChild(statusValue);
-            item.appendChild(copy);
-            return item;
-        }
-
-        function appendDonutPattern(defs, patternId, category) {
-            const pattern = document.createElementNS(SVG_NAMESPACE, 'pattern');
-            pattern.setAttribute('id', patternId);
-            pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-            pattern.setAttribute('width', '8');
-            pattern.setAttribute('height', '8');
-
-            const background = document.createElementNS(SVG_NAMESPACE, 'rect');
-            background.setAttribute('width', '8');
-            background.setAttribute('height', '8');
-            background.setAttribute(
-                'fill',
-                category === 'pass'
-                    ? 'var(--success-green)'
-                    : (category === 'fail' ? 'var(--error-red)' : 'var(--validation-blank)')
-            );
-            pattern.appendChild(background);
-
-            if (category === 'fail') {
-                const hatch = document.createElementNS(SVG_NAMESPACE, 'path');
-                hatch.setAttribute('d', 'M-2 2 L2 -2 M0 8 L8 0 M6 10 L10 6');
-                hatch.setAttribute('stroke', 'var(--bg-main)');
-                hatch.setAttribute('stroke-width', '1.5');
-                pattern.appendChild(hatch);
-            } else if (category === 'blank') {
-                const dot = document.createElementNS(SVG_NAMESPACE, 'circle');
-                dot.setAttribute('cx', '4');
-                dot.setAttribute('cy', '4');
-                dot.setAttribute('r', '1.5');
-                dot.setAttribute('fill', 'var(--bg-main)');
-                pattern.appendChild(dot);
-            }
-
-            defs.appendChild(pattern);
-        }
-
-        function createRecoveryDonutItem(kind, titleText, summary, copyText) {
-            const item = document.createElement('section');
-            item.className = 'recovery-validation-item recovery-donut-item';
-            item.dataset.validationKind = kind;
             item.dataset.blank = String(summary.blank);
             item.dataset.pass = String(summary.pass);
             item.dataset.fail = String(summary.fail);
             item.dataset.total = String(summary.total);
 
+            const header = document.createElement('div');
+            header.className = 're-header';
+
             const title = document.createElement('h4');
             title.textContent = titleText;
-            item.appendChild(title);
 
-            const layout = document.createElement('div');
-            layout.className = 'recovery-donut-layout';
+            const statusValue = document.createElement('span');
+            statusValue.className = `recovery-evidence-status ${status}`;
+            statusValue.textContent = labels[status] || {
+                pass: 'CONSISTENT',
+                fail: 'PROBLEM',
+                mixed: 'MIXED',
+                blank: 'NOT CHECKED'
+            }[status];
 
-            const svg = document.createElementNS(SVG_NAMESPACE, 'svg');
-            svg.classList.add('recovery-donut');
-            svg.setAttribute('viewBox', '0 0 120 120');
-            svg.setAttribute('role', 'img');
-            svg.setAttribute('focusable', 'false');
-            svg.setAttribute(
-                'aria-label',
-                `${titleText}: ${summary.pass} pass, ${summary.fail} fail, ${summary.blank} blank, ${summary.total} total.`
-            );
+            header.append(title, statusValue);
+            item.appendChild(header);
+            appendSegmentedStatusBar(item, summary, titleText);
 
-            const svgTitle = document.createElementNS(SVG_NAMESPACE, 'title');
-            svgTitle.textContent =
-                `${titleText}: ${summary.pass} pass, ${summary.fail} fail, ${summary.blank} blank.`;
-            svg.appendChild(svgTitle);
-
-            const defs = document.createElementNS(SVG_NAMESPACE, 'defs');
-            ['blank', 'pass', 'fail'].forEach((category) => {
-                appendDonutPattern(defs, `recovery-${kind}-${category}`, category);
-            });
-            svg.appendChild(defs);
-
-            let offset = 0;
-            ['blank', 'pass', 'fail'].forEach((category) => {
-                const count = summary[category];
-                if (count === 0 || summary.total === 0) return;
-                const percentage = (count / summary.total) * 100;
-                const segment = document.createElementNS(SVG_NAMESPACE, 'circle');
-                segment.setAttribute('cx', '60');
-                segment.setAttribute('cy', '60');
-                segment.setAttribute('r', '42');
-                segment.setAttribute('fill', 'none');
-                segment.setAttribute('stroke', `url(#recovery-${kind}-${category})`);
-                segment.setAttribute('stroke-width', '18');
-                segment.setAttribute('pathLength', '100');
-                segment.setAttribute('stroke-dasharray', `${percentage} ${100 - percentage}`);
-                segment.setAttribute('stroke-dashoffset', String(-offset));
-                segment.setAttribute('transform', 'rotate(-90 60 60)');
-                segment.dataset.category = category;
-                svg.appendChild(segment);
-                offset += percentage;
-            });
-
-            const centerCount = document.createElementNS(SVG_NAMESPACE, 'text');
-            centerCount.classList.add('recovery-donut-center-count');
-            centerCount.setAttribute('x', '60');
-            centerCount.setAttribute('y', '59');
-            centerCount.textContent = `${summary.pass + summary.fail}/${summary.total}`;
-            svg.appendChild(centerCount);
-
-            const centerLabel = document.createElementNS(SVG_NAMESPACE, 'text');
-            centerLabel.classList.add('recovery-donut-center-label');
-            centerLabel.setAttribute('x', '60');
-            centerLabel.setAttribute('y', '73');
-            centerLabel.textContent = 'checked';
-            svg.appendChild(centerLabel);
-            layout.appendChild(svg);
-
-            const legend = document.createElement('ul');
-            legend.className = 'recovery-donut-legend';
-            ['blank', 'pass', 'fail'].forEach((category) => {
-                const row = document.createElement('li');
-                row.dataset.category = category;
-                const swatch = document.createElement('span');
-                swatch.className = `recovery-legend-swatch ${category}`;
-                swatch.setAttribute('aria-hidden', 'true');
-                const label = document.createElement('span');
-                const labelText = category === 'blank'
-                    ? 'Blank / not checked'
-                    : (category === 'pass' ? 'Pass' : 'Fail');
-                label.textContent = `${labelText}: ${summary[category]}`;
-                row.appendChild(swatch);
-                row.appendChild(label);
-                legend.appendChild(row);
-            });
-            layout.appendChild(legend);
-            item.appendChild(layout);
+            const counts = document.createElement('div');
+            counts.className = 'recovery-evidence-counts';
+            if (summary.pass > 0) {
+                const sp = document.createElement('span');
+                sp.className = 'pass';
+                sp.textContent = `Pass: ${summary.pass}`;
+                counts.appendChild(sp);
+            }
+            if (summary.fail > 0) {
+                const sf = document.createElement('span');
+                sf.className = 'fail';
+                sf.textContent = `Problem: ${summary.fail}`;
+                counts.appendChild(sf);
+            }
+            if (summary.blank > 0) {
+                const sb = document.createElement('span');
+                sb.className = 'blank';
+                sb.textContent = `Not checked: ${summary.blank}`;
+                counts.appendChild(sb);
+            }
+            item.appendChild(counts);
 
             const copy = document.createElement('p');
-            copy.style.marginTop = '12px';
+            copy.className = 'recovery-evidence-copy';
             copy.textContent = copyText;
             item.appendChild(copy);
             return item;
+        }
+
+        function appendSegmentedStatusBar(parent, summary, ariaTitle, extraClass = '') {
+            const bar = document.createElement('div');
+            bar.className = extraClass
+                ? `recovery-evidence-bar ${extraClass}`
+                : 'recovery-evidence-bar';
+            bar.setAttribute('role', 'img');
+            bar.setAttribute(
+                'aria-label',
+                `${ariaTitle}: ${summary.pass} pass, ${summary.fail} fail, ` +
+                `${summary.blank} not checked, ${summary.total} total.`
+            );
+            ['pass', 'fail', 'blank'].forEach((category) => {
+                const count = summary[category];
+                if (count === 0) return;
+                const segment = document.createElement('span');
+                segment.className = `recovery-evidence-segment ${category}`;
+                segment.style.flexGrow = String(count);
+                segment.dataset.category = category;
+                bar.appendChild(segment);
+            });
+            parent.appendChild(bar);
+            return bar;
+        }
+
+        function summarizeMeterFamilies(evidenceItems) {
+            const summary = {
+                pass: 0,
+                fail: 0,
+                blank: 0,
+                total: evidenceItems.length
+            };
+            evidenceItems.forEach((item) => {
+                const status = item.dataset.status;
+                if (status === 'pass') {
+                    summary.pass += 1;
+                } else if (status === 'fail' || status === 'mixed') {
+                    summary.fail += 1;
+                } else {
+                    summary.blank += 1;
+                }
+            });
+            return summary;
+        }
+
+        function createRecoveryMeter(kind, titleText, model, evidenceItems) {
+            const meter = document.createElement('details');
+            meter.className = 'recovery-meter';
+            meter.dataset.meterKind = kind;
+            meter.dataset.state = model.state;
+            const familyBar = summarizeMeterFamilies(evidenceItems);
+            meter.dataset.barPass = String(familyBar.pass);
+            meter.dataset.barFail = String(familyBar.fail);
+            meter.dataset.barBlank = String(familyBar.blank);
+            if (Number.isInteger(model.coverage)) {
+                meter.dataset.coverage = String(model.coverage);
+                meter.dataset.coverageTotal = String(model.coverageTotal);
+            }
+
+            const summary = document.createElement('summary');
+
+            const topRow = document.createElement('div');
+            topRow.className = 'rm-top';
+
+            const titleBlock = document.createElement('div');
+            titleBlock.className = 'rm-titles';
+
+            const title = document.createElement('h3');
+            title.className = 'recovery-meter-title';
+            title.textContent = titleText;
+
+            const state = document.createElement('strong');
+            state.className = `recovery-meter-state ${model.state}`;
+            state.textContent = model.label;
+
+            titleBlock.append(title, state);
+
+            const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            chevron.setAttribute('class', 'rm-chevron');
+            chevron.setAttribute('viewBox', '0 0 24 24');
+            chevron.innerHTML = '<path d="M6 9l6 6 6-6"/>';
+
+            topRow.append(titleBlock, chevron);
+
+            const copy = document.createElement('p');
+            copy.className = 'recovery-meter-summary-copy';
+            copy.textContent = model.copy;
+
+            summary.append(topRow);
+            appendSegmentedStatusBar(
+                summary,
+                familyBar,
+                titleText,
+                'recovery-meter-bar'
+            );
+            summary.append(copy);
+            meter.appendChild(summary);
+
+            const details = document.createElement('div');
+            details.className = 'recovery-meter-details';
+            const grid = document.createElement('div');
+            grid.className = 'recovery-evidence-grid';
+            evidenceItems.forEach(item => grid.appendChild(item));
+            details.appendChild(grid);
+            meter.appendChild(details);
+            return meter;
+        }
+
+        function getRbtArtifactSummary(rbtValidation) {
+            const outcomes = Array.isArray(rbtValidation?.outcomes)
+                ? rbtValidation.outcomes
+                : [];
+            if (outcomes.length === 0) {
+                return validationSummaryFromStatus('not-checked');
+            }
+            return summarizeValidationOutcomes(
+                outcomes.map(outcome => outcome.status)
+            );
+        }
+
+        function getRbtConfidenceSummary(rbtValidation) {
+            return validationSummaryFromStatus(rbtValidation?.status);
+        }
+
+        function deriveRecoveryConfidence(validation, rbtSummary) {
+            const bip39Status = validation.bip39?.status || 'not-checked';
+            if (rbtSummary.pass > 0 && bip39Status === 'pass') {
+                return {
+                    state: 'confirmed',
+                    label: 'CONFIRMED',
+                    copy: validation.rbt?.hasConflict
+                        ? 'At least one RBT confirms this candidate, but another RBT source disagrees. Review Backup Kit Health before preserving the artifacts.'
+                        : 'The candidate is bound to the sharing session by RBT and is a well-formed BIP39 mnemonic.'
+                };
+            }
+            if (rbtSummary.pass > 0) {
+                return {
+                    state: 'anomaly',
+                    label: 'ANOMALY',
+                    copy: 'RBT identifies the shared protocol input, but the candidate fails BIP39 validation. Stop and investigate the mismatch.'
+                };
+            }
+            if (rbtSummary.fail > 0) {
+                return {
+                    state: 'mismatch',
+                    label: 'MISMATCH',
+                    copy: 'Available RBT evidence does not bind this candidate to the sharing session, even if the words form a valid BIP39 mnemonic.'
+                };
+            }
+            if (bip39Status === 'pass') {
+                return {
+                    state: 'plausible',
+                    label: 'PLAUSIBLE — NOT SESSION-BOUND',
+                    copy: 'The candidate is valid BIP39, but no RBT evidence was available to identify it as the phrase originally shared.'
+                };
+            }
+            return {
+                state: 'low-confidence',
+                label: 'LOW CONFIDENCE',
+                copy: 'No RBT evidence identified the candidate, and it is not a valid BIP39 mnemonic.'
+            };
+        }
+
+        function getRbtArtifactConsistencyCopy(rbtValidation) {
+            const outcomes = Array.isArray(rbtValidation?.outcomes)
+                ? rbtValidation.outcomes
+                : [];
+            if (outcomes.length === 0) {
+                return 'No Share payload or Manifest Header supplied RBT evidence.';
+            }
+            const matchedCount = outcomes.filter(
+                outcome => outcome.status === 'pass'
+            ).length;
+            const problemLabels = outcomes
+                .filter(outcome => outcome.status === 'fail')
+                .map(outcome => outcome.sourceLabel || (
+                    outcome.sources?.includes('manifest-header')
+                        ? 'Manifest Header (SB)'
+                        : `${outcome.profile === 'full' ? 'Full' : 'Compact'} Share payload`
+                ));
+            if (problemLabels.length === 0) {
+                return `All ${outcomes.length} supplied RBT-bearing ` +
+                    `${outcomes.length === 1 ? 'artifact matches' : 'artifacts match'} ` +
+                    'the recovered candidate.';
+            }
+            const result = matchedCount > 0
+                ? `${matchedCount} of ${outcomes.length} supplied RBT-bearing artifacts match the recovered candidate.`
+                : 'No supplied RBT-bearing artifact matches the recovered candidate.';
+            return `${result} ${problemLabels.length === 1 ? 'Problem source' : 'Problem sources'}: ` +
+                `${problemLabels.join(', ')}.`;
+        }
+
+        function deriveBackupKitHealth(families) {
+            const summaries = families.map(family =>
+                normalizeValidationSummary(family.summary)
+            );
+            const coverage = summaries.filter(
+                summary => summary.pass + summary.fail > 0
+            ).length;
+            const hasProblem = summaries.some(summary => summary.fail > 0);
+            const hasEvidence = summaries.some(summary => summary.pass > 0);
+            if (hasProblem) {
+                return {
+                    state: 'problems',
+                    label: 'PROBLEMS DETECTED',
+                    copy: `At least one supplied artifact check disagreed. Evidence coverage: ${coverage} of ${families.length} check families.`,
+                    coverage,
+                    coverageTotal: families.length
+                };
+            }
+            if (hasEvidence) {
+                return {
+                    state: 'consistent',
+                    label: 'CONSISTENT',
+                    copy: `No supplied artifact check disagreed. Evidence coverage: ${coverage} of ${families.length} check families.`,
+                    coverage,
+                    coverageTotal: families.length
+                };
+            }
+            return {
+                state: 'not-assessed',
+                label: 'NOT ASSESSED',
+                copy: `No backup-artifact cross-check was completed. Evidence coverage: 0 of ${families.length} check families.`,
+                coverage: 0,
+                coverageTotal: families.length
+            };
+        }
+
+        function getManifestHeaderCopy(manifestHeader) {
+            if (manifestHeader?.reason === 'matched') {
+                return 'The Manifest Header agrees with the available Share payload session. SB is a kit cross-check, not a separate Recovery Confidence metric.';
+            }
+            if (manifestHeader?.reason === 'invalid') {
+                return 'A Manifest Header was supplied but could not be decoded or validated.';
+            }
+            if (manifestHeader?.reason === 'mismatch') {
+                return 'The Manifest Header disagrees with the available Share payload session.';
+            }
+            if (manifestHeader?.reason === 'no-share-payload') {
+                return 'The valid header may supply RBT, but no Share payload was available for an independent SB kit cross-check.';
+            }
+            return 'No Manifest Header was supplied. Optional absence does not lower Backup Kit Health.';
         }
 
         function renderRecoveryValidationSummary(validation) {
@@ -4587,36 +5869,219 @@ TERMS OF USE
             if (!container) return;
             container.replaceChildren();
 
-            container.appendChild(createRecoveryStatusItem(
-                'rbt',
-                'Recovery Binding Tag (RBT)',
-                validation.rbt.status,
-                'RBT verification is not implemented in this HTML version. No session-binding conclusion is available.'
+            const rbtConfidenceSummary = getRbtConfidenceSummary(validation.rbt);
+            const rbtArtifactSummary = getRbtArtifactSummary(validation.rbt);
+            const rbtOutcomes = Array.isArray(validation.rbt?.outcomes)
+                ? validation.rbt.outcomes
+                : [];
+            const matchingProfiles = Array.from(new Set(
+                rbtOutcomes
+                    .filter(outcome => outcome.status === 'pass')
+                    .map(outcome => outcome.profile)
+            ));
+            const rbtProfiles = (
+                matchingProfiles.length > 0
+                    ? matchingProfiles
+                    : validation.rbt?.checkedProfiles || []
+            ).map(profile =>
+                    profile === 'full' ? 'Full (96-bit)' : 'Compact (48-bit)'
+                );
+            const rbtCopy = rbtConfidenceSummary.pass > 0
+                ? (
+                    validation.rbt?.hasConflict
+                        ? 'At least one RBT matched the candidate. The match confirms this binding; artifact discrepancies are listed in Backup Kit Health.'
+                        : `The recovered protocol input matched ${rbtProfiles.join(' and ')} RBT evidence.`
+                )
+                : (
+                    rbtConfidenceSummary.fail > 0
+                        ? 'The recovered protocol input did not match any available RBT evidence.'
+                        : 'No Share payload or Manifest Header supplied RBT evidence.'
+                );
+            const bip39Summary = validationSummaryFromStatus(
+                validation.bip39?.status
+            );
+            const confidence = deriveRecoveryConfidence(
+                validation,
+                rbtConfidenceSummary
+            );
+            const confidenceItems = [
+                createRecoveryEvidenceItem(
+                    'rbt',
+                    'Recovery Binding Tag (RBT)',
+                    rbtConfidenceSummary,
+                    rbtCopy,
+                    {
+                        pass: 'MATCH',
+                        fail: 'MISMATCH',
+                        blank: 'NOT CHECKED'
+                    }
+                ),
+                createRecoveryEvidenceItem(
+                    'bip39',
+                    'BIP39 Checksum',
+                    bip39Summary,
+                    validation.bip39?.status === 'pass'
+                        ? 'The candidate is a well-formed BIP39 mnemonic. BIP39 alone does not identify the intended wallet or sharing session.'
+                        : 'The candidate is not a valid BIP39 mnemonic.',
+                    {
+                        pass: 'VALID',
+                        fail: 'INVALID',
+                        blank: 'NOT CHECKED'
+                    }
+                )
+            ];
+            container.appendChild(createRecoveryMeter(
+                'confidence',
+                'Recovery Confidence',
+                confidence,
+                confidenceItems
             ));
 
-            const bip39Passed = validation.bip39.status === 'pass';
-            container.appendChild(createRecoveryStatusItem(
-                'bip39',
-                'BIP39 Checksum',
-                bip39Passed ? 'pass' : 'fail',
-                bip39Passed
-                    ? 'The candidate is a well-formed BIP39 mnemonic. This does not identify the intended wallet or sharing session.'
-                    : 'The candidate is not a valid BIP39 mnemonic. Review the required Share Numbers and word values.'
+            const manifestHeaderSummary = validationSummaryFromStatus(
+                validation.manifestHeader?.status
+            );
+            const kitFamilies = [
+                {
+                    kind: 'manifest-audit',
+                    title: 'Manifest Audit Hash',
+                    summary: validation.manifestAudit,
+                    copy: 'Digital Audit evidence checks that each exact Share payload is the one committed to by the Manifest.'
+                },
+                {
+                    kind: 'mat',
+                    title: 'Manual Authentication (MAT)',
+                    summary: validation.mat,
+                    copy: 'MAT performs the human-readable Share-to-Manifest binding. Blank optional rows do not lower kit health.'
+                },
+                {
+                    kind: 'payload-integrity',
+                    title: 'Share Payload Integrity',
+                    summary: validation.payloadIntegrity,
+                    copy: 'Checks payload prefixes, encoding, Transport Hash where present, arithmetic structure, and cross-Share session consistency.'
+                },
+                {
+                    kind: 'checksums',
+                    title: 'Share Checksums',
+                    summary: validation.checksums,
+                    copy: 'RC, CC, and GIC test each entered Share against itself for damage or transcription errors.'
+                },
+                {
+                    kind: 'manifest-header',
+                    title: 'Manifest Session Header (SB)',
+                    summary: manifestHeaderSummary,
+                    copy: getManifestHeaderCopy(validation.manifestHeader)
+                },
+                {
+                    kind: 'rbt-agreement',
+                    title: 'RBT Artifact Consistency',
+                    summary: rbtArtifactSummary,
+                    copy: getRbtArtifactConsistencyCopy(validation.rbt)
+                }
+            ];
+            const kitHealth = deriveBackupKitHealth(kitFamilies);
+            const kitItems = kitFamilies.map(family =>
+                createRecoveryEvidenceItem(
+                    family.kind,
+                    family.title,
+                    family.summary,
+                    family.copy
+                )
+            );
+            container.appendChild(createRecoveryMeter(
+                'kit-health',
+                'Backup Kit Health',
+                kitHealth,
+                kitItems
             ));
+        }
 
-            container.appendChild(createRecoveryDonutItem(
-                'checksums',
-                'Share Checksums',
-                validation.checksums,
-                'RC, CC, and GIC test each entered Share against itself. They detect blank, damaged, or mistyped derived fields, but do not bind Shares to one session.'
-            ));
+        function getWalletProfileLabelFromCode(code) {
+            const labels = {
+                0: 'BIP44 — Legacy',
+                1: 'BIP49 — Nested SegWit',
+                2: 'BIP84 — Native SegWit',
+                3: 'BIP86 — Taproot',
+                4: 'Hardware Wallet Default',
+                5: 'Generic / Custom'
+            };
+            return labels[code] || 'Not available from payloads';
+        }
 
-            container.appendChild(createRecoveryDonutItem(
-                'mat',
-                'Manual Authentication (MAT)',
-                validation.mat,
-                'Each unit is one MAT tag-row. A row is checked only when its tag and the required Manifest key material are complete.'
-            ));
+        function renderRecoveryPayloadMetadata(recoveryContext) {
+            const container = document.getElementById('recovery-payload-metadata');
+            if (!container) return;
+            container.replaceChildren();
+            const context = recoveryContext || {};
+            const payloads = Array.isArray(context.payloadMetadata)
+                ? context.payloadMetadata.filter(Boolean)
+                : [];
+            const header = context.manifestHeaderMetadata || null;
+            const profiles = new Set(payloads.map(metadata => metadata.profile));
+            if (header?.profile) profiles.add(header.profile);
+            const firstPayload = payloads[0] || null;
+            appendShareMetadataLine(
+                container,
+                'Digital Profiles Used',
+                profiles.size > 0
+                    ? Array.from(profiles, profile =>
+                        profile === 'full' ? 'Full' : 'Compact'
+                    ).join(' + ')
+                    : 'No digital payload metadata supplied'
+            );
+            appendShareMetadataLine(
+                container,
+                'BIP39 Language',
+                firstPayload?.languageInput === 1
+                    ? 'English'
+                    : 'English (current manual Recovery mode)'
+            );
+            appendShareMetadataLine(
+                container,
+                'Word Count',
+                context.wordCount || 'Not available'
+            );
+            appendShareMetadataLine(
+                container,
+                'Threshold',
+                context.threshold ? `${context.threshold}-of-n` : 'Not available'
+            );
+            appendShareMetadataLine(
+                container,
+                'Wallet / Derivation Profile',
+                firstPayload
+                    ? getWalletProfileLabelFromCode(firstPayload.walletProfileCode)
+                    : 'Not encoded in the supplied Manifest Header'
+            );
+            const fullSession = payloads.find(metadata => metadata.profile === 'full')
+                ?.sessionBatchIdHex ||
+                (header?.profile === 'full' ? header.sessionBatchIdHex : '');
+            const compactSession = payloads.find(metadata => metadata.profile === 'compact')
+                ?.sessionBatchIdHex ||
+                (header?.profile === 'compact' ? header.sessionBatchIdHex : '');
+            if (fullSession) {
+                appendShareMetadataLine(
+                    container,
+                    'Full Session Batch ID',
+                    fullSession
+                );
+            }
+            if (compactSession) {
+                appendShareMetadataLine(
+                    container,
+                    'Compact Session Batch ID',
+                    compactSession
+                );
+            }
+            appendShareMetadataLine(
+                container,
+                'BIP39 Passphrase Requirement / Hint',
+                'Not encoded — inspect the Shares and Manifest'
+            );
+            appendShareMetadataLine(
+                container,
+                'Exact Derivation Details and RVA',
+                'Not encoded — inspect the Shares and Manifest'
+            );
         }
 
         /**
@@ -4631,6 +6096,7 @@ TERMS OF USE
 
             container.replaceChildren();
             renderRecoveryValidationSummary(validation);
+            renderRecoveryPayloadMetadata(validation.recoveryContext);
 
             words.forEach((word, index) => {
                 const row = document.createElement('div');
@@ -4798,6 +6264,11 @@ TERMS OF USE
 
             createFlowWordCache = Array(24).fill('');
             recoverFlowCache = Array(MAX_SHARES).fill(null).map(() => createEmptyRecoveryCacheEntry());
+            recoveryPayloadPromises = Array(MAX_SHARES).fill(Promise.resolve());
+            recoveryAuditPromises = Array(MAX_SHARES).fill(Promise.resolve());
+            recoverManifestHeaderText = '';
+            recoverManifestHeaderMetadata = null;
+            recoverManifestHeaderPromise = Promise.resolve();
 
             if (typeof manualRecoveryShareCache !== 'undefined') {
                 Object.keys(manualRecoveryShareCache).forEach(key => {
@@ -4891,7 +6362,7 @@ TERMS OF USE
         // ==========================================================================
         // SCHIAVINATO SHARING LIBRARY (Embedded for offline use)
         // - This object contains all core cryptographic and validation logic.
-        // - It is self-contained and has no dependencies on the DOM or UI scripts.
+        // - It is independent of the DOM/UI and uses browser-native WebCrypto primitives.
         // ==========================================================================
         const DuraShare = (function() {
             'use strict';
@@ -4901,8 +6372,8 @@ TERMS OF USE
             // ==========================================================================
             const FIELD_PRIME = 2053;
             const WORDS_PER_ROW = 3;
-            const COLUMN_TAGS = [10, 20, 30];
-            const COLUMN_TOTAL = 60;
+            const COLUMN_TAGS = [100, 200, 300];
+            const COLUMN_TOTAL = 600;
             const MAT_MODES = Object.freeze({
                 NONE: 'none',
                 SINGLE: 'single',
@@ -4912,6 +6383,35 @@ TERMS OF USE
                 NONE: 'none',
                 WHOLE: 'whole',
                 SPLIT: 'split'
+            });
+            const PROTOCOL_VERSION = 0x01;
+            const BIP39_ENGLISH_INPUT = 0x01;
+            const RBT_ITERATIONS = 16384;
+            const SUPPORTED_MAX_SHARE_NUMBER = 5;
+            const PROFILE = Object.freeze({
+                FULL: 'full',
+                COMPACT: 'compact'
+            });
+            const WALLET_PROFILE = Object.freeze({
+                BIP44: 0,
+                BIP49: 1,
+                BIP84: 2,
+                BIP86: 3,
+                HARDWARE_DEFAULT: 4,
+                GENERIC_CUSTOM: 5
+            });
+            const WORD_COUNT_CODES = Object.freeze({
+                12: 0,
+                15: 1,
+                18: 2,
+                21: 3,
+                24: 4
+            });
+            const PREFIX_BYTES = Object.freeze({
+                SHARE_FULL: Object.freeze([0x53, 0x46]),
+                SHARE_COMPACT: Object.freeze([0x53, 0x43]),
+                MANIFEST_HEADER: Object.freeze([0x53, 0x42]),
+                SHARE_AUDIT: Object.freeze([0x53, 0x41])
             });
 
             function computeRowTotal(rowCount) {
@@ -4933,28 +6433,44 @@ TERMS OF USE
             let randomSource = (GLOBAL_SCOPE.crypto && typeof GLOBAL_SCOPE.crypto.getRandomValues === 'function')
                 ? GLOBAL_SCOPE.crypto
                 : null;
-            let sha256Impl = (typeof GLOBAL_SCOPE.sha256 === 'function') ? GLOBAL_SCOPE.sha256 : null;
+            let subtleSource = (GLOBAL_SCOPE.crypto && GLOBAL_SCOPE.crypto.subtle)
+                ? GLOBAL_SCOPE.crypto.subtle
+                : null;
+            let webCryptoHealthPromise = null;
 
             /**
-             * Allows callers to override the randomness provider and/or SHA-256 implementation.
+             * Allows callers to override platform providers for deterministic tests.
              * Useful for non-browser environments or deterministic tests.
              * @param {Object} [options]
              * @param {{getRandomValues: function(Uint32Array): void}} [options.randomSource]
-             * @param {Function} [options.sha256]
+             * @param {SubtleCrypto|null} [options.subtleSource]
              */
             function configureEnvironment(options = {}) {
-                const { randomSource: newRandomSource, sha256: newSha256 } = options;
+                const {
+                    randomSource: newRandomSource,
+                    subtleSource: newSubtleSource
+                } = options;
                 if (newRandomSource !== undefined) {
                     if (!newRandomSource || typeof newRandomSource.getRandomValues !== 'function') {
                         throw new Error('randomSource must expose getRandomValues(Uint32Array).');
                     }
                     randomSource = newRandomSource;
                 }
-                if (newSha256 !== undefined) {
-                    if (typeof newSha256 !== 'function' || typeof newSha256.arrayBuffer !== 'function') {
-                        throw new Error('sha256 must have a callable arrayBuffer(message) helper.');
+                if (newSubtleSource !== undefined) {
+                    if (
+                        newSubtleSource !== null &&
+                        (
+                            typeof newSubtleSource.digest !== 'function' ||
+                            typeof newSubtleSource.importKey !== 'function' ||
+                            typeof newSubtleSource.deriveBits !== 'function'
+                        )
+                    ) {
+                        throw new Error(
+                            'subtleSource must expose digest(), importKey(), and deriveBits(), or be null.'
+                        );
                     }
-                    sha256Impl = newSha256;
+                    subtleSource = newSubtleSource;
+                    webCryptoHealthPromise = null;
                 }
             }
 
@@ -5031,6 +6547,189 @@ TERMS OF USE
                 if (ArrayBuffer.isView(arr) && typeof arr.fill === 'function') {
                     arr.fill(0);
                 }
+            }
+
+            const CRYPTO_HARD_STOP_GUIDANCE =
+                'Stop this ceremony. No Shares or digital envelopes were produced. ' +
+                'Use the default Standard security level in a current vanilla Tails/Tor Browser session.';
+
+            class CryptoHardStopError extends Error {
+                constructor(detail) {
+                    super(`Cryptographic runtime failed: ${detail} ${CRYPTO_HARD_STOP_GUIDANCE}`);
+                    this.name = 'CryptoHardStopError';
+                }
+            }
+
+            function cryptoHardStopError(detail) {
+                return new CryptoHardStopError(detail);
+            }
+
+            function isCryptoHardStopError(error) {
+                return error instanceof CryptoHardStopError;
+            }
+
+            function bytesToHex(bytes) {
+                if (!(bytes instanceof Uint8Array)) {
+                    throw new TypeError('Hex encoding requires a Uint8Array.');
+                }
+                const hex = [];
+                for (let i = 0; i < bytes.length; i++) {
+                    hex.push(bytes[i].toString(16).padStart(2, '0').toUpperCase());
+                }
+                return hex.join('');
+            }
+
+            function hexToBytes(hex, label = 'Hex value') {
+                if (typeof hex !== 'string' || hex.length % 2 !== 0 || !/^[0-9A-Fa-f]*$/.test(hex)) {
+                    throw new Error(`${label} must contain an even number of hexadecimal characters.`);
+                }
+                const bytes = new Uint8Array(hex.length / 2);
+                for (let i = 0; i < bytes.length; i++) {
+                    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+                }
+                return bytes;
+            }
+
+            function concatBytes(...parts) {
+                let length = 0;
+                parts.forEach((part) => {
+                    if (!(part instanceof Uint8Array)) {
+                        throw new TypeError('Byte concatenation requires Uint8Array inputs.');
+                    }
+                    length += part.length;
+                });
+                const result = new Uint8Array(length);
+                let offset = 0;
+                parts.forEach((part) => {
+                    result.set(part, offset);
+                    offset += part.length;
+                });
+                return result;
+            }
+
+            function cloneBytes(bytes, expectedLength, label) {
+                if (!(bytes instanceof Uint8Array) || bytes.length !== expectedLength) {
+                    throw new Error(`${label} must be exactly ${expectedLength} bytes.`);
+                }
+                return new Uint8Array(bytes);
+            }
+
+            function requireBytes(bytes, expectedLength, label) {
+                if (!(bytes instanceof Uint8Array) || bytes.length !== expectedLength) {
+                    throw new Error(`${label} must be exactly ${expectedLength} bytes.`);
+                }
+                return bytes;
+            }
+
+            function packFieldElements12(values) {
+                if (!Array.isArray(values) || values.length === 0) {
+                    throw new Error('12-bit packing requires at least one field element.');
+                }
+                const output = new Uint8Array(Math.ceil(values.length * 12 / 8));
+                let bitOffset = 0;
+                for (let valueIndex = 0; valueIndex < values.length; valueIndex++) {
+                    const value = values[valueIndex];
+                    if (!Number.isInteger(value) || value < 0 || value >= FIELD_PRIME) {
+                        clearSensitiveArray(output);
+                        throw new Error(
+                            `Field element ${valueIndex + 1} must be an integer between 0 and ${FIELD_PRIME - 1}.`
+                        );
+                    }
+                    for (let bit = 11; bit >= 0; bit--) {
+                        const byteIndex = Math.floor(bitOffset / 8);
+                        const bitInByte = 7 - (bitOffset % 8);
+                        output[byteIndex] |= ((value >>> bit) & 1) << bitInByte;
+                        bitOffset++;
+                    }
+                }
+                return output;
+            }
+
+            function unpackFieldElements12(bytes, elementCount) {
+                if (!(bytes instanceof Uint8Array)) {
+                    throw new TypeError('12-bit unpacking requires a Uint8Array.');
+                }
+                if (!Number.isInteger(elementCount) || elementCount <= 0) {
+                    throw new Error('12-bit unpacking requires a positive element count.');
+                }
+                const expectedLength = Math.ceil(elementCount * 12 / 8);
+                if (bytes.length !== expectedLength) {
+                    throw new Error(
+                        `Packed field data must be exactly ${expectedLength} bytes for ${elementCount} elements.`
+                    );
+                }
+                const values = [];
+                let bitOffset = 0;
+                for (let valueIndex = 0; valueIndex < elementCount; valueIndex++) {
+                    let value = 0;
+                    for (let bit = 0; bit < 12; bit++) {
+                        const byteIndex = Math.floor(bitOffset / 8);
+                        const bitInByte = 7 - (bitOffset % 8);
+                        value = (value << 1) | ((bytes[byteIndex] >>> bitInByte) & 1);
+                        bitOffset++;
+                    }
+                    if (value >= FIELD_PRIME) {
+                        clearSensitiveArray(values);
+                        throw new Error(
+                            `Decoded field element ${valueIndex + 1} is outside GF(2053).`
+                        );
+                    }
+                    values.push(value);
+                }
+                while (bitOffset < bytes.length * 8) {
+                    const byteIndex = Math.floor(bitOffset / 8);
+                    const bitInByte = 7 - (bitOffset % 8);
+                    if (((bytes[byteIndex] >>> bitInByte) & 1) !== 0) {
+                        clearSensitiveArray(values);
+                        throw new Error('Packed field data has non-zero padding bits.');
+                    }
+                    bitOffset++;
+                }
+                return values;
+            }
+
+            function getWordCountCode(wordCount) {
+                const code = WORD_COUNT_CODES[wordCount];
+                if (!Number.isInteger(code)) {
+                    throw new Error('Word count must be 12, 15, 18, 21, or 24.');
+                }
+                return code;
+            }
+
+            function normalizeWalletProfileCode(value) {
+                const code = value === undefined
+                    ? WALLET_PROFILE.GENERIC_CUSTOM
+                    : Number(value);
+                if (!Number.isInteger(code) || code < 0 || code > WALLET_PROFILE.GENERIC_CUSTOM) {
+                    throw new Error('Wallet profile code must be an integer between 0 and 5.');
+                }
+                return code;
+            }
+
+            function buildShareFlags(wordCount, walletProfileCode) {
+                return getWordCountCode(wordCount) | (normalizeWalletProfileCode(walletProfileCode) << 3);
+            }
+
+            function buildManifestFlags(wordCount, profile) {
+                if (![PROFILE.FULL, PROFILE.COMPACT].includes(profile)) {
+                    throw new Error('Manifest profile must be full or compact.');
+                }
+                const profileCode = profile === PROFILE.FULL ? 1 : 0;
+                return getWordCountCode(wordCount) | (profileCode << 5);
+            }
+
+            function encodeFullPath(value, label) {
+                if (!Number.isInteger(value) || value < 1 || value > 255) {
+                    throw new Error(`${label} must be an integer between 1 and 255.`);
+                }
+                return new Uint8Array([value, 0]);
+            }
+
+            function encodeCompactPath(value, label) {
+                if (!Number.isInteger(value) || value < 1 || value > 255) {
+                    throw new Error(`${label} must be an integer between 1 and 255.`);
+                }
+                return new Uint8Array([value]);
             }
 
             // ==========================================================================
@@ -5304,6 +7003,20 @@ TERMS OF USE
              */
             function getRandomFieldElement() {
                 return getRandomIntInclusive(FIELD_PRIME - 1);
+            }
+
+            function getRandomBytes(length) {
+                if (!Number.isInteger(length) || length <= 0 || length > 65536) {
+                    throw new Error('Random byte length must be an integer between 1 and 65536.');
+                }
+                const bytes = new Uint8Array(length);
+                try {
+                    fillRandomValues(bytes);
+                    return bytes;
+                } catch (error) {
+                    clearSensitiveArray(bytes);
+                    throw error;
+                }
             }
 
             // ==========================================================================
@@ -5860,6 +7573,11 @@ TERMS OF USE
                             share.matTags.forEach((tags) => clearSensitiveArray(tags));
                             share.matTags.length = 0;
                         }
+                        if (share.digital) {
+                            clearDigitalProfile(share.digital.full);
+                            clearDigitalProfile(share.digital.compact);
+                            share.digital = null;
+                        }
                         share.globalIntegrityCheckShare = 0;
                     });
                     artifacts.shares.length = 0;
@@ -5868,17 +7586,41 @@ TERMS OF USE
                     artifacts.manifests.forEach((manifest) => clearMatShareKeys(manifest.shareKeys));
                     artifacts.manifests.length = 0;
                 }
+                clearDigitalSession(artifacts.session);
+                artifacts.session = null;
+                clearSensitiveArray(artifacts.inputSymbols);
             }
 
             async function createSharingArtifacts(mnemonic, k, n, wordlist, options = {}) {
-                const arithmetic = await splitBip39(mnemonic, k, n, wordlist);
+                const arithmetic = await splitBip39(
+                    mnemonic,
+                    k,
+                    n,
+                    wordlist,
+                    { includeInputSymbols: true }
+                );
+                let artifacts = null;
                 try {
-                    return generateMatArtifacts(arithmetic.shares, options);
+                    artifacts = generateMatArtifacts(arithmetic.shares, options);
+                    artifacts.session = await createDigitalArtifactsForSession(
+                        artifacts.shares,
+                        arithmetic.inputSymbols,
+                        k,
+                        options
+                    );
+                    return artifacts;
+                } catch (error) {
+                    clearSharingArtifacts(artifacts);
+                    throw error;
                 } finally {
                     // generateMatArtifacts returns independent output buffers. The arithmetic
                     // source arrays are temporary owned scratch data and must never outlive
                     // this wrapper, regardless of success or failure.
-                    clearSharingArtifacts({ shares: arithmetic.shares, manifests: [] });
+                    clearSharingArtifacts({
+                        shares: arithmetic.shares,
+                        manifests: [],
+                        inputSymbols: arithmetic.inputSymbols
+                    });
                 }
             }
 
@@ -5994,7 +7736,7 @@ TERMS OF USE
             }
 
             /**
-             * Computes column checksums (sum of each column's words plus column tag 10/20/30).
+             * Computes column checksums (sum of each column's words plus column tag 100/200/300).
              */
             function computeColumnChecks(wordIndices) {
                 const rowCount = wordIndices.length / WORDS_PER_ROW;
@@ -6239,19 +7981,156 @@ TERMS OF USE
                 return Array.from(bytes).map((b) => b.toString(2).padStart(8, '0')).join('');
             }
 
-            /**
-             * Hashes the provided data using the embedded SHA-256 implementation.
-             */
-            async function computeSha256(data) {
-                if (!sha256Impl || typeof sha256Impl.arrayBuffer !== 'function') {
-                    const fallback = GLOBAL_SCOPE.sha256;
-                    if (typeof fallback === 'function' && typeof fallback.arrayBuffer === 'function') {
-                        sha256Impl = fallback;
-                    } else {
-                        throw new Error('SHA-256 implementation is not configured.');
-                    }
+            function resolveSubtleCrypto() {
+                if (
+                    !subtleSource ||
+                    typeof subtleSource.digest !== 'function' ||
+                    typeof subtleSource.importKey !== 'function' ||
+                    typeof subtleSource.deriveBits !== 'function'
+                ) {
+                    throw cryptoHardStopError(
+                        'WebCrypto SubtleCrypto with SHA-256 and PBKDF2 support is unavailable.'
+                    );
                 }
-                return new Uint8Array(sha256Impl.arrayBuffer(data));
+                return subtleSource;
+            }
+
+            async function runWebCryptoKnownAnswerTests() {
+                const subtle = resolveSubtleCrypto();
+                const shaInput = new Uint8Array([0x61, 0x62, 0x63]);
+                const shaExpected = hexToBytes(
+                    'BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD',
+                    'SHA-256 known-answer digest'
+                );
+                const rbtCanonical = hexToBytes(
+                    '016905BF0D902A53A1177731441D42AA73407E',
+                    'RBT known-answer canonical material'
+                );
+                const rbtSalt = hexToBytes(
+                    'A1B2C3D4E5F60708',
+                    'RBT known-answer salt'
+                );
+                const rbtExpectedPrefix = hexToBytes(
+                    '3DE50771B03A018838A0D18E',
+                    'RBT known-answer result'
+                );
+                let shaActual = null;
+                let rbtActual = null;
+                try {
+                    shaActual = new Uint8Array(await subtle.digest('SHA-256', shaInput));
+                    if (!typedArraysEqual(shaActual, shaExpected)) {
+                        throw cryptoHardStopError('the SHA-256 known-answer test did not match.');
+                    }
+                    const key = await subtle.importKey(
+                        'raw',
+                        rbtCanonical,
+                        'PBKDF2',
+                        false,
+                        ['deriveBits']
+                    );
+                    rbtActual = new Uint8Array(await subtle.deriveBits(
+                        {
+                            name: 'PBKDF2',
+                            salt: rbtSalt,
+                            iterations: RBT_ITERATIONS,
+                            hash: 'SHA-512'
+                        },
+                        key,
+                        256
+                    ));
+                    if (!typedArraysEqual(rbtActual.slice(0, 12), rbtExpectedPrefix)) {
+                        throw cryptoHardStopError(
+                            'the PBKDF2-HMAC-SHA512 known-answer test did not match.'
+                        );
+                    }
+                } catch (error) {
+                    if (isCryptoHardStopError(error)) {
+                        throw error;
+                    }
+                    const detail = error && error.message
+                        ? error.message
+                        : 'unexpected WebCrypto failure';
+                    throw cryptoHardStopError(`known-answer tests failed (${detail}).`);
+                } finally {
+                    clearSensitiveArray(shaInput);
+                    clearSensitiveArray(shaExpected);
+                    clearSensitiveArray(shaActual);
+                    clearSensitiveArray(rbtCanonical);
+                    clearSensitiveArray(rbtSalt);
+                    clearSensitiveArray(rbtExpectedPrefix);
+                    clearSensitiveArray(rbtActual);
+                }
+            }
+
+            async function assertWebCryptoHealthy() {
+                if (!webCryptoHealthPromise) {
+                    webCryptoHealthPromise = runWebCryptoKnownAnswerTests();
+                }
+                return webCryptoHealthPromise;
+            }
+
+            async function computeSha256(data) {
+                if (!(data instanceof Uint8Array)) {
+                    throw new TypeError('SHA-256 input must be a Uint8Array.');
+                }
+                await assertWebCryptoHealthy();
+                try {
+                    return new Uint8Array(
+                        await resolveSubtleCrypto().digest('SHA-256', data)
+                    );
+                } catch (error) {
+                    if (isCryptoHardStopError(error)) {
+                        throw error;
+                    }
+                    const detail = error && error.message
+                        ? error.message
+                        : 'unexpected SHA-256 failure';
+                    throw cryptoHardStopError(`SHA-256 failed (${detail}).`);
+                }
+            }
+
+            async function deriveRbt(canonicalMaterial, sessionBatchId, outputLength) {
+                if (!(canonicalMaterial instanceof Uint8Array) || canonicalMaterial.length < 2) {
+                    throw new Error('RBT canonical material must be a non-empty Uint8Array.');
+                }
+                if (!(sessionBatchId instanceof Uint8Array) || ![4, 8].includes(sessionBatchId.length)) {
+                    throw new Error('RBT Session Batch ID must be 4 or 8 bytes.');
+                }
+                if (![6, 12, 32].includes(outputLength)) {
+                    throw new Error('RBT output length must be 6, 12, or 32 bytes.');
+                }
+                await assertWebCryptoHealthy();
+                let derived = null;
+                try {
+                    const key = await resolveSubtleCrypto().importKey(
+                        'raw',
+                        canonicalMaterial,
+                        'PBKDF2',
+                        false,
+                        ['deriveBits']
+                    );
+                    derived = new Uint8Array(await resolveSubtleCrypto().deriveBits(
+                        {
+                            name: 'PBKDF2',
+                            salt: sessionBatchId,
+                            iterations: RBT_ITERATIONS,
+                            hash: 'SHA-512'
+                        },
+                        key,
+                        256
+                    ));
+                    return derived.slice(0, outputLength);
+                } catch (error) {
+                    if (isCryptoHardStopError(error)) {
+                        throw error;
+                    }
+                    const detail = error && error.message
+                        ? error.message
+                        : 'unexpected PBKDF2 failure';
+                    throw cryptoHardStopError(`RBT derivation failed (${detail}).`);
+                } finally {
+                    clearSensitiveArray(derived);
+                }
             }
 
             /**
@@ -6289,6 +8168,831 @@ TERMS OF USE
                 }
                 return true;
             }
+
+            function buildCanonicalSecretMaterial(inputSymbols) {
+                const packed = packFieldElements12(inputSymbols);
+                try {
+                    return concatBytes(
+                        new Uint8Array([BIP39_ENGLISH_INPUT]),
+                        packed
+                    );
+                } finally {
+                    clearSensitiveArray(packed);
+                }
+            }
+
+            function validatePayloadShare(share, wordCount) {
+                if (!share || typeof share !== 'object') {
+                    throw new Error('Payload Share must be an object.');
+                }
+                if (!Number.isInteger(share.shareNumber) || share.shareNumber < 1 || share.shareNumber > 256) {
+                    throw new Error('Payload Share number must be an integer between 1 and 256.');
+                }
+                if (!Array.isArray(share.wordShares) || share.wordShares.length !== wordCount) {
+                    throw new Error(`Payload Share must contain exactly ${wordCount} word values.`);
+                }
+                if (!Array.isArray(share.checksumShares) || share.checksumShares.length !== wordCount / WORDS_PER_ROW) {
+                    throw new Error(`Payload Share must contain exactly ${wordCount / WORDS_PER_ROW} row checksums.`);
+                }
+                if (!Array.isArray(share.columnChecksumShares) || share.columnChecksumShares.length !== 3) {
+                    throw new Error('Payload Share must contain exactly three column checksums.');
+                }
+                normalizeShareValue(
+                    share.globalIntegrityCheckShare,
+                    'Payload Share printed GIC'
+                );
+            }
+
+            function buildFullShareData(share) {
+                const values = [
+                    ...share.wordShares,
+                    ...share.checksumShares,
+                    ...share.columnChecksumShares,
+                    share.globalIntegrityCheckShare
+                ];
+                try {
+                    return packFieldElements12(values);
+                } finally {
+                    clearSensitiveArray(values);
+                }
+            }
+
+            function buildCompactShareData(share) {
+                return packFieldElements12(share.wordShares);
+            }
+
+            function buildFullSharePayloadBody({
+                share,
+                threshold,
+                wordCount,
+                walletProfileCode,
+                sessionBatchId,
+                rbt
+            }) {
+                validatePayloadShare(share, wordCount);
+                const shareData = buildFullShareData(share);
+                const thresholdPath = encodeFullPath(threshold, 'Threshold');
+                const sharePath = encodeFullPath(share.shareNumber, 'Share number');
+                try {
+                    return concatBytes(
+                        new Uint8Array(PREFIX_BYTES.SHARE_FULL),
+                        new Uint8Array([
+                            PROTOCOL_VERSION,
+                            buildShareFlags(wordCount, walletProfileCode),
+                            BIP39_ENGLISH_INPUT
+                        ]),
+                        thresholdPath,
+                        sharePath,
+                        requireBytes(sessionBatchId, 8, 'Full Session Batch ID'),
+                        requireBytes(rbt, 12, 'Full RBT'),
+                        shareData
+                    );
+                } finally {
+                    clearSensitiveArray(shareData);
+                    clearSensitiveArray(thresholdPath);
+                    clearSensitiveArray(sharePath);
+                }
+            }
+
+            async function buildFullSharePayload(options) {
+                const body = buildFullSharePayloadBody(options);
+                let digest = null;
+                let transportHash = null;
+                try {
+                    digest = await computeSha256(body);
+                    transportHash = digest.slice(0, 16);
+                    return {
+                        payload: concatBytes(body, transportHash),
+                        transportHash
+                    };
+                } catch (error) {
+                    clearSensitiveArray(transportHash);
+                    throw error;
+                } finally {
+                    clearSensitiveArray(body);
+                    clearSensitiveArray(digest);
+                }
+            }
+
+            function buildCompactSharePayload({
+                share,
+                threshold,
+                wordCount,
+                walletProfileCode,
+                sessionBatchId,
+                rbt
+            }) {
+                validatePayloadShare(share, wordCount);
+                const shareData = buildCompactShareData(share);
+                const thresholdPath = encodeCompactPath(threshold, 'Threshold');
+                const sharePath = encodeCompactPath(share.shareNumber, 'Share number');
+                try {
+                    return {
+                        payload: concatBytes(
+                            new Uint8Array(PREFIX_BYTES.SHARE_COMPACT),
+                            new Uint8Array([
+                                PROTOCOL_VERSION,
+                                buildShareFlags(wordCount, walletProfileCode),
+                                BIP39_ENGLISH_INPUT
+                            ]),
+                            thresholdPath,
+                            sharePath,
+                            requireBytes(sessionBatchId, 4, 'Compact Session Batch ID'),
+                            requireBytes(rbt, 6, 'Compact RBT'),
+                            shareData
+                        )
+                    };
+                } finally {
+                    clearSensitiveArray(shareData);
+                    clearSensitiveArray(thresholdPath);
+                    clearSensitiveArray(sharePath);
+                }
+            }
+
+            function buildManifestHeaderPayload({
+                profile,
+                wordCount,
+                sessionBatchId,
+                rbt
+            }) {
+                const batchLength = profile === PROFILE.FULL ? 8 : 4;
+                const rbtLength = profile === PROFILE.FULL ? 12 : 6;
+                return concatBytes(
+                    new Uint8Array(PREFIX_BYTES.MANIFEST_HEADER),
+                    new Uint8Array([
+                        PROTOCOL_VERSION,
+                        buildManifestFlags(wordCount, profile)
+                    ]),
+                    requireBytes(sessionBatchId, batchLength, `${profile} Session Batch ID`),
+                    requireBytes(rbt, rbtLength, `${profile} RBT`)
+                );
+            }
+
+            function buildShareAuditPayload({
+                profile,
+                wordCount,
+                threshold,
+                shareNumber,
+                auditHash
+            }) {
+                if (!(auditHash instanceof Uint8Array) || auditHash.length !== 32) {
+                    throw new Error('Share Audit Hash must be exactly 32 bytes.');
+                }
+                const isFull = profile === PROFILE.FULL;
+                if (!isFull && profile !== PROFILE.COMPACT) {
+                    throw new Error('Share Audit profile must be full or compact.');
+                }
+                const thresholdPath = isFull
+                    ? encodeFullPath(threshold, 'Threshold')
+                    : encodeCompactPath(threshold, 'Threshold');
+                const sharePath = isFull
+                    ? encodeFullPath(shareNumber, 'Share number')
+                    : encodeCompactPath(shareNumber, 'Share number');
+                const committedHash = isFull ? new Uint8Array(auditHash) : auditHash.slice(0, 16);
+                try {
+                    return concatBytes(
+                        new Uint8Array(PREFIX_BYTES.SHARE_AUDIT),
+                        new Uint8Array([
+                            PROTOCOL_VERSION,
+                            buildManifestFlags(wordCount, profile)
+                        ]),
+                        thresholdPath,
+                        sharePath,
+                        committedHash
+                    );
+                } finally {
+                    clearSensitiveArray(thresholdPath);
+                    clearSensitiveArray(sharePath);
+                    clearSensitiveArray(committedHash);
+                }
+            }
+
+            function decodeShareFlags(flags) {
+                if (!Number.isInteger(flags) || flags < 0 || flags > 0xff) {
+                    throw new Error('Payload flags byte is invalid.');
+                }
+                const wordCounts = [12, 15, 18, 21, 24];
+                const wordCountCode = flags & 0x07;
+                if (wordCountCode >= wordCounts.length) {
+                    throw new Error('Payload word-count flag is reserved.');
+                }
+                const walletProfileCode = (flags >>> 3) & 0x07;
+                if (walletProfileCode > WALLET_PROFILE.GENERIC_CUSTOM) {
+                    throw new Error('Payload wallet/profile flag is reserved.');
+                }
+                if ((flags & 0xc0) !== 0) {
+                    throw new Error('Nested payloads are not supported by this HTML version.');
+                }
+                return {
+                    wordCount: wordCounts[wordCountCode],
+                    walletProfileCode
+                };
+            }
+
+            function validateDecodedPayloadArithmetic(share, wordCount) {
+                const rowCount = wordCount / WORDS_PER_ROW;
+                const audit = auditOptionalChecksums(
+                    share,
+                    rowCount,
+                    computeRowTotal(rowCount)
+                );
+                if (
+                    audit.rowFails.length > 0 ||
+                    audit.colFails.length > 0 ||
+                    audit.gicFail
+                ) {
+                    throw new Error(
+                        'Full payload arithmetic fields are internally inconsistent.'
+                    );
+                }
+            }
+
+            async function decodeSharePayloadHex(rawPayload) {
+                if (typeof rawPayload !== 'string') {
+                    throw new Error('Share payload must be hexadecimal text.');
+                }
+                const normalizedHex = rawPayload.replace(/\s+/g, '').toUpperCase();
+                if (normalizedHex === '') {
+                    throw new Error('Share payload is empty.');
+                }
+                let payload = null;
+                let body = null;
+                let digest = null;
+                let auditDigest = null;
+                let suppliedTransportHash = null;
+                let shareData = null;
+                let decodedValues = null;
+                try {
+                    payload = hexToBytes(normalizedHex, 'Share payload');
+                    if (payload.length < 17 || payload[0] !== 0x53) {
+                        throw new Error('Share payload prefix is missing or invalid.');
+                    }
+                    const profile = payload[1] === 0x46
+                        ? PROFILE.FULL
+                        : (payload[1] === 0x43 ? PROFILE.COMPACT : null);
+                    if (!profile) {
+                        throw new Error('Only SF (Full) and SC (Compact) Share payloads are accepted.');
+                    }
+                    if (payload[2] !== PROTOCOL_VERSION) {
+                        throw new Error(
+                            `Unsupported Share payload version 0x${payload[2].toString(16).padStart(2, '0').toUpperCase()}.`
+                        );
+                    }
+                    const flags = decodeShareFlags(payload[3]);
+                    if (payload[4] !== BIP39_ENGLISH_INPUT) {
+                        throw new Error('Only BIP39 English Share payloads are supported.');
+                    }
+                    const isFull = profile === PROFILE.FULL;
+                    const threshold = payload[5];
+                    const shareNumber = isFull ? payload[7] : payload[6];
+                    if (![2, 3].includes(threshold)) {
+                        throw new Error('Payload threshold must be 2 or 3 for this HTML version.');
+                    }
+                    if (
+                        !Number.isInteger(shareNumber) ||
+                        shareNumber < 1 ||
+                        shareNumber > SUPPORTED_MAX_SHARE_NUMBER
+                    ) {
+                        throw new Error(
+                            `Payload Share number must be between 1 and ${SUPPORTED_MAX_SHARE_NUMBER}.`
+                        );
+                    }
+                    if (isFull && (payload[6] !== 0 || payload[8] !== 0)) {
+                        throw new Error('Full payload flat-path reserved bytes must be zero.');
+                    }
+
+                    const rowCount = flags.wordCount / WORDS_PER_ROW;
+                    const elementCount = isFull
+                        ? flags.wordCount + rowCount + 4
+                        : flags.wordCount;
+                    const shareDataLength = Math.ceil(elementCount * 12 / 8);
+                    const expectedLength = isFull
+                        ? 29 + shareDataLength + 16
+                        : 17 + shareDataLength;
+                    if (payload.length !== expectedLength) {
+                        throw new Error(
+                            `${profile === PROFILE.FULL ? 'Full' : 'Compact'} payload must be exactly ` +
+                            `${expectedLength} bytes for ${flags.wordCount} words.`
+                        );
+                    }
+
+                    const batchStart = isFull ? 9 : 7;
+                    const batchEnd = batchStart + (isFull ? 8 : 4);
+                    const rbtEnd = batchEnd + (isFull ? 12 : 6);
+                    const shareDataEnd = rbtEnd + shareDataLength;
+                    shareData = payload.slice(rbtEnd, shareDataEnd);
+                    decodedValues = unpackFieldElements12(shareData, elementCount);
+
+                    if (isFull) {
+                        body = payload.slice(0, payload.length - 16);
+                        suppliedTransportHash = payload.slice(payload.length - 16);
+                        digest = await computeSha256(body);
+                        if (!typedArraysEqual(digest.slice(0, 16), suppliedTransportHash)) {
+                            throw new Error('Full payload Transport Hash mismatch.');
+                        }
+                    }
+                    auditDigest = await computeSha256(payload);
+
+                    const wordShares = decodedValues.slice(0, flags.wordCount);
+                    let checksumShares;
+                    let columnChecksumShares;
+                    let globalIntegrityCheckShare;
+                    let checksDerived = false;
+                    if (isFull) {
+                        const rowEnd = flags.wordCount + rowCount;
+                        checksumShares = decodedValues.slice(flags.wordCount, rowEnd);
+                        columnChecksumShares = decodedValues.slice(rowEnd, rowEnd + 3);
+                        globalIntegrityCheckShare = decodedValues[rowEnd + 3];
+                        validateDecodedPayloadArithmetic({
+                            shareNumber,
+                            wordShares,
+                            checksumShares,
+                            columnChecksumShares,
+                            globalIntegrityCheckShare
+                        }, flags.wordCount);
+                    } else {
+                        checksumShares = computeRowChecks(wordShares);
+                        columnChecksumShares = computeColumnChecks(wordShares);
+                        globalIntegrityCheckShare = modAdd(
+                            computeGlobalIntegrityCheck(wordShares),
+                            shareNumber
+                        );
+                        checksDerived = true;
+                    }
+
+                    return {
+                        profile,
+                        payloadHex: normalizedHex,
+                        protocolVersion: payload[2],
+                        wordCount: flags.wordCount,
+                        walletProfileCode: flags.walletProfileCode,
+                        languageInput: payload[4],
+                        threshold,
+                        shareNumber,
+                        sessionBatchIdHex: bytesToHex(payload.slice(batchStart, batchEnd)),
+                        rbtHex: bytesToHex(payload.slice(batchEnd, rbtEnd)),
+                        auditHashHex: bytesToHex(auditDigest),
+                        transportHashHex: isFull ? bytesToHex(suppliedTransportHash) : '',
+                        wordShares,
+                        checksumShares,
+                        columnChecksumShares,
+                        globalIntegrityCheckShare,
+                        checksDerived
+                    };
+                } finally {
+                    clearSensitiveArray(payload);
+                    clearSensitiveArray(body);
+                    clearSensitiveArray(digest);
+                    clearSensitiveArray(auditDigest);
+                    clearSensitiveArray(suppliedTransportHash);
+                    clearSensitiveArray(shareData);
+                    clearSensitiveArray(decodedValues);
+                }
+            }
+
+            function decodeManifestFlags(flags) {
+                if (!Number.isInteger(flags) || flags < 0 || flags > 0xff) {
+                    throw new Error('Manifest flags byte is invalid.');
+                }
+                const wordCounts = [12, 15, 18, 21, 24];
+                const wordCountCode = flags & 0x07;
+                if (wordCountCode >= wordCounts.length) {
+                    throw new Error('Manifest word-count flag is reserved.');
+                }
+                if ((flags & 0x18) !== 0) {
+                    throw new Error('Nested Manifest payloads are not supported.');
+                }
+                const profileCode = (flags >>> 5) & 0x03;
+                if (profileCode > 1 || (flags & 0x80) !== 0) {
+                    throw new Error('Manifest profile/reserved flags are invalid.');
+                }
+                return {
+                    wordCount: wordCounts[wordCountCode],
+                    profile: profileCode === 1 ? PROFILE.FULL : PROFILE.COMPACT
+                };
+            }
+
+            function decodeManifestHeaderPayloadHex(rawPayload) {
+                if (typeof rawPayload !== 'string') {
+                    throw new Error('Manifest Header payload must be hexadecimal text.');
+                }
+                const normalizedHex = rawPayload.replace(/\s+/g, '').toUpperCase();
+                let payload = null;
+                try {
+                    payload = hexToBytes(normalizedHex, 'Manifest Header payload');
+                    if (
+                        payload.length < 4 ||
+                        payload[0] !== 0x53 ||
+                        payload[1] !== 0x42
+                    ) {
+                        throw new Error('Manifest Header payload must use the SB prefix (5342).');
+                    }
+                    if (payload[2] !== PROTOCOL_VERSION) {
+                        throw new Error('Unsupported Manifest Header payload version.');
+                    }
+                    const flags = decodeManifestFlags(payload[3]);
+                    const expectedLength = flags.profile === PROFILE.FULL ? 24 : 14;
+                    if (payload.length !== expectedLength) {
+                        throw new Error(
+                            `${flags.profile === PROFILE.FULL ? 'Full' : 'Compact'} SB payload ` +
+                            `must be exactly ${expectedLength} bytes.`
+                        );
+                    }
+                    const batchEnd = flags.profile === PROFILE.FULL ? 12 : 8;
+                    return {
+                        profile: flags.profile,
+                        payloadHex: normalizedHex,
+                        protocolVersion: payload[2],
+                        wordCount: flags.wordCount,
+                        sessionBatchIdHex: bytesToHex(payload.slice(4, batchEnd)),
+                        rbtHex: bytesToHex(payload.slice(batchEnd))
+                    };
+                } finally {
+                    clearSensitiveArray(payload);
+                }
+            }
+
+            function decodeManifestAuditEvidenceHex(rawEvidence) {
+                if (typeof rawEvidence !== 'string') {
+                    throw new Error('Manifest Audit evidence must be hexadecimal text.');
+                }
+                const normalizedHex = rawEvidence.replace(/\s+/g, '').toUpperCase();
+                if (normalizedHex === '') {
+                    throw new Error('Manifest Audit evidence is empty.');
+                }
+                if (normalizedHex.length === 64 && /^[0-9A-F]{64}$/.test(normalizedHex)) {
+                    return {
+                        kind: 'hash',
+                        auditHashHex: normalizedHex,
+                        committedHashHex: normalizedHex,
+                        committedHashBytes: 32
+                    };
+                }
+                let payload = null;
+                try {
+                    payload = hexToBytes(normalizedHex, 'Share Audit payload');
+                    if (
+                        payload.length < 6 ||
+                        payload[0] !== 0x53 ||
+                        payload[1] !== 0x41
+                    ) {
+                        throw new Error(
+                            'Audit evidence must be a 32-byte Audit Hash or an SA payload (5341).'
+                        );
+                    }
+                    if (payload[2] !== PROTOCOL_VERSION) {
+                        throw new Error('Unsupported Share Audit payload version.');
+                    }
+                    const flags = decodeManifestFlags(payload[3]);
+                    const isFull = flags.profile === PROFILE.FULL;
+                    const expectedLength = isFull ? 40 : 22;
+                    if (payload.length !== expectedLength) {
+                        throw new Error(
+                            `${isFull ? 'Full' : 'Compact'} SA payload must be exactly ` +
+                            `${expectedLength} bytes.`
+                        );
+                    }
+                    const threshold = payload[4];
+                    const shareNumber = isFull ? payload[6] : payload[5];
+                    if (![2, 3].includes(threshold)) {
+                        throw new Error('SA payload threshold must be 2 or 3.');
+                    }
+                    if (
+                        shareNumber < 1 ||
+                        shareNumber > SUPPORTED_MAX_SHARE_NUMBER
+                    ) {
+                        throw new Error(
+                            `SA payload Share number must be between 1 and ${SUPPORTED_MAX_SHARE_NUMBER}.`
+                        );
+                    }
+                    if (isFull && (payload[5] !== 0 || payload[7] !== 0)) {
+                        throw new Error('Full SA flat-path reserved bytes must be zero.');
+                    }
+                    const hashStart = isFull ? 8 : 6;
+                    return {
+                        kind: 'sa',
+                        profile: flags.profile,
+                        payloadHex: normalizedHex,
+                        protocolVersion: payload[2],
+                        wordCount: flags.wordCount,
+                        threshold,
+                        shareNumber,
+                        committedHashHex: bytesToHex(payload.slice(hashStart)),
+                        committedHashBytes: isFull ? 32 : 16
+                    };
+                } finally {
+                    clearSensitiveArray(payload);
+                }
+            }
+
+            function validateRecoveryPayloadSet(payloadMetadata, shares = null, expectedWordCount = null) {
+                if (!Array.isArray(payloadMetadata)) {
+                    throw new Error('Recovery payload metadata must be an array.');
+                }
+                const entries = [];
+                payloadMetadata.forEach((metadata, index) => {
+                    if (!metadata) return;
+                    if (
+                        ![PROFILE.FULL, PROFILE.COMPACT].includes(metadata.profile) ||
+                        ![12, 15, 18, 21, 24].includes(metadata.wordCount) ||
+                        ![2, 3].includes(metadata.threshold) ||
+                        !Number.isInteger(metadata.shareNumber)
+                    ) {
+                        throw new Error(`Share Input #${index + 1} has invalid payload metadata.`);
+                    }
+                    if (
+                        Array.isArray(shares) &&
+                        shares[index] &&
+                        shares[index].shareNumber !== metadata.shareNumber
+                    ) {
+                        throw new Error(
+                            `Share Input #${index + 1} was edited after payload import; ` +
+                            'its Share Number no longer matches the payload.'
+                        );
+                    }
+                    entries.push({ ...metadata, inputIndex: index });
+                });
+                if (entries.length === 0) {
+                    return { hasPayloads: false };
+                }
+                const reference = entries[0];
+                if (expectedWordCount !== null && reference.wordCount !== expectedWordCount) {
+                    throw new Error('Payload word count does not match the Recovery form.');
+                }
+                const seenShareNumbers = new Set();
+                let fullBatchIdHex = null;
+                let compactBatchIdHex = null;
+                let fullRbtHex = null;
+                let compactRbtHex = null;
+                entries.forEach((entry) => {
+                    if (
+                        entry.wordCount !== reference.wordCount ||
+                        entry.threshold !== reference.threshold ||
+                        entry.languageInput !== reference.languageInput ||
+                        entry.walletProfileCode !== reference.walletProfileCode
+                    ) {
+                        throw new Error('Recovery payloads do not describe the same backup settings.');
+                    }
+                    if (seenShareNumbers.has(entry.shareNumber)) {
+                        throw new Error('Recovery payloads contain duplicate Share Numbers.');
+                    }
+                    seenShareNumbers.add(entry.shareNumber);
+                    if (entry.profile === PROFILE.FULL) {
+                        if (fullBatchIdHex && fullBatchIdHex !== entry.sessionBatchIdHex) {
+                            throw new Error('Full payload Session Batch IDs do not match.');
+                        }
+                        if (fullRbtHex && fullRbtHex !== entry.rbtHex) {
+                            throw new Error('Full payload RBT values do not match.');
+                        }
+                        fullBatchIdHex = entry.sessionBatchIdHex;
+                        fullRbtHex = entry.rbtHex;
+                    } else {
+                        if (compactBatchIdHex && compactBatchIdHex !== entry.sessionBatchIdHex) {
+                            throw new Error('Compact payload Session Batch IDs do not match.');
+                        }
+                        if (compactRbtHex && compactRbtHex !== entry.rbtHex) {
+                            throw new Error('Compact payload RBT values do not match.');
+                        }
+                        compactBatchIdHex = entry.sessionBatchIdHex;
+                        compactRbtHex = entry.rbtHex;
+                    }
+                });
+                if (
+                    fullBatchIdHex &&
+                    compactBatchIdHex &&
+                    !fullBatchIdHex.startsWith(compactBatchIdHex)
+                ) {
+                    throw new Error('Full and Compact payloads are not from the same session family.');
+                }
+                return {
+                    hasPayloads: true,
+                    wordCount: reference.wordCount,
+                    threshold: reference.threshold,
+                    languageInput: reference.languageInput,
+                    walletProfileCode: reference.walletProfileCode,
+                    fullBatchIdHex,
+                    compactBatchIdHex,
+                    fullRbtHex,
+                    compactRbtHex
+                };
+            }
+
+            function collectRecoveryRbtSources(
+                payloadMetadata,
+                manifestHeader,
+                wordCount
+            ) {
+                const sources = [];
+                const addSource = (
+                    profile,
+                    sessionBatchIdHex,
+                    rbtHex,
+                    source,
+                    sourceLabel
+                ) => {
+                    if (![PROFILE.FULL, PROFILE.COMPACT].includes(profile)) {
+                        return;
+                    }
+                    const batchHexLength = profile === PROFILE.FULL ? 16 : 8;
+                    const rbtHexLength = profile === PROFILE.FULL ? 24 : 12;
+                    if (
+                        typeof sessionBatchIdHex !== 'string' ||
+                        typeof rbtHex !== 'string' ||
+                        !new RegExp(`^[0-9a-fA-F]{${batchHexLength}}$`).test(
+                            sessionBatchIdHex
+                        ) ||
+                        !new RegExp(`^[0-9a-fA-F]{${rbtHexLength}}$`).test(rbtHex)
+                    ) {
+                        return;
+                    }
+                    const normalizedBatchId = sessionBatchIdHex.toUpperCase();
+                    const normalizedRbt = rbtHex.toUpperCase();
+                    sources.push({
+                        profile,
+                        sessionBatchIdHex: normalizedBatchId,
+                        rbtHex: normalizedRbt,
+                        sources: [source],
+                        sourceLabel
+                    });
+                };
+
+                if (Array.isArray(payloadMetadata)) {
+                    payloadMetadata.forEach((metadata) => {
+                        if (!metadata || metadata.wordCount !== wordCount) return;
+                        addSource(
+                            metadata.profile,
+                            metadata.sessionBatchIdHex,
+                            metadata.rbtHex,
+                            'share-payload',
+                            `Share #${metadata.shareNumber} ` +
+                            `${metadata.profile === PROFILE.FULL ? 'Full' : 'Compact'} payload`
+                        );
+                    });
+                }
+                if (manifestHeader && manifestHeader.wordCount === wordCount) {
+                    addSource(
+                        manifestHeader.profile,
+                        manifestHeader.sessionBatchIdHex,
+                        manifestHeader.rbtHex,
+                        'manifest-header',
+                        'Manifest Header (SB)'
+                    );
+                }
+                return sources;
+            }
+
+            function clearDigitalProfile(profile) {
+                if (!profile || typeof profile !== 'object') return;
+                Object.values(profile).forEach((value) => {
+                    if (value instanceof Uint8Array) {
+                        clearSensitiveArray(value);
+                    }
+                });
+            }
+
+            function clearDigitalSession(session) {
+                if (!session || typeof session !== 'object') return;
+                clearDigitalProfile(session.full);
+                clearDigitalProfile(session.compact);
+                session.full = null;
+                session.compact = null;
+            }
+
+            async function createDigitalArtifactsForSession(
+                shares,
+                inputSymbols,
+                threshold,
+                options = {}
+            ) {
+                if (!Array.isArray(shares) || shares.length === 0) {
+                    throw new Error('Digital envelopes require at least one Share.');
+                }
+                if (!Array.isArray(inputSymbols) || inputSymbols.length === 0) {
+                    throw new Error('Digital envelopes require canonical input symbols.');
+                }
+                const wordCount = inputSymbols.length;
+                ensureSupportedWordCount(wordCount);
+                const walletProfileCode = normalizeWalletProfileCode(options.walletProfileCode);
+                const suppliedBatchId = options.fullSessionBatchId;
+                const fullBatchId = suppliedBatchId === undefined
+                    ? getRandomBytes(8)
+                    : cloneBytes(suppliedBatchId, 8, 'Full Session Batch ID');
+                const compactBatchId = fullBatchId.slice(0, 4);
+                const canonicalMaterial = buildCanonicalSecretMaterial(inputSymbols);
+                let fullRbt = null;
+                let compactRbt = null;
+                let session = null;
+                try {
+                    await assertWebCryptoHealthy();
+                    fullRbt = await deriveRbt(canonicalMaterial, fullBatchId, 12);
+                    compactRbt = await deriveRbt(canonicalMaterial, compactBatchId, 6);
+                    session = {
+                        protocolVersion: PROTOCOL_VERSION,
+                        languageInput: BIP39_ENGLISH_INPUT,
+                        wordCount,
+                        threshold,
+                        walletProfileCode,
+                        full: {
+                            batchId: new Uint8Array(fullBatchId),
+                            rbt: new Uint8Array(fullRbt),
+                            manifestHeaderPayload: buildManifestHeaderPayload({
+                                profile: PROFILE.FULL,
+                                wordCount,
+                                sessionBatchId: fullBatchId,
+                                rbt: fullRbt
+                            })
+                        },
+                        compact: {
+                            batchId: new Uint8Array(compactBatchId),
+                            rbt: new Uint8Array(compactRbt),
+                            manifestHeaderPayload: buildManifestHeaderPayload({
+                                profile: PROFILE.COMPACT,
+                                wordCount,
+                                sessionBatchId: compactBatchId,
+                                rbt: compactRbt
+                            })
+                        }
+                    };
+
+                    for (const share of shares) {
+                        let fullResult = null;
+                        let compactResult = null;
+                        let fullAuditHash = null;
+                        let compactAuditHash = null;
+                        try {
+                            fullResult = await buildFullSharePayload({
+                                share,
+                                threshold,
+                                wordCount,
+                                walletProfileCode,
+                                sessionBatchId: fullBatchId,
+                                rbt: fullRbt
+                            });
+                            compactResult = buildCompactSharePayload({
+                                share,
+                                threshold,
+                                wordCount,
+                                walletProfileCode,
+                                sessionBatchId: compactBatchId,
+                                rbt: compactRbt
+                            });
+                            fullAuditHash = await computeSha256(fullResult.payload);
+                            compactAuditHash = await computeSha256(compactResult.payload);
+                            share.digital = {
+                                full: {
+                                    payload: fullResult.payload,
+                                    transportHash: fullResult.transportHash,
+                                    auditHash: fullAuditHash,
+                                    auditPayload: buildShareAuditPayload({
+                                        profile: PROFILE.FULL,
+                                        wordCount,
+                                        threshold,
+                                        shareNumber: share.shareNumber,
+                                        auditHash: fullAuditHash
+                                    })
+                                },
+                                compact: {
+                                    payload: compactResult.payload,
+                                    auditHash: compactAuditHash,
+                                    auditPayload: buildShareAuditPayload({
+                                        profile: PROFILE.COMPACT,
+                                        wordCount,
+                                        threshold,
+                                        shareNumber: share.shareNumber,
+                                        auditHash: compactAuditHash
+                                    })
+                                }
+                            };
+                            fullResult = null;
+                            compactResult = null;
+                            fullAuditHash = null;
+                            compactAuditHash = null;
+                        } finally {
+                            if (fullResult) clearDigitalProfile(fullResult);
+                            if (compactResult) clearDigitalProfile(compactResult);
+                            clearSensitiveArray(fullAuditHash);
+                            clearSensitiveArray(compactAuditHash);
+                        }
+                    }
+                    return session;
+                } catch (error) {
+                    shares.forEach((share) => {
+                        if (share.digital) {
+                            clearDigitalProfile(share.digital.full);
+                            clearDigitalProfile(share.digital.compact);
+                            share.digital = null;
+                        }
+                    });
+                    clearDigitalSession(session);
+                    throw error;
+                } finally {
+                    clearSensitiveArray(fullBatchId);
+                    clearSensitiveArray(compactBatchId);
+                    clearSensitiveArray(canonicalMaterial);
+                    clearSensitiveArray(fullRbt);
+                    clearSensitiveArray(compactRbt);
+                }
+            }
             
             // ==========================================================================
             // PUBLIC API METHODS
@@ -6296,7 +9000,7 @@ TERMS OF USE
             /**
              * Splits a BIP39 mnemonic into n Shamir shares with threshold k.
              */
-            async function splitBip39(mnemonic, k, n, wordlist) {
+            async function splitBip39(mnemonic, k, n, wordlist, options = {}) {
                 if (!Number.isInteger(k) || !Number.isInteger(n)) {
                     throw new Error('Threshold (k) and total shares (n) must be integers.');
                 }
@@ -6420,7 +9124,11 @@ TERMS OF USE
 
                         shares.push(share);
                     }
-                    return { shares };
+                    const result = { shares };
+                    if (options.includeInputSymbols === true) {
+                        result.inputSymbols = [...wordIndices];
+                    }
+                    return result;
                 } finally {
                     // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
                     // Includes canary/smoke abort paths — seed-bearing scratch must not outlive the call.
@@ -6446,7 +9154,7 @@ TERMS OF USE
              * @param {Array<string>} wordlist - The BIP39 wordlist.
              * @returns {Promise<Object>} A report object with detailed error tracking
              */
-            async function recoverAndValidate(shares, wordCount, wordlist) {
+            async function recoverAndValidate(shares, wordCount, wordlist, options = {}) {
                 const report = {
                     recoveredMnemonic: null,
                     recoveredIndices: null,
@@ -6459,13 +9167,18 @@ TERMS OF USE
                             status: 'not-checked'
                         },
                         rbt: {
-                            status: 'not-checked'
+                            status: 'not-checked',
+                            checkedProfiles: [],
+                            outcomes: [],
+                            hasConflict: false
                         }
                     }
                 };
 
                 // Declare sensitive variables outside try block for cleanup in finally
                 let recoveredWords = [];
+                let rbtCanonicalMaterial = null;
+                const rbtScratchBuffers = [];
 
                 try {
                     // 1. Pre-flight checks for input validity
@@ -6480,6 +9193,12 @@ TERMS OF USE
                     }
                     validateSharesForRecovery(shares, wordCount);
                     ensureShareNumbersDistinct(shares);
+                    const manifestHeader = options.manifestHeaderMetadata || null;
+                    const rbtSources = collectRecoveryRbtSources(
+                        options.payloadMetadata || [],
+                        manifestHeader,
+                        wordCount
+                    );
 
                     // 1b. Lagrange sanity check for share numbers
                     const shareNumbers = shares.map(share => share.shareNumber);
@@ -6526,9 +9245,57 @@ TERMS OF USE
                             await validateBIP39Mnemonic(mnemonic, wordlist);
                             report.validation.bip39.status = 'pass';
                         } catch (bip39Error) {
+                            if (isCryptoHardStopError(bip39Error)) {
+                                throw bip39Error;
+                            }
                             report.errors.bip39 = true;
                             report.validation.bip39.status = 'fail';
                             // Keep the candidate visible so the user can inspect and edit inputs.
+                        }
+
+                        if (rbtSources.length > 0) {
+                            rbtCanonicalMaterial = buildCanonicalSecretMaterial(recoveredWords);
+                            for (const source of rbtSources) {
+                                const batchId = hexToBytes(
+                                    source.sessionBatchIdHex,
+                                    `Recovered ${source.profile} Session Batch ID`
+                                );
+                                rbtScratchBuffers.push(batchId);
+                                const expectedRbt = await deriveRbt(
+                                    rbtCanonicalMaterial,
+                                    batchId,
+                                    source.profile === PROFILE.FULL ? 12 : 6
+                                );
+                                rbtScratchBuffers.push(expectedRbt);
+                                const status = constantTimeStringEqual(
+                                    bytesToHex(expectedRbt),
+                                    source.rbtHex
+                                ) ? 'pass' : 'fail';
+                                report.validation.rbt.outcomes.push({
+                                    profile: source.profile,
+                                    sources: [...source.sources],
+                                    sourceLabel: source.sourceLabel,
+                                    status
+                                });
+                                if (
+                                    !report.validation.rbt.checkedProfiles.includes(
+                                        source.profile
+                                    )
+                                ) {
+                                    report.validation.rbt.checkedProfiles.push(
+                                        source.profile
+                                    );
+                                }
+                            }
+                            const hasMatch = report.validation.rbt.outcomes.some(
+                                outcome => outcome.status === 'pass'
+                            );
+                            const hasMismatch = report.validation.rbt.outcomes.some(
+                                outcome => outcome.status === 'fail'
+                            );
+                            report.validation.rbt.status = hasMatch ? 'pass' : 'fail';
+                            report.validation.rbt.hasConflict =
+                                hasMatch && hasMismatch;
                         }
                     }
 
@@ -6538,6 +9305,8 @@ TERMS OF USE
                 } finally {
                     // Best-effort: clear numeric scratch buffers (not a secure memory wipe).
                     clearSensitiveArray(recoveredWords);
+                    clearSensitiveArray(rbtCanonicalMaterial);
+                    rbtScratchBuffers.forEach(buffer => clearSensitiveArray(buffer));
                 }
 
                 return report;
@@ -6566,6 +9335,23 @@ TERMS OF USE
                 computeColumnCheckPolynomials,
                 computeGlobalIntegrityCheckPolynomial,
                 configureEnvironment,
+                assertWebCryptoHealthy,
+                isCryptoHardStopError,
+                computeSha256,
+                deriveRbt,
+                packFieldElements12,
+                unpackFieldElements12,
+                bytesToHex,
+                hexToBytes,
+                decodeSharePayloadHex,
+                decodeManifestHeaderPayloadHex,
+                decodeManifestAuditEvidenceHex,
+                validateRecoveryPayloadSet,
+                buildFullSharePayload,
+                buildCompactSharePayload,
+                buildManifestHeaderPayload,
+                buildShareAuditPayload,
+                createDigitalArtifactsForSession,
                 assertCsprngHealthy,
                 assertCoefficientBatchHealthy,
                 isRngHardStopError,
@@ -8636,9 +11422,10 @@ TERMS OF USE
     </script>
 
     <!-- ==========================================================================
-    SHA-256 LIBRARY (Embedded for offline use)
+    LEGACY SHA-256 COMPATIBILITY LIBRARY (Inactive)
     - Adapted from js-sha256 v0.9.0 (MIT License) https://github.com/emn178/js-sha256
-    - Provides a pure-JavaScript SHA-256 implementation that works in air-gapped sessions.
+    - DuraShare now uses browser-native WebCrypto for SHA-256.
+    - Retained but unused until the manual vanilla-Tails compatibility gate is completed.
     ========================================================================== -->
     <script>
         (function (root) {

@@ -365,13 +365,12 @@ test('complete Whole-Key rows validate while another Share may omit MAT', async 
   await expect(matSummary).toHaveAttribute('data-blank', '8');
   await expect(matSummary).toHaveAttribute('data-pass', '8');
   await expect(matSummary).toHaveAttribute('data-fail', '0');
-  await expect(matSummary.locator('svg')).toHaveAttribute(
+  await expect(matSummary.locator('.recovery-evidence-bar')).toHaveAttribute(
     'aria-label',
-    'Manual Authentication (MAT): 8 pass, 0 fail, 8 blank, 16 total.'
+    'Manual Authentication (MAT): 8 pass, 0 fail, 8 not checked, 16 total.'
   );
-  await expect(matSummary.locator('[data-category="blank"] span').last()).toHaveText(
-    'Blank / not checked: 8'
-  );
+  await expect(matSummary.locator('.recovery-evidence-counts'))
+    .toContainText('Not checked: 8');
 });
 
 test('Split-Key MAT B validates without MAT A when only MAT B material is available', async ({ page }) => {
@@ -464,9 +463,9 @@ test('Dual Split-Key MAT validates both columns and the final result summary', a
   await expect(matSummary).toHaveAttribute('data-blank', '8');
   await expect(matSummary).toHaveAttribute('data-pass', '8');
   await expect(matSummary).toHaveAttribute('data-fail', '0');
-  await expect(matSummary.locator('svg')).toHaveAttribute(
+  await expect(matSummary.locator('.recovery-evidence-bar')).toHaveAttribute(
     'aria-label',
-    'Manual Authentication (MAT): 8 pass, 0 fail, 8 blank, 16 total.'
+    'Manual Authentication (MAT): 8 pass, 0 fail, 8 not checked, 16 total.'
   );
   await expect(page.locator('[data-validation-kind="bip39"]')).toHaveAttribute(
     'data-status',
@@ -647,8 +646,8 @@ test('MAT mismatch is summarized by row and raw entries survive Back', async ({ 
   await expect(matSummary).toHaveAttribute('data-blank', '12');
   await expect(matSummary).toHaveAttribute('data-pass', '3');
   await expect(matSummary).toHaveAttribute('data-fail', '1');
-  await expect(matSummary.locator('[data-category="pass"] span').last()).toHaveText('Pass: 3');
-  await expect(matSummary.locator('[data-category="fail"] span').last()).toHaveText('Fail: 1');
+  await expect(matSummary.locator('.recovery-evidence-counts')).toContainText('Pass: 3');
+  await expect(matSummary.locator('.recovery-evidence-counts')).toContainText('Problem: 1');
   expect(await getRecoveredMnemonic(page)).toBe(MNEMONIC);
 
   await page.click('#btn-back-to-recover1');

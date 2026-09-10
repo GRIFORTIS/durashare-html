@@ -9,8 +9,8 @@ const __dirname = dirname(__filename);
 const HTML_PATH = resolve(__dirname, '..', 'durashare.html');
 
 const FIELD_PRIME = 2053;
-const COLUMN_TAGS = [10, 20, 30];
-const COLUMN_TOTAL = 60;
+const COLUMN_TAGS = [100, 200, 300];
+const COLUMN_TOTAL = 600;
 
 let cachedWordlist = null;
 
@@ -39,7 +39,7 @@ export function computeRowChecksums(wordValues) {
 }
 
 /**
- * v0.5.0 column checksums: sum(column words) + tag (10/20/30) mod 2053.
+ * v0.7.0 column checksums: sum(column words) + tag (100/200/300) mod 2053.
  */
 export function computeColumnChecksums(wordValues) {
   const rowCount = wordValues.length / 3;
@@ -55,7 +55,7 @@ export function computeColumnChecksums(wordValues) {
 }
 
 /**
- * v0.5.0 printed GIC: (sum(words) + rowTotal + columnTotal + shareNumber) mod 2053.
+ * v0.7.0 printed GIC: (sum(words) + rowTotal + columnTotal + shareNumber) mod 2053.
  */
 export function computePrintedGic(wordValues, shareNumber) {
   const rowCount = wordValues.length / 3;

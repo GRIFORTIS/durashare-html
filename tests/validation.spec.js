@@ -110,8 +110,8 @@ test('recovery with modified data reports BIP39 failure independently', async ({
     'data-status',
     'fail'
   );
-  await expect(page.locator('[data-validation-kind="bip39"] .recovery-status-value')).toHaveText(
-    'FAIL'
+  await expect(page.locator('[data-validation-kind="bip39"] .recovery-evidence-status')).toHaveText(
+    'INVALID'
   );
   const checksumSummary = page.locator('[data-validation-kind="checksums"]');
   await expect(checksumSummary).toHaveAttribute('data-total', '24');
