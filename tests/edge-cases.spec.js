@@ -246,8 +246,8 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
       'fail'
     );
     await expect(
-      page.locator('[data-validation-kind="bip39"] .recovery-status-value')
-    ).toHaveText('FAIL');
+      page.locator('[data-validation-kind="bip39"] .recovery-evidence-status')
+    ).toHaveText('INVALID');
     expect(await getRecoveredMnemonic(page)).toBe(buildUniformMnemonic(24, 2047));
     console.log('✅ Recovery produced the expected candidate and explicit BIP39 FAIL (24-word)');
   });
@@ -280,8 +280,8 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
       'fail'
     );
     await expect(
-      page.locator('[data-validation-kind="bip39"] .recovery-status-value')
-    ).toHaveText('FAIL');
+      page.locator('[data-validation-kind="bip39"] .recovery-evidence-status')
+    ).toHaveText('INVALID');
     expect(await getRecoveredMnemonic(page)).toBe(buildUniformMnemonic(12, 2047));
     console.log('✅ Recovery produced the expected candidate and explicit BIP39 FAIL (12-word)');
   });
@@ -321,8 +321,8 @@ test.describe('Edge Cases - Recovery with Extreme Field Values', () => {
       'fail'
     );
     await expect(
-      page.locator('[data-validation-kind="bip39"] .recovery-status-value')
-    ).toHaveText('FAIL');
+      page.locator('[data-validation-kind="bip39"] .recovery-evidence-status')
+    ).toHaveText('INVALID');
     expect(await getRecoveredMnemonic(page)).toBe(buildUniformMnemonic(24, 1800));
     console.log('✅ Field maximum interpolation produced the expected candidate and BIP39 FAIL');
     

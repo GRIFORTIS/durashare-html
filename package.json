@@ -1,6 +1,6 @@
 {
   "name": "durashare-html-tests",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "End-to-end tests for DuraShare HTML tool",
   "type": "module",
   "scripts": {

@@ -19,7 +19,7 @@ const MNEMONIC_12 =
 const MNEMONIC_24 =
   'abandon zoo enhance young join maximum fancy call minimum code spider olive alcohol system also share birth profit horn bargain beauty media rapid tattoo';
 
-test('candidate result exposes four accessible validation summaries without a review gate', async ({ page }) => {
+test('candidate result separates collapsed confidence and kit-health meters', async ({ page }) => {
   await openApp(page);
   await navigateToCreateShares(page);
   await select12Words(page);
@@ -42,26 +42,71 @@ test('candidate result exposes four accessible validation summaries without a re
   ).toBeVisible();
   await expect(page.locator('#custom-modal')).not.toBeVisible();
   await expect(page.getByText('Checks Need Review')).toHaveCount(0);
-  await expect(page.locator('#recovery-validation-summary > section')).toHaveCount(4);
+  const meters = page.locator('#recovery-validation-summary > details');
+  await expect(meters).toHaveCount(2);
+  await expect(meters.nth(0)).not.toHaveAttribute('open', '');
+  await expect(meters.nth(1)).not.toHaveAttribute('open', '');
+
+  const confidence = page.locator('[data-meter-kind="confidence"]');
+  await expect(confidence).toHaveAttribute('data-state', 'plausible');
+  await expect(confidence.locator('.recovery-meter-state'))
+    .toHaveText('PLAUSIBLE — NOT SESSION-BOUND');
+  const kitHealth = page.locator('[data-meter-kind="kit-health"]');
+  await expect(kitHealth).toHaveAttribute('data-state', 'consistent');
+  await expect(kitHealth).toHaveAttribute('data-coverage', '1');
+  await expect(kitHealth).toHaveAttribute('data-coverage-total', '6');
+  await expect(confidence).toHaveAttribute('data-bar-pass', '1');
+  await expect(confidence).toHaveAttribute('data-bar-fail', '0');
+  await expect(confidence).toHaveAttribute('data-bar-blank', '1');
+  await expect(kitHealth).toHaveAttribute('data-bar-pass', '1');
+  await expect(kitHealth).toHaveAttribute('data-bar-fail', '0');
+  await expect(kitHealth).toHaveAttribute('data-bar-blank', '5');
+  await expect(confidence.locator(':scope > summary .recovery-meter-bar .recovery-evidence-segment.pass'))
+    .toHaveCount(1);
+  await expect(confidence.locator(':scope > summary .recovery-meter-bar .recovery-evidence-segment.blank'))
+    .toHaveCount(1);
+  await expect(kitHealth.locator(':scope > summary .recovery-meter-bar .recovery-evidence-segment.pass'))
+    .toHaveCount(1);
+  await expect(kitHealth.locator(':scope > summary .recovery-meter-bar .recovery-evidence-segment.blank'))
+    .toHaveCount(1);
+  await expect(kitHealth.locator(':scope > summary .recovery-meter-bar'))
+    .toHaveAttribute(
+      'aria-label',
+      'Backup Kit Health: 1 pass, 0 fail, 5 not checked, 6 total.'
+    );
 
   const rbt = page.locator('[data-validation-kind="rbt"]');
-  await expect(rbt).toHaveAttribute('data-status', 'not-checked');
-  await expect(rbt.locator('.recovery-status-value')).toHaveText('NOT CHECKED');
-  await expect(rbt).toContainText('not implemented in this HTML version');
+  await expect(rbt).toHaveAttribute('data-status', 'blank');
+  await expect(rbt.locator('.recovery-evidence-status')).toHaveText('NOT CHECKED');
+  await expect(rbt).toContainText('No Share payload or Manifest Header');
+
+  const manifestHeader = page.locator('[data-validation-kind="manifest-header"]');
+  await expect(manifestHeader).toHaveAttribute('data-status', 'blank');
+  const manifestAudit = page.locator('[data-validation-kind="manifest-audit"]');
+  await expect(manifestAudit).toHaveAttribute('data-total', '2');
+  await expect(manifestAudit).toHaveAttribute('data-blank', '2');
+  await expect(manifestAudit).toHaveAttribute('data-pass', '0');
 
   const bip39 = page.locator('[data-validation-kind="bip39"]');
   await expect(bip39).toHaveAttribute('data-status', 'pass');
-  await expect(bip39.locator('.recovery-status-value')).toHaveText('PASS');
+  await expect(bip39.locator('.recovery-evidence-status')).toHaveText('VALID');
+
+  const payloadIntegrity = page.locator(
+    '[data-validation-kind="payload-integrity"]'
+  );
+  await expect(payloadIntegrity).toHaveAttribute('data-total', '2');
+  await expect(payloadIntegrity).toHaveAttribute('data-blank', '2');
 
   const checksums = page.locator('[data-validation-kind="checksums"]');
   await expect(checksums).toHaveAttribute('data-total', '16');
   await expect(checksums).toHaveAttribute('data-blank', '0');
   await expect(checksums).toHaveAttribute('data-pass', '16');
   await expect(checksums).toHaveAttribute('data-fail', '0');
-  await expect(checksums.locator('svg')).toHaveAttribute('role', 'img');
-  await expect(checksums.locator('svg')).toHaveAttribute(
+  await expect(checksums.locator('.recovery-evidence-bar'))
+    .toHaveAttribute('role', 'img');
+  await expect(checksums.locator('.recovery-evidence-bar')).toHaveAttribute(
     'aria-label',
-    'Share Checksums: 16 pass, 0 fail, 0 blank, 16 total.'
+    'Share Checksums: 16 pass, 0 fail, 0 not checked, 16 total.'
   );
 
   const mat = page.locator('[data-validation-kind="mat"]');
@@ -69,9 +114,22 @@ test('candidate result exposes four accessible validation summaries without a re
   await expect(mat).toHaveAttribute('data-blank', '16');
   await expect(mat).toHaveAttribute('data-pass', '0');
   await expect(mat).toHaveAttribute('data-fail', '0');
+
+  await kitHealth.locator('summary').click();
+  const auditBox = await manifestAudit.boundingBox();
+  const matBox = await mat.boundingBox();
+  expect(auditBox?.y).toBe(matBox?.y);
+  const kitHeights = await kitHealth.locator('.recovery-evidence-item')
+    .evaluateAll(items => items.map(item => item.getBoundingClientRect().height));
+  expect(new Set(kitHeights).size).toBe(1);
+
+  await confidence.locator('summary').click();
+  const confidenceHeights = await confidence.locator('.recovery-evidence-item')
+    .evaluateAll(items => items.map(item => item.getBoundingClientRect().height));
+  expect(new Set(confidenceHeights).size).toBe(1);
 });
 
-test('donut totals scale with 24-word 3-share recovery', async ({ page }) => {
+test('equal-size evidence bars scale with 24-word 3-share recovery', async ({ page }) => {
   await openApp(page);
   await navigateToCreateShares(page);
   await select24Words(page);
@@ -97,6 +155,9 @@ test('donut totals scale with 24-word 3-share recovery', async ({ page }) => {
   const mat = page.locator('[data-validation-kind="mat"]');
   await expect(mat).toHaveAttribute('data-total', '48');
   await expect(mat).toHaveAttribute('data-blank', '48');
+  const manifestAudit = page.locator('[data-validation-kind="manifest-audit"]');
+  await expect(manifestAudit).toHaveAttribute('data-total', '3');
+  await expect(manifestAudit).toHaveAttribute('data-blank', '3');
 });
 
 test('duplicate Share Numbers still block before any candidate is shown', async ({ page }) => {
