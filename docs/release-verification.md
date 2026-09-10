@@ -35,16 +35,20 @@ gpg --import GRIFORTIS-PGP-PUBLIC-KEY.asc
 gpg --fingerprint security@grifortis.com
 # Expected: 7921 FD56 9450 8DA4 020E 671F 4CFE 6248 C57F 15DF
 
-export VERSION="v0.5.0"
-# download durashare.html, .asc, CHECKSUMS.txt, CHECKSUMS.txt.asc
+export VERSION="v0.6.0"
+# Download the six published assets for this tag:
+# durashare.html, durashare.html.asc,
+# CHECKSUMS.txt, CHECKSUMS.txt.asc,
+# CHECKSUMS.json, CHECKSUMS.json.asc
 # (HTML v0.4.1 used schiavinato_sharing.html instead)
 
 gpg --verify durashare.html.asc durashare.html
 gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
+gpg --verify CHECKSUMS.json.asc CHECKSUMS.json
 sha256sum -c CHECKSUMS.txt --ignore-missing
 ```
 
 ## What verification does not prove
 
 - The tool is audited or safe for real funds
-- Behavior matches the full living protocol / whitepaper (HTML v0.5.0 targets frozen `previous_versions/v0.5.0/` share-table vectors; see README compatibility)
+- Behavior matches the full living protocol / whitepaper. HTML v0.6.0 targets the arithmetic, MAT, and hexadecimal digital-envelope subset frozen by protocol v0.7.0 root vectors, plus archived v0.5.0 recovery vectors; see README compatibility.

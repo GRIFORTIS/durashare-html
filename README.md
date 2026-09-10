@@ -24,7 +24,7 @@ Key features (see [What it does and how on the spec repo](https://github.com/GRI
 
 DuraShare **modifies existing, well-established cryptographic techniques** for human-friendly threshold backup. Reference implementations are thoroughly tested, published in good faith **as is**, and have **not** been independently audited. See [Disclaimer](#disclaimer).
 
-> **HTML implementation status:** This implementation is a work in progress. The DuraShare overview above describes the protocol as a whole; not every listed feature is currently available here. See [Compatibility](#compatibility) for the exact supported scope.
+> **HTML implementation status:** v0.6.0 implements a defined subset of the DuraShare protocol. The overview above describes the protocol as a whole; see [Compatibility](#compatibility) for this release's exact supported scope and exclusions.
 
 ## What is this?
 
@@ -41,6 +41,9 @@ For high-security environments, run from a [Tails OS](https://tails.boum.org/) s
 - Split a BIP39 mnemonic into \(k\)-of-\(n\) shares
 - Recover the original BIP39 mnemonic from \(k\) shares
 - Validate inputs and share integrity during split/recovery to prevent silent mistakes
+- Generate single- or dual-column MAT data with Whole-Key or Split-Key Manifests
+- Display and import Full/Compact hexadecimal Share, SB, and SA payloads
+- Check Transport Hashes, Manifest Audit evidence, Session Batch IDs, RBT, BIP39, and stored-artifact consistency
 
 **Key properties:**
 - Single file (all CSS/JS inline)
@@ -92,13 +95,17 @@ gpg --fingerprint security@grifortis.com
 ### 2. Download Release Files
 
 ```bash
-# Replace VERSION with actual release (e.g., v0.5.0)
-VERSION="v0.5.0"
+# Replace VERSION with the release to verify
+VERSION="v0.6.0"
 curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/durashare.html"
 curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/durashare.html.asc"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.txt"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.txt.asc"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.json"
+curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.json.asc"
 ```
 
-> **Note:** HTML **v0.4.1** release assets used the filename `schiavinato_sharing.html`. From **v0.5.0** the artifact is `durashare.html`.
+> **Note:** HTML **v0.4.1** release assets used the filename `schiavinato_sharing.html`. From **v0.5.0** the artifact is `durashare.html`. Each release publishes the same six files: `durashare.html`, `durashare.html.asc`, `CHECKSUMS.txt`, `CHECKSUMS.txt.asc`, `CHECKSUMS.json`, and `CHECKSUMS.json.asc`.
 
 ### 3. Verify GPG Signature
 
@@ -111,9 +118,8 @@ gpg --verify durashare.html.asc durashare.html
 ### 4. Verify Checksum (Optional but Recommended)
 
 ```bash
-curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.txt"
-curl -fsSL -O "https://github.com/GRIFORTIS/durashare-html/releases/download/${VERSION}/CHECKSUMS.txt.asc"
 gpg --verify CHECKSUMS.txt.asc CHECKSUMS.txt
+gpg --verify CHECKSUMS.json.asc CHECKSUMS.json
 sha256sum --check CHECKSUMS.txt --ignore-missing
 ```
 
@@ -141,7 +147,9 @@ Maintainers: see [`RELEASE.md`](./RELEASE.md) for the signed-tag release process
 
 ## Conformance Validation
 
-This implementation is validated against canonical test vectors:
+This implementation is validated against frozen canonical test vectors:
+- Protocol v0.7.0 vectors for current arithmetic, MAT, Full/Compact hexadecimal digital envelopes, Manifest Audit Hashes, Session Batch IDs, and RBT
+- Archived HTML v0.5.0 share-table vectors for recovery-only compatibility
 - [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
 
 Tests run automatically in CI on every push/PR.
@@ -150,10 +158,11 @@ Tests run automatically in CI on every push/PR.
 
 ## Compatibility
 
-- **Released HTML tool version**: v0.5.0 (`package.json` / UI footer)
-- **Released v0.5.0 scope**: the **arithmetic share-table subset** (split/recover with position-bound row/column checksums and printed GIC), validated against frozen `previous_versions/v0.5.0/` vectors
-- **Unreleased work in progress**: single- or dual-column Manual Authentication (MAT), including Whole-Key and Split-Key Manifests and optional recovery-time MAT auditing. Session Batch ID and Recovery Binding Tag (RBT) are not implemented yet.
-- **Still out of scope**: the complete DuraShare protocol — digital envelope / Bech32m QR payloads, Manifest Audit Hash, RBT/RVA, and other living-spec surfaces
+- **Released HTML tool version**: v0.6.0 (`package.json` / UI footer)
+- **Supported protocol subset**: arithmetic Share tables; position-bound row and column checksums; printed GIC; single- or dual-column MAT with Whole-Key or Split-Key Manifests; Full/Compact hexadecimal Share payloads; hexadecimal SB/SA payloads; Manifest Audit Hash; Session Batch ID; profile-length RBT; and free-text RVA/verification notes
+- **Frozen interoperability oracle**: protocol v0.7.0 root vectors, pinned through `GRIFORTIS/durashare@v0.7.0`
+- **Recovery compatibility**: archived HTML v0.5.0 Share-table vectors remain covered for manual recovery; absent v0.6.0 artifact fields are reported as not checked
+- **Still out of scope**: Bech32m/QR rendering or scanning, automatic wallet derivation/RVA verification, pre-encrypted numeric input, nested ceremonies, and complete parity with the living protocol
 - **BIP39 word counts**: 12, 15, 18, 21, 24
 - **Threshold schemes**: 2-of-3, 2-of-4, 3-of-5
 - **Breaking vs HTML v0.4.1**: v0.4.1 shares need the **v0.4.1 tool** (`schiavinato_sharing.html`, still published on that release). New releases ship `durashare.html`

@@ -26,8 +26,9 @@ npm test
 
 ```bash
 npm ci
-npm test
 npm run lint
+npm audit --audit-level=high
+npm test
 ```
 
 On macOS, `npm test` uses Google Chrome. On Linux CI, workflows run `npx playwright install chromium` before tests.
@@ -46,7 +47,18 @@ npm run test:ui
 Conformance is defined by the canonical vectors in the specification repo:
 - [TEST_VECTORS](https://github.com/GRIFORTIS/durashare/blob/main/test_vectors/README.md)
 
-The Playwright suite loads the frozen v0.5.0 machine-readable vectors at `previous_versions/v0.5.0/test_vectors/vectors.json` in the [specification repo](https://github.com/GRIFORTIS/durashare). CI pins `GRIFORTIS/durashare@v0.6.0` (first tag that archives that path); locally, use a tree that includes `previous_versions/v0.5.0/` or set `DURASHARE_SPEC_REPO_PATH`.
+The Playwright suite loads two frozen vector sets from the
+[specification repo](https://github.com/GRIFORTIS/durashare):
+
+- `test_vectors/vectors.json` from protocol tag `v0.7.0` is the byte-level
+  oracle for current arithmetic, MAT, Full/Compact digital envelopes,
+  Manifest Audit Hashes, Session Batch IDs, and RBT.
+- `previous_versions/v0.5.0/test_vectors/vectors.json` preserves
+  recovery-only compatibility with HTML v0.5.0 Share tables.
+
+CI pins the immutable `GRIFORTIS/durashare@v0.7.0` tag, which contains both
+sets. Locally, use a spec tree containing both paths or set
+`DURASHARE_SPEC_REPO_PATH`.
 Local options:
 - Clone `durashare` next to `durashare-html` (a local folder still named `schiavinato-sharing` is also detected), or
 - Set `DURASHARE_SPEC_REPO_PATH=/abs/path/to/durashare`.
