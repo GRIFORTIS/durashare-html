@@ -7,6 +7,17 @@ Protocol/spec changes belong in the canonical repo:
 
 ## [Unreleased]
 
+## 0.6.0 - 2026-09-10
+
+HTML **v0.6.0** implements the arithmetic, Manual Authentication (MAT), and
+hexadecimal Full/Compact digital-envelope subset validated against the frozen
+DuraShare protocol **v0.7.0** vectors. It also preserves recovery-only
+compatibility with frozen HTML v0.5.0 share-table vectors.
+
+This release does **not** claim complete protocol v0.7.0 parity. Bech32m/QR
+rendering and scanning are not implemented, and RVA is recorded as
+human-readable recovery context rather than verified through wallet derivation.
+
 ### Security
 - Hard-stop CSPRNG smoke tests before share generation and manual sharding Random Again: require working `crypto.getRandomValues`, reject sentinel no-ops, constant-filled byte bursts, and identical consecutive bursts. Never fall back to `Math.random`.
 - Ceremony coefficient canary: refuse batches where all coefficients are identical (size ≥ 2) or any value repeats ≥ 6 times; no silent redraw — modal abort only.
@@ -17,16 +28,22 @@ Protocol/spec changes belong in the canonical repo:
 - Partial polynomial construction clears its own secret-bearing scratch if an RNG failure interrupts a draw.
 
 ### Changed
-- Recovery now shows the interpolated candidate when all required Share inputs are valid, without a confirmation gate. RC/CC/GIC and MAT are reported as accessible, non-blocking blank/pass/fail summaries; BIP39 is always evaluated independently, and RBT is explicitly shown as not checked until this HTML version implements it.
+- Recovery Confidence and Backup Kit Health summary bars now show the same pass / problem / not-checked mix as their evidence families, instead of a single solid state color.
+- Recovery Confidence now treats RBT as one any-match decision, while Backup Kit Health reports every supplied RBT-bearing Share payload and Manifest Header separately and identifies mismatching artifacts.
+- Recovery now shows the interpolated candidate when all required Share inputs are valid, without a confirmation gate. Recovery Confidence evaluates RBT and BIP39; Backup Kit Health separately reports Manifest Audit, MAT, payload-integrity, Share-checksum, SB, and RBT-artifact consistency.
 - CI and release workflows use minimally upgraded, SHA-pinned Node.js 24-native action releases; CI uses one Node.js 24 toolchain behind a stable `CI Gate` instead of version-specific required checks.
 - CodeQL advanced setup uses SHA-pinned CodeQL Action v4.37.7 on Node.js 24 instead of deprecated v3.
 
 ### Added
-- Manual Authentication (MAT) work in progress: create single- or dual-column MAT shares with Whole-Key or Split-Key Manifests, and optionally audit complete tag/key rows during recovery.
+- Single- or dual-column Manual Authentication (MAT), with Whole-Key and Split-Key Manifests and optional recovery-time auditing of complete tag/key rows.
+- Full and Compact hexadecimal Share payloads, Manifest Session Headers (SB), Share Audit payloads (SA), Manifest Audit Hashes, Session Batch IDs, profile-length Recovery Binding Tags (RBT), and free-text RVA/verification notes.
+- Recovery-time hexadecimal payload import, atomic population, Transport Hash and arithmetic validation, cross-Share session checks, and independent artifact-health reporting.
 
 ### Fixed
+- Recovery Manifest Audit evidence no longer stays green after the Share payload fails Transport Hash (or other decode) checks; leaving the audit field does not re-mark it valid over an invalid payload.
+- Published-release verification now requires the current stable `CI Gate`, Secret Scanning, and CodeQL analysis contexts instead of obsolete version-specific Node.js checks.
 - CI test reliability: run each GIC-binding scheme as an independent case and read each rendered Share card in one validated browser pass, preserving the same UI assertions without exceeding the per-test timeout.
-- CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.1 (development tooling only; no change to `durashare.html`).
+- CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.2 (development tooling only; no change to the standalone `durashare.html` runtime).
 
 ## 0.5.0 - 2026-07-27
 

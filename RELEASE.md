@@ -16,8 +16,10 @@ On the target commit (normally `main` after merge):
 
 1. **CI must be green** on GitHub (`ci.yml` + `codeql.yml`). Branch ruleset enforces this for merges.
 2. `CHANGELOG.md` has the dated release section for this version.
-3. `package.json` `version`, user-facing strings in `durashare.html`, and the git tag all match (e.g. `0.5.0` / `v0.5.0`).
-4. Conformance tests pass locally (`npm ci`, Playwright). Spec checkout: `GRIFORTIS/durashare@v0.6.0` (frozen v0.5.0 vectors at `previous_versions/v0.5.0/test_vectors/vectors.json`).
+3. `package.json` `version`, user-facing strings in `durashare.html`, and the git tag all match (e.g. `0.6.0` / `v0.6.0`).
+4. README and release notes state the exact supported protocol subset and frozen-vector version without claiming parity with the living specification.
+5. From a clean checkout, run `npm ci`, `npm audit --audit-level=high`, `npm run lint`, and the full Playwright suite.
+6. Conformance uses `GRIFORTIS/durashare@v0.7.0`: root v0.7.0 vectors are the current byte-level oracle, while archived v0.5.0 vectors cover recovery compatibility.
 
 Signing identity:
 
@@ -31,7 +33,7 @@ Build into `release-assets/` at the repository root. That directory is **gitigno
 From a clean checkout at the release commit:
 
 ```bash
-export VERSION="v0.5.0"
+export VERSION="v0.6.0"
 mkdir -p release-assets
 cp durashare.html "release-assets/durashare.html"
 
@@ -119,7 +121,7 @@ Wait for **CI on the tag** (`ci.yml` runs on `v*` tags) to finish green before p
 Manual re-verify:
 
 ```bash
-gh workflow run release.yml -f tag=v0.5.0
+gh workflow run release.yml -f tag=v0.6.0
 ```
 
 > **Note:** HTML **v0.4.1** release assets used `schiavinato_sharing.html`. From **v0.5.0** publish `durashare.html` (and matching `.asc` / checksum entries).
