@@ -557,6 +557,7 @@ test('one matching RBT confirms confidence while health identifies each conflict
   await navigateToRecover(page);
   await page.fill('#recover-payload-1', payload1);
   await page.locator('#recover-payload-1').blur();
+  await expect(page.locator('#recover-payload-1')).toHaveClass(/valid/);
   await page.fill('#recover-payload-2', damagedPayload2);
   await page.locator('#recover-payload-2').blur();
   await expect(page.locator('#recover-payload-2')).toHaveClass(/valid/);
@@ -564,6 +565,7 @@ test('one matching RBT confirms confidence while health identifies each conflict
   await page.locator('#recover-share-2-row-3-word-2').blur();
   await page.fill('#recover-payload-3', payload3);
   await page.locator('#recover-payload-3').blur();
+  await expect(page.locator('#recover-payload-3')).toHaveClass(/valid/);
   await page.fill('#recover-manifest-header-payload', conflictingHeader);
   await page.locator('#recover-manifest-header-payload').blur();
   await expect(page.locator('#recover-manifest-header-payload'))

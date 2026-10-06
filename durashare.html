@@ -905,11 +905,27 @@ TERMS OF USE
         }
 
         /* Home Page Styles */
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 30px;
+        }
+
+        .home-col {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .home-button {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             width: 100%;
             padding: 30px;
-            margin-bottom: 20px;
             border: 1px solid var(--border-color);
             border-radius: 12px;
             background-color: var(--bg-card);
@@ -917,7 +933,28 @@ TERMS OF USE
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-sizing: border-box;
         }
+
+        .home-button.main-action {
+            flex-grow: 1;
+            justify-content: flex-start;
+            padding-top: 120px;
+        }
+
+        .home-button.full-height {
+            flex-grow: 1;
+            min-height: 450px;
+            justify-content: flex-start;
+            padding-top: 120px;
+        }
+
+        .home-button.helper-action {
+            flex-grow: 0;
+            flex-shrink: 0;
+            padding: 20px;
+        }
+
         .home-button:hover {
             border-color: var(--cyber-gold);
             transform: translateY(-3px);
@@ -926,6 +963,10 @@ TERMS OF USE
         .home-button h2 {
             font-size: 1.75rem;
             margin: 0 0 10px 0;
+        }
+        .home-button h3 {
+            font-size: 1.25rem;
+            margin: 0 0 5px 0;
         }
         .home-button p {
             font-size: 1rem;
@@ -942,6 +983,20 @@ TERMS OF USE
             transform: none;
         }
         .home-button:disabled:hover { border-color: var(--border-color); }
+
+        @media (max-width: 900px) {
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+            .home-button.main-action,
+            .home-button.full-height {
+                justify-content: center;
+                padding: 40px 30px;
+            }
+            .home-button.full-height {
+                min-height: auto;
+            }
+        }
 
         /* Recover Page Styles */
         .horizontal-radio-group {
@@ -1239,25 +1294,39 @@ TERMS OF USE
             - Provides navigation to the two primary flows: Create and Recover.
             ========================================================================== -->
             <section id="pageHome" style="display: none;">
-                <button class="home-button" id="btn-go-to-recover">
-                    <h2>Recover Wallet</h2>
-                    <p>Enter your share data to recover the original seed phrase</p>
-                </button>
-                <button class="home-button" id="btn-manual-recovery-helper">
-                    <h2>Manual Recovery Helper</h2>
-                    <p>Generate Lagrange multipliers to recombine paper shares offline</p>
-                </button>
+                <div class="home-grid">
+                    <!-- Column 1: Sharing -->
+                    <div class="home-col">
+                        <button class="home-button main-action" id="btn-go-to-create">
+                            <h2>1. Create Shares</h2>
+                            <p>Split your seed phrase into multiple secure shares</p>
+                        </button>
+                        <button class="home-button helper-action" id="btn-manual-sharding-helper">
+                            <h3>Sharding Helper</h3>
+                            <p>Secure randoms for paper sharding</p>
+                        </button>
+                    </div>
 
-                <hr style="margin: 30px 0;">
+                    <!-- Column 2: Audit -->
+                    <div class="home-col">
+                        <button class="home-button full-height" id="btn-go-to-audit">
+                            <h2>2. Audit Share</h2>
+                            <p>Verify a stored share without exposing the original seed phrase</p>
+                        </button>
+                    </div>
 
-                <button class="home-button" id="btn-go-to-create">
-                    <h2>Create Shares</h2>
-                    <p>Split your seed phrase into multiple secure shares</p>
-                </button>
-                <button class="home-button" id="btn-manual-sharding-helper">
-                    <h2>Manual Sharding Helper</h2>
-                    <p>Generate secure random numbers for pencil & paper sharding</p>
-                </button>
+                    <!-- Column 3: Recovery -->
+                    <div class="home-col">
+                        <button class="home-button main-action" id="btn-go-to-recover">
+                            <h2>3. Recover Wallet</h2>
+                            <p>Enter your share data to recover the original seed phrase</p>
+                        </button>
+                        <button class="home-button helper-action" id="btn-manual-recovery-helper">
+                            <h3>Recovery Helper</h3>
+                            <p>Multipliers to recombine paper shares</p>
+                        </button>
+                    </div>
+                </div>
             </section>
             
             <!-- ==========================================================================
@@ -1523,6 +1592,65 @@ TERMS OF USE
             </section>
 
             <!-- ==========================================================================
+            PAGE 3: AUDIT SHARE
+            - Reuses the Recovery share-entry component for one reactive Share.
+            ========================================================================== -->
+            <section id="pageAudit" style="display: none;">
+                <div class="component-card">
+                    <h2>Audit One Share</h2>
+                    <p>Enter any available Share, payload, Manifest, or MAT fields in any order. Checks run as soon as enough information is available.</p>
+                    <div class="alert alert-info">
+                        <strong>COMPARE THE PHYSICAL SHARE:</strong> When a payload fills the fields, compare every displayed value with the stored Share. Any difference is a problem even if the payload itself is valid.
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <h2>1. Share Parameters</h2>
+                    <div style="display: flex; flex-direction: column; gap: 20px; align-items: flex-start;">
+                        <div class="form-group">
+                            <label>Scheme Threshold (K)</label>
+                            <div class="horizontal-radio-group">
+                                <div class="choice-group">
+                                    <input type="radio" id="audit-k-2" name="audit-k" value="2" checked>
+                                    <label for="audit-k-2">2</label>
+                                </div>
+                                <div class="choice-group">
+                                    <input type="radio" id="audit-k-3" name="audit-k" value="3">
+                                    <label for="audit-k-3">3</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Original Seed Phrase Length</label>
+                            <div class="word-count-toggle">
+                                <button id="audit-btn-12-words" class="btn btn-secondary" type="button">12 Words</button>
+                                <button id="audit-btn-24-words" class="btn btn-primary" type="button">24 Words</button>
+                                <button id="btn-wordcount-toggle-audit" class="link-button" type="button">More</button>
+                                <div id="extra-wordcount-audit" class="word-count-extra">
+                                    <button id="audit-btn-15-words" class="btn btn-secondary" type="button">15</button>
+                                    <button id="audit-btn-18-words" class="btn btn-secondary" type="button">18</button>
+                                    <button id="audit-btn-21-words" class="btn btn-secondary" type="button">21</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="audit-share-entry-placeholder"></div>
+
+                <div class="component-card">
+                    <h3 style="margin-top: 0;">Audit Assessment</h3>
+                    <p>Results describe only the evidence supplied. Missing optional evidence remains not checked.</p>
+                    <div id="audit-validation-summary" class="recovery-meter-layout"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <button class="btn btn-secondary btn-back-home">Back to Home</button>
+                    <button id="btn-clear-audit" class="btn btn-primary" type="button">Clear Audit &amp; Audit Another Share</button>
+                </div>
+            </section>
+
+            <!-- ==========================================================================
             PAGE 3: RECOVER WALLET - DATA INPUT
             - The first step in the "Recover Wallet" flow.
             - Dynamically generates input fields based on user's scheme selection.
@@ -1563,20 +1691,23 @@ TERMS OF USE
                     </div>
                 </div>
 
-                <div class="component-card">
-                    <h2>2. Manifest Session Header (Optional)</h2>
-                    <div class="form-group recovery-payload-group" style="margin-bottom: 0;">
-                        <label for="recover-manifest-header-payload">Manifest Header Payload Hex (SB)</label>
-                        <input type="text" id="recover-manifest-header-payload" class="mono" autocomplete="off" spellcheck="false" placeholder="Paste 5342… and leave the field">
-                        <p id="recover-manifest-header-status" class="recovery-payload-status"></p>
+                <div id="recover-share-entry-placeholder">
+                    <div id="shared-share-entry">
+                        <div class="component-card">
+                            <h2>2. Manifest Session Header (Optional)</h2>
+                            <div class="form-group recovery-payload-group" style="margin-bottom: 0;">
+                                <label for="recover-manifest-header-payload">Manifest Header Payload Hex (SB)</label>
+                                <input type="text" id="recover-manifest-header-payload" class="mono" autocomplete="off" spellcheck="false" placeholder="Paste 5342… and leave the field">
+                                <p id="recover-manifest-header-status" class="recovery-payload-status"></p>
+                            </div>
+                        </div>
+
+                        <p class="recover-hint"><strong>Only the Share Number and Share words are required.</strong> Copy RC, CC, GIC, MAT A, and MAT B only when they appear on your Share. Leave every unavailable field empty. Manifest keys are entered in the optional section below each Share.</p>
+
+                        <div id="recover-shares-container">
+                            <!-- Share input blocks are dynamically inserted here by JS -->
+                        </div>
                     </div>
-                </div>
-
-                <p class="recover-hint"><strong>Only the Share Number and Share words are required.</strong> Copy RC, CC, GIC, MAT A, and MAT B only when they appear on your Share. Leave every unavailable field empty. Manifest keys are entered in the optional section below each Share.</p>
-
-                <!-- Section 3.3: Dynamic Share Inputs -->
-                <div id="recover-shares-container">
-                    <!-- Share input blocks are dynamically inserted here by JS -->
                 </div>
 
                 <!-- Page 3 Footer Buttons -->
@@ -1789,6 +1920,7 @@ TERMS OF USE
                 payloadText: '',
                 payloadMetadata: null,
                 payloadEvidenceMetadata: null,
+                payloadSnapshot: null,
                 auditEvidenceText: '',
                 auditEvidenceMetadata: null,
                 shareNumber: '',
@@ -1812,7 +1944,72 @@ TERMS OF USE
         let recoverManifestHeaderMetadata = null;
         let recoverManifestHeaderPromise = Promise.resolve();
         let recoverWordCount = 24;
+        let auditFlowCache = [createEmptyRecoveryCacheEntry()];
+        let auditPayloadPromises = [Promise.resolve()];
+        let auditEvidencePromises = [Promise.resolve()];
+        let auditManifestHeaderText = '';
+        let auditManifestHeaderMetadata = null;
+        let auditManifestHeaderPromise = Promise.resolve();
+        let auditWordCount = 24;
+        let auditThreshold = 2;
+        let activeShareEntryMode = 'recovery';
         const manualRecoveryShareCache = {};
+
+        function getActiveFlowCache() {
+            return getFlowCacheForMode(activeShareEntryMode);
+        }
+
+        function getFlowCacheForMode(mode) {
+            return mode === 'audit'
+                ? auditFlowCache
+                : recoverFlowCache;
+        }
+
+        function getPayloadPromisesForMode(mode) {
+            return mode === 'audit'
+                ? auditPayloadPromises
+                : recoveryPayloadPromises;
+        }
+
+        function getActiveEvidencePromises() {
+            return activeShareEntryMode === 'audit'
+                ? auditEvidencePromises
+                : recoveryAuditPromises;
+        }
+
+        function getActiveWordCount() {
+            return activeShareEntryMode === 'audit'
+                ? auditWordCount
+                : recoverWordCount;
+        }
+
+        function getActiveManifestHeaderText() {
+            return activeShareEntryMode === 'audit'
+                ? auditManifestHeaderText
+                : recoverManifestHeaderText;
+        }
+
+        function getActiveManifestHeaderMetadata() {
+            return activeShareEntryMode === 'audit'
+                ? auditManifestHeaderMetadata
+                : recoverManifestHeaderMetadata;
+        }
+
+        function setActiveManifestHeaderText(value) {
+            if (activeShareEntryMode === 'audit') {
+                auditManifestHeaderText = value;
+            } else {
+                recoverManifestHeaderText = value;
+            }
+        }
+
+        function setActiveManifestHeaderMetadata(value) {
+            if (activeShareEntryMode === 'audit') {
+                auditManifestHeaderMetadata = value;
+            } else {
+                recoverManifestHeaderMetadata = value;
+            }
+        }
 
         let activeSuggestionIndex = -1;
         let allowMouseHover = false;
@@ -2067,6 +2264,7 @@ TERMS OF USE
             create2: document.getElementById('pageCreate2'),
             manualRecovery: document.getElementById('pageManualRecovery'),
             manualSharding: document.getElementById('pageManualSharding'),
+            audit: document.getElementById('pageAudit'),
             recover1: document.getElementById('pageRecover1'),
             recover2: document.getElementById('pageRecover2'),
         };
@@ -2076,6 +2274,7 @@ TERMS OF USE
         const flowSubheader = document.getElementById('flow-subheader');
 
         const btnGoToCreate = document.getElementById('btn-go-to-create');
+        const btnGoToAudit = document.getElementById('btn-go-to-audit');
         const btnGoToRecover = document.getElementById('btn-go-to-recover');
         const btnManualRecoveryHelper = document.getElementById('btn-manual-recovery-helper');
         const btnManualShardingHelper = document.getElementById('btn-manual-sharding-helper');
@@ -2087,6 +2286,7 @@ TERMS OF USE
         const btnStartOverRecover = document.getElementById('btn-start-over-recover');
         const btnBackToRecover1 = document.getElementById('btn-back-to-recover1');
         const btnShowMultipliers = document.getElementById('btn-show-multipliers');
+        const btnClearAudit = document.getElementById('btn-clear-audit');
 
         const schemeRadios = document.querySelectorAll('input[name="scheme"]');
         const schemeExplanation = document.getElementById('scheme-explanation');
@@ -2120,6 +2320,21 @@ TERMS OF USE
         const recoverBtn21Words = document.getElementById('recover-btn-21-words');
         const btnWordcountToggleRecover = document.getElementById('btn-wordcount-toggle-recover');
         const extraWordcountRecover = document.getElementById('extra-wordcount-recover');
+        const auditKRadios = document.querySelectorAll('input[name="audit-k"]');
+        const auditBtn12Words = document.getElementById('audit-btn-12-words');
+        const auditBtn24Words = document.getElementById('audit-btn-24-words');
+        const auditBtn15Words = document.getElementById('audit-btn-15-words');
+        const auditBtn18Words = document.getElementById('audit-btn-18-words');
+        const auditBtn21Words = document.getElementById('audit-btn-21-words');
+        const btnWordcountToggleAudit = document.getElementById('btn-wordcount-toggle-audit');
+        const extraWordcountAudit = document.getElementById('extra-wordcount-audit');
+        const sharedShareEntry = document.getElementById('shared-share-entry');
+        const auditShareEntryPlaceholder =
+            document.getElementById('audit-share-entry-placeholder');
+        const recoverShareEntryPlaceholder =
+            document.getElementById('recover-share-entry-placeholder');
+        const auditValidationSummary =
+            document.getElementById('audit-validation-summary');
         
         const sharedSchemeSelector = document.getElementById('shared-scheme-selector');
         const createSchemePlaceholder = document.getElementById('create-scheme-placeholder');
@@ -2191,9 +2406,32 @@ TERMS OF USE
             window.scrollTo(0, 0); // Scroll to top on page change
         }
 
+        function activateShareEntryMode(mode) {
+            if (sharedShareEntry?.isConnected) {
+                persistRecoverShareInputsToCache();
+            }
+            activeShareEntryMode = mode;
+            const target = mode === 'audit'
+                ? auditShareEntryPlaceholder
+                : recoverShareEntryPlaceholder;
+            if (sharedShareEntry && target) {
+                target.appendChild(sharedShareEntry);
+            }
+            renderRecoverShareInputsFromCache();
+        }
+
         btnContinueToHome.addEventListener('click', () => showPage('home'));
         btnGoToCreate.addEventListener('click', () => showPage('create1', 'Create Shares'));
-        btnGoToRecover.addEventListener('click', () => showPage('recover1', 'Recover Wallet'));
+        if (btnGoToAudit) {
+            btnGoToAudit.addEventListener('click', () => {
+                activateShareEntryMode('audit');
+                showPage('audit', 'Audit Share');
+            });
+        }
+        btnGoToRecover.addEventListener('click', () => {
+            activateShareEntryMode('recovery');
+            showPage('recover1', 'Recover Wallet');
+        });
         if (btnManualRecoveryHelper) {
             btnManualRecoveryHelper.addEventListener('click', () => showPage('manualRecovery', 'Manual Recovery Helper'));
         }
@@ -2225,8 +2463,8 @@ TERMS OF USE
         }
         if (recoverManifestHeaderInput) {
             recoverManifestHeaderInput.addEventListener('input', () => {
-                recoverManifestHeaderText = recoverManifestHeaderInput.value;
-                recoverManifestHeaderMetadata = null;
+                setActiveManifestHeaderText(recoverManifestHeaderInput.value);
+                setActiveManifestHeaderMetadata(null);
                 clearInputErrorState(recoverManifestHeaderInput);
                 if (recoverManifestHeaderStatus) {
                     recoverManifestHeaderStatus.className = 'recovery-payload-status';
@@ -2235,9 +2473,38 @@ TERMS OF USE
                             ? ''
                             : 'Leave this field to validate the SB payload.';
                 }
+                refreshAuditAssessment();
             });
             recoverManifestHeaderInput.addEventListener('blur', () => {
-                recoverManifestHeaderPromise = handleManifestHeaderBlur();
+                const promise = handleManifestHeaderBlur();
+                if (activeShareEntryMode === 'audit') {
+                    auditManifestHeaderPromise = promise;
+                } else {
+                    recoverManifestHeaderPromise = promise;
+                }
+            });
+        }
+        auditKRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                auditThreshold = Number(radio.value);
+                refreshAuditAssessment();
+            });
+        });
+        if (btnClearAudit) {
+            btnClearAudit.addEventListener('click', async () => {
+                const confirmed = await showConfirmationModal(
+                    'Clear this audit?',
+                    'All Share, Manifest, and MAT values entered on this Audit page will be removed.',
+                    { confirmLabel: 'Clear Audit' }
+                );
+                if (confirmed) {
+                    await Promise.allSettled([
+                        ...auditPayloadPromises,
+                        ...auditEvidencePromises,
+                        auditManifestHeaderPromise
+                    ]);
+                    clearAuditState();
+                }
             });
         }
         updateMatCustodyVisibility();
@@ -3124,9 +3391,10 @@ TERMS OF USE
             initializeRecoveryInputTracking(input);
             input.addEventListener('input', () => {
                 if (part === 'secondary' && input.value.trim() !== '') {
-                    recoverFlowCache[shareIndex - 1].splitKeyStarted = true;
+                    getActiveFlowCache()[shareIndex - 1].splitKeyStarted = true;
                 }
                 clearInputErrorState(input);
+                refreshAuditAssessment();
             });
             input.addEventListener('blur', () => {
                 validateShareInline(shareIndex);
@@ -3240,7 +3508,7 @@ TERMS OF USE
             });
             details.appendChild(content);
             details.addEventListener('toggle', () => {
-                const cacheEntry = recoverFlowCache[shareIndex - 1];
+                const cacheEntry = getActiveFlowCache()[shareIndex - 1];
                 if (cacheEntry) {
                     cacheEntry.manifestOpen = details.open;
                 }
@@ -3270,30 +3538,58 @@ TERMS OF USE
             );
         }
 
-        function setRecoveryConfigurationFromPayload(wordCount, threshold) {
-            recoverWordCount = wordCount;
-            const buttons = {
-                12: recoverBtn12Words,
-                15: recoverBtn15Words,
-                18: recoverBtn18Words,
-                21: recoverBtn21Words,
-                24: recoverBtn24Words
-            };
+        function setRecoveryConfigurationFromPayload(
+            wordCount,
+            threshold,
+            mode = activeShareEntryMode
+        ) {
+            const isAudit = mode === 'audit';
+            if (isAudit) {
+                auditWordCount = wordCount;
+                auditThreshold = threshold;
+            } else {
+                recoverWordCount = wordCount;
+            }
+            const buttons = isAudit
+                ? {
+                    12: auditBtn12Words,
+                    15: auditBtn15Words,
+                    18: auditBtn18Words,
+                    21: auditBtn21Words,
+                    24: auditBtn24Words
+                }
+                : {
+                    12: recoverBtn12Words,
+                    15: recoverBtn15Words,
+                    18: recoverBtn18Words,
+                    21: recoverBtn21Words,
+                    24: recoverBtn24Words
+                };
             Object.entries(buttons).forEach(([count, button]) => {
                 if (!button) return;
                 const active = Number(count) === wordCount;
                 button.classList.toggle('btn-primary', active);
                 button.classList.toggle('btn-secondary', !active);
             });
-            if ([15, 18, 21].includes(wordCount) && extraWordcountRecover) {
-                extraWordcountRecover.style.display = 'flex';
-                if (btnWordcountToggleRecover) {
-                    btnWordcountToggleRecover.textContent = 'Less';
+            const extraContainer = isAudit
+                ? extraWordcountAudit
+                : extraWordcountRecover;
+            const toggleButton = isAudit
+                ? btnWordcountToggleAudit
+                : btnWordcountToggleRecover;
+            if ([15, 18, 21].includes(wordCount) && extraContainer) {
+                extraContainer.style.display = 'flex';
+                if (toggleButton) {
+                    toggleButton.textContent = 'Less';
                 }
             }
-            const thresholdRadio = document.getElementById(`recover-k-${threshold}`);
+            const thresholdRadio = document.getElementById(
+                `${isAudit ? 'audit' : 'recover'}-k-${threshold}`
+            );
             if (!thresholdRadio) {
-                throw new Error(`Recovery threshold ${threshold} is not supported.`);
+                throw new Error(
+                    `${isAudit ? 'Audit' : 'Recovery'} threshold ${threshold} is not supported.`
+                );
             }
             thresholdRadio.checked = true;
         }
@@ -3341,6 +3637,24 @@ TERMS OF USE
             );
         }
 
+        function setAuditPayloadSnapshot(cacheEntry, decoded = null) {
+            if (cacheEntry.payloadSnapshot) {
+                DuraShare.clearSensitiveArray(cacheEntry.payloadSnapshot.wordShares);
+                DuraShare.clearSensitiveArray(cacheEntry.payloadSnapshot.checksumShares);
+                DuraShare.clearSensitiveArray(cacheEntry.payloadSnapshot.columnChecksumShares);
+            }
+            cacheEntry.payloadSnapshot = decoded
+                ? {
+                    shareNumber: decoded.shareNumber,
+                    threshold: decoded.threshold,
+                    wordShares: [...decoded.wordShares],
+                    checksumShares: [...decoded.checksumShares],
+                    columnChecksumShares: [...decoded.columnChecksumShares],
+                    globalIntegrityCheckShare: decoded.globalIntegrityCheckShare
+                }
+                : null;
+        }
+
         function getPayloadStatusCopy(metadata) {
             if (!metadata) return '';
             const profileName = metadata.profile === 'full' ? 'Full' : 'Compact';
@@ -3349,9 +3663,14 @@ TERMS OF USE
                 : `Valid ${profileName} payload. Transport and arithmetic checks passed.`;
         }
 
-        async function handleRecoveryPayloadBlur(shareIndex, input) {
+        async function handleRecoveryPayloadBlur(
+            shareIndex,
+            input,
+            operationMode = activeShareEntryMode
+        ) {
             const cacheIndex = shareIndex - 1;
-            const cacheEntry = recoverFlowCache[cacheIndex];
+            const flowCache = getFlowCacheForMode(operationMode);
+            const cacheEntry = flowCache[cacheIndex];
             const rawPayload = input.value;
             const status = input.closest('.recovery-payload-group')
                 ?.querySelector('.recovery-payload-status');
@@ -3359,31 +3678,50 @@ TERMS OF USE
             if (rawPayload.trim() === '') {
                 cacheEntry.payloadMetadata = null;
                 cacheEntry.payloadEvidenceMetadata = null;
+                if (operationMode === 'audit') {
+                    setAuditPayloadSnapshot(cacheEntry);
+                }
                 clearInputErrorState(input);
                 if (status) {
                     status.className =
                         'recovery-payload-status recovery-share-payload-status';
                     status.textContent = '';
                 }
-                refreshManifestEvidenceStatuses();
+                if (operationMode === activeShareEntryMode) {
+                    refreshManifestEvidenceStatuses();
+                    refreshAuditAssessment();
+                }
                 return;
             }
 
             cacheEntry.payloadEvidenceMetadata = null;
+            if (operationMode === activeShareEntryMode) {
+                persistRecoverShareInputsToCache();
+            }
             try {
                 const decoded = await DuraShare.decodeSharePayloadHex(rawPayload);
+                if (operationMode === activeShareEntryMode) {
+                    // Preserve edits made in other Share inputs while this
+                    // asynchronous payload decode was running.
+                    persistRecoverShareInputsToCache();
+                }
                 const metadata = payloadMetadataFromDecoded(decoded);
                 cacheEntry.payloadEvidenceMetadata = metadata;
-                persistRecoverShareInputsToCache();
                 const selectedThreshold = Number(
-                    document.querySelector('input[name="recover-k"]:checked')?.value
+                    document.querySelector(
+                        `input[name="${operationMode === 'audit' ? 'audit-k' : 'recover-k'}"]:checked`
+                    )?.value
                 );
+                const currentWordCount = operationMode === 'audit'
+                    ? auditWordCount
+                    : recoverWordCount;
                 const configurationDiffers =
-                    decoded.wordCount !== recoverWordCount ||
+                    decoded.wordCount !== currentWordCount ||
                     decoded.threshold !== selectedThreshold;
                 if (
+                    operationMode === 'recovery' &&
                     configurationDiffers &&
-                    recoverFlowCache.some(recoveryCacheEntryHasManualData)
+                    flowCache.some(recoveryCacheEntryHasManualData)
                 ) {
                     throw new Error(
                         'This payload conflicts with the populated Recovery form. ' +
@@ -3391,7 +3729,7 @@ TERMS OF USE
                     );
                 }
 
-                const proposedMetadata = recoverFlowCache.map(
+                const proposedMetadata = flowCache.map(
                     entry => entry.payloadMetadata
                 );
                 proposedMetadata[cacheIndex] = metadata;
@@ -3400,10 +3738,15 @@ TERMS OF USE
                 if (configurationDiffers) {
                     setRecoveryConfigurationFromPayload(
                         decoded.wordCount,
-                        decoded.threshold
+                        decoded.threshold,
+                        operationMode
                     );
                 }
                 populateRecoveryCacheFromPayload(cacheEntry, decoded, rawPayload);
+                if (operationMode === 'audit') {
+                    setAuditPayloadSnapshot(cacheEntry, decoded);
+                }
+                if (operationMode !== activeShareEntryMode) return;
                 renderRecoverShareInputsFromCache();
                 const renderedInput = document.getElementById(
                     `recover-payload-${shareIndex}`
@@ -3419,8 +3762,13 @@ TERMS OF USE
                     }
                 }
                 refreshManifestEvidenceStatuses();
+                refreshAuditAssessment();
             } catch (error) {
                 cacheEntry.payloadMetadata = null;
+                if (operationMode === 'audit') {
+                    setAuditPayloadSnapshot(cacheEntry);
+                }
+                if (operationMode !== activeShareEntryMode) return;
                 markInputInvalid(input, error.message);
                 if (status) {
                     status.className =
@@ -3428,11 +3776,12 @@ TERMS OF USE
                     status.textContent = error.message;
                 }
                 refreshManifestEvidenceStatuses();
+                refreshAuditAssessment();
             }
         }
 
         function validateManifestHeaderAgainstPayloads(headerMetadata) {
-            const payloads = recoverFlowCache
+            const payloads = getActiveFlowCache()
                 .map(entry => entry.payloadMetadata)
                 .filter(Boolean);
             if (payloads.length === 0) {
@@ -3614,10 +3963,11 @@ TERMS OF USE
         }
 
         function refreshManifestEvidenceStatuses() {
-            if (recoverManifestHeaderMetadata) {
+            const manifestHeaderMetadata = getActiveManifestHeaderMetadata();
+            if (manifestHeaderMetadata) {
                 try {
                     const message = validateManifestHeaderAgainstPayloads(
-                        recoverManifestHeaderMetadata
+                        manifestHeaderMetadata
                     );
                     setEvidenceStatus(
                         recoverManifestHeaderInput,
@@ -3634,7 +3984,7 @@ TERMS OF USE
                     );
                 }
             }
-            recoverFlowCache.forEach((entry, index) => {
+            getActiveFlowCache().forEach((entry, index) => {
                 if (entry.auditEvidenceText.trim() === '') return;
                 if (!entry.auditEvidenceMetadata) return;
                 const input = document.getElementById(`recover-audit-evidence-${index + 1}`);
@@ -3646,33 +3996,37 @@ TERMS OF USE
         }
 
         async function handleManifestHeaderBlur() {
-            recoverManifestHeaderText = recoverManifestHeaderInput?.value || '';
-            if (recoverManifestHeaderText.trim() === '') {
-                recoverManifestHeaderMetadata = null;
+            const manifestHeaderText = recoverManifestHeaderInput?.value || '';
+            setActiveManifestHeaderText(manifestHeaderText);
+            if (manifestHeaderText.trim() === '') {
+                setActiveManifestHeaderMetadata(null);
                 setEvidenceStatus(
                     recoverManifestHeaderInput,
                     recoverManifestHeaderStatus,
                     '',
                     ''
                 );
+                refreshAuditAssessment();
                 return;
             }
             try {
-                recoverManifestHeaderMetadata =
-                    DuraShare.decodeManifestHeaderPayloadHex(recoverManifestHeaderText);
+                setActiveManifestHeaderMetadata(
+                    DuraShare.decodeManifestHeaderPayloadHex(manifestHeaderText)
+                );
             } catch (error) {
-                recoverManifestHeaderMetadata = null;
+                setActiveManifestHeaderMetadata(null);
                 setEvidenceStatus(
                     recoverManifestHeaderInput,
                     recoverManifestHeaderStatus,
                     error.message,
                     'fail'
                 );
+                refreshAuditAssessment();
                 return;
             }
             try {
                 const message = validateManifestHeaderAgainstPayloads(
-                    recoverManifestHeaderMetadata
+                    getActiveManifestHeaderMetadata()
                 );
                 setEvidenceStatus(
                     recoverManifestHeaderInput,
@@ -3688,14 +4042,16 @@ TERMS OF USE
                     'fail'
                 );
             }
+            refreshAuditAssessment();
         }
 
         async function handleAuditEvidenceBlur(shareIndex, input, status) {
-            const cacheEntry = recoverFlowCache[shareIndex - 1];
+            const cacheEntry = getActiveFlowCache()[shareIndex - 1];
             cacheEntry.auditEvidenceText = input.value;
             if (input.value.trim() === '') {
                 cacheEntry.auditEvidenceMetadata = null;
                 setEvidenceStatus(input, status, '', '');
+                refreshAuditAssessment();
                 return;
             }
             try {
@@ -3715,11 +4071,13 @@ TERMS OF USE
                     liveStatus.textContent = error.message;
                 }
             }
+            refreshAuditAssessment();
         }
 
         function generateSingleRecoverShareInput(shareIndex) {
             const cacheIndex = shareIndex - 1;
-            const shareCache = recoverFlowCache[cacheIndex];
+            const shareCache = getActiveFlowCache()[cacheIndex];
+            const entryMode = activeShareEntryMode;
 
             const container = document.createElement('div');
             container.className = 'share-input-container';
@@ -3754,6 +4112,9 @@ TERMS OF USE
                 shareCache.payloadText = payloadInput.value;
                 shareCache.payloadMetadata = null;
                 shareCache.payloadEvidenceMetadata = null;
+                if (activeShareEntryMode === 'audit') {
+                    setAuditPayloadSnapshot(shareCache);
+                }
                 clearInputErrorState(payloadInput);
                 payloadStatus.className =
                     'recovery-payload-status recovery-share-payload-status';
@@ -3761,10 +4122,15 @@ TERMS OF USE
                     payloadInput.value.trim() === ''
                         ? ''
                         : 'Leave this field to validate and import the payload.';
+                refreshAuditAssessment();
             });
             payloadInput.addEventListener('blur', () => {
-                recoveryPayloadPromises[cacheIndex] =
-                    handleRecoveryPayloadBlur(shareIndex, payloadInput);
+                getPayloadPromisesForMode(entryMode)[cacheIndex] =
+                    handleRecoveryPayloadBlur(
+                        shareIndex,
+                        payloadInput,
+                        entryMode
+                    );
             });
             payloadGroup.appendChild(payloadLabel);
             payloadGroup.appendChild(payloadInput);
@@ -3800,9 +4166,10 @@ TERMS OF USE
                     auditInput.value.trim() === ''
                         ? ''
                         : 'Leave this field to validate the Manifest Audit evidence.';
+                refreshAuditAssessment();
             });
             auditInput.addEventListener('blur', () => {
-                recoveryAuditPromises[cacheIndex] =
+                getActiveEvidencePromises()[cacheIndex] =
                     handleAuditEvidenceBlur(shareIndex, auditInput, auditStatus);
             });
             auditGroup.appendChild(auditLabel);
@@ -3834,6 +4201,7 @@ TERMS OF USE
             });
             inputX.addEventListener('input', () => {
                 clearInputErrorState(inputX);
+                refreshAuditAssessment();
             });
             shareNumberGroup.appendChild(labelX);
             shareNumberGroup.appendChild(inputX);
@@ -3851,7 +4219,7 @@ TERMS OF USE
             seedGrid.className = 'share-word-list';
             seedGrid.style.setProperty('--share-columns', '6');
 
-            const totalWords = recoverWordCount;
+            const totalWords = getActiveWordCount();
             const wordsPerChecksum = 3;
             const numChecksums = totalWords / wordsPerChecksum;
             const payloadChecksDerived = Boolean(
@@ -3884,6 +4252,7 @@ TERMS OF USE
                     attachAutocompleteListeners(input);
                     input.addEventListener('input', () => {
                         clearInputErrorState(input);
+                        refreshAuditAssessment();
                     });
                     input.addEventListener('blur', () => {
                         validateInputOnBlur(input);
@@ -3915,6 +4284,7 @@ TERMS OF USE
                 attachAutocompleteListeners(input);
                 input.addEventListener('input', () => {
                     clearInputErrorState(input);
+                    refreshAuditAssessment();
                 });
                 input.addEventListener('blur', () => {
                     validateInputOnBlur(input);
@@ -3945,6 +4315,7 @@ TERMS OF USE
                     initializeRecoveryInputTracking(matInput);
                     matInput.addEventListener('input', () => {
                         clearInputErrorState(matInput);
+                        refreshAuditAssessment();
                     });
                     matInput.addEventListener('blur', () => {
                         validateShareInline(shareIndex);
@@ -3975,7 +4346,10 @@ TERMS OF USE
                 input.value = (shareCache.columnChecksums && shareCache.columnChecksums[col]) || '';
                 initializeRecoveryInputTracking(input);
                 attachAutocompleteListeners(input);
-                input.addEventListener('input', () => clearInputErrorState(input));
+                input.addEventListener('input', () => {
+                    clearInputErrorState(input);
+                    refreshAuditAssessment();
+                });
                 input.addEventListener('blur', () => {
                     validateInputOnBlur(input);
                     validateShareInline(shareIndex);
@@ -4003,7 +4377,10 @@ TERMS OF USE
             gicInput.value = shareCache.globalIntegrityCheckShare || '';
             initializeRecoveryInputTracking(gicInput);
             attachAutocompleteListeners(gicInput);
-            gicInput.addEventListener('input', () => clearInputErrorState(gicInput));
+            gicInput.addEventListener('input', () => {
+                clearInputErrorState(gicInput);
+                refreshAuditAssessment();
+            });
             gicInput.addEventListener('blur', () => {
                 validateInputOnBlur(gicInput);
                 validateShareInline(shareIndex);
@@ -4032,7 +4409,7 @@ TERMS OF USE
                 if (!shareNumberInput) return;
 
                 const shareIndex = parseInt(shareNumberInput.id.split('-').pop(), 10) - 1;
-                const cacheEntry = recoverFlowCache[shareIndex];
+                const cacheEntry = getActiveFlowCache()[shareIndex];
 
                 if (cacheEntry) {
                     cacheEntry.payloadText = payloadInput ? payloadInput.value : '';
@@ -4103,18 +4480,27 @@ TERMS OF USE
          */
         function renderRecoverShareInputsFromCache() {
             if (recoverManifestHeaderInput) {
-                recoverManifestHeaderInput.value = recoverManifestHeaderText;
+                recoverManifestHeaderInput.value = getActiveManifestHeaderText();
+                clearInputErrorState(recoverManifestHeaderInput);
+            }
+            if (recoverManifestHeaderStatus) {
+                recoverManifestHeaderStatus.className = 'recovery-payload-status';
+                recoverManifestHeaderStatus.textContent = '';
             }
             recoverSharesContainer.replaceChildren();
-            const kValue = document.querySelector('input[name="recover-k"]:checked').value;
-            const numShares = parseInt(kValue, 10);
+            const kValue = document.querySelector(
+                'input[name="recover-k"]:checked'
+            ).value;
+            const numShares = activeShareEntryMode === 'audit'
+                ? 1
+                : parseInt(kValue, 10);
             for (let i = 1; i <= numShares; i++) {
                 const shareInputBlock = generateSingleRecoverShareInput(i);
                 recoverSharesContainer.appendChild(shareInputBlock);
             }
 
             const recoverWordInputs = recoverSharesContainer.querySelectorAll('.share-word-item input');
-            if (recoverWordInputs.length > 0) {
+            if (recoverWordInputs.length > 0 && activeShareEntryMode === 'recovery') {
                 const lastRecoverWordInput = recoverWordInputs[recoverWordInputs.length - 1];
                 attachTabAdvance(lastRecoverWordInput, btnRecoverWallet);
             }
@@ -4122,6 +4508,7 @@ TERMS OF USE
                 validateShareInline(i);
             }
             refreshManifestEvidenceStatuses();
+            refreshAuditAssessment();
         }
 
         /**
@@ -4132,7 +4519,11 @@ TERMS OF USE
             renderRecoverShareInputsFromCache();
         }
 
-        recoverKRadios.forEach(radio => radio.addEventListener('change', updateRecoverSharesInputs));
+        recoverKRadios.forEach(radio => radio.addEventListener('change', () => {
+            if (activeShareEntryMode === 'recovery') {
+                updateRecoverSharesInputs();
+            }
+        }));
         
         // ==========================================================================
         // SECTION 5: UI - AUTOCOMPLETE & VALIDATION
@@ -4550,7 +4941,7 @@ TERMS OF USE
             const hasSecondaryInput = Array.from(
                 container.querySelectorAll('input[data-mat-key="true"][data-part="secondary"]')
             ).some(input => input.value.trim() !== '');
-            const cacheEntry = recoverFlowCache[shareIndex - 1];
+            const cacheEntry = getActiveFlowCache()[shareIndex - 1];
             if (hasSecondaryInput && cacheEntry) {
                 cacheEntry.splitKeyStarted = true;
             }
@@ -4899,7 +5290,11 @@ TERMS OF USE
                 share.globalIntegrityCheckShare = 0;
                 share.shareNumber = 0;
             }
-            return { checksumOutcomes, matOutcomes };
+            const result = { checksumOutcomes, matOutcomes };
+            if (activeShareEntryMode === 'audit') {
+                renderAuditAssessment(result);
+            }
+            return result;
         }
 
         // ==========================================================================
@@ -5848,6 +6243,203 @@ TERMS OF USE
             };
         }
 
+        function compareAuditField(input, expected) {
+            const parsed = parseShareValue(input?.value || '', {
+                allowNumeric: true
+            });
+            if (parsed.ok && parsed.value === expected) {
+                return 'pass';
+            }
+            if (input) {
+                markInputInvalid(
+                    input,
+                    'Current value differs from the imported Share payload.'
+                );
+            }
+            return 'fail';
+        }
+
+        function evaluateAuditPayloadAgreement() {
+            const entry = auditFlowCache[0];
+            const snapshot = entry?.payloadSnapshot;
+            if (!snapshot || !entry.payloadMetadata) {
+                return validationSummaryFromStatus('not-checked');
+            }
+            const outcomes = [
+                auditThreshold === snapshot.threshold ? 'pass' : 'fail',
+                compareAuditField(
+                    document.getElementById('recover-x-1'),
+                    snapshot.shareNumber
+                )
+            ];
+            const wordInputs = Array.from(
+                recoverSharesContainer.querySelectorAll(
+                    'input[data-slot^="word-"]'
+                )
+            );
+            wordInputs.forEach((input, index) => {
+                outcomes.push(compareAuditField(
+                    input,
+                    snapshot.wordShares[index]
+                ));
+            });
+            const rowInputs = Array.from(
+                recoverSharesContainer.querySelectorAll(
+                    'input[data-slot="checksum"]'
+                )
+            );
+            rowInputs.forEach((input, index) => {
+                outcomes.push(compareAuditField(
+                    input,
+                    snapshot.checksumShares[index]
+                ));
+            });
+            snapshot.columnChecksumShares.forEach((expected, index) => {
+                outcomes.push(compareAuditField(
+                    document.getElementById(`recover-share-1-column-${index}`),
+                    expected
+                ));
+            });
+            outcomes.push(compareAuditField(
+                document.getElementById('recover-share-1-gic'),
+                snapshot.globalIntegrityCheckShare
+            ));
+            return summarizeValidationOutcomes(outcomes);
+        }
+
+        function getAuditArtifactSummaries(validation) {
+            const entry = auditFlowCache[0];
+            const payloadInput = document.getElementById('recover-payload-1');
+            const payloadIntegrity = entry.payloadText.trim() === ''
+                ? validationSummaryFromStatus('not-checked')
+                : validationSummaryFromStatus(
+                    entry.payloadMetadata
+                        ? 'pass'
+                        : (payloadInput?.classList.contains('invalid')
+                            ? 'fail'
+                            : 'not-checked')
+                );
+            const auditResolved = resolveAuditEvidenceStatus(entry);
+            const manifestAudit = validationSummaryFromStatus(
+                auditResolved.state === 'pass'
+                    ? 'pass'
+                    : (auditResolved.state === 'fail'
+                        ? 'fail'
+                        : 'not-checked')
+            );
+            const headerText = auditManifestHeaderText.trim();
+            let headerStatus = 'not-checked';
+            if (headerText !== '') {
+                if (!auditManifestHeaderMetadata) {
+                    headerStatus = recoverManifestHeaderInput
+                        ?.classList.contains('invalid')
+                        ? 'fail'
+                        : 'not-checked';
+                } else if (entry.payloadMetadata) {
+                    try {
+                        validateManifestHeaderAgainstPayloads(
+                            auditManifestHeaderMetadata
+                        );
+                        headerStatus = 'pass';
+                    } catch (_error) {
+                        headerStatus = 'fail';
+                    }
+                }
+            }
+            return {
+                payloadIntegrity,
+                payloadAgreement: evaluateAuditPayloadAgreement(),
+                manifestAudit,
+                manifestHeader: validationSummaryFromStatus(headerStatus),
+                checksums: summarizeValidationOutcomes(
+                    validation?.checksumOutcomes || []
+                ),
+                mat: summarizeValidationOutcomes(
+                    validation?.matOutcomes || []
+                )
+            };
+        }
+
+        function renderAuditAssessment(validation = null) {
+            if (
+                activeShareEntryMode !== 'audit' ||
+                !auditValidationSummary ||
+                !recoverSharesContainer.firstElementChild
+            ) {
+                return;
+            }
+            auditValidationSummary.replaceChildren();
+            const summaries = getAuditArtifactSummaries(validation);
+            const families = [
+                {
+                    kind: 'audit-payload-integrity',
+                    title: 'Share Payload Integrity',
+                    summary: summaries.payloadIntegrity,
+                    copy: 'Checks payload encoding, Transport Hash when present, and serialized arithmetic.'
+                },
+                {
+                    kind: 'audit-payload-agreement',
+                    title: 'Editable Share vs Payload',
+                    summary: summaries.payloadAgreement,
+                    copy: 'Checks whether the current editable fields agree with the imported payload.'
+                },
+                {
+                    kind: 'audit-checksums',
+                    title: 'Share Checksums',
+                    summary: summaries.checksums,
+                    copy: 'RC, CC, and GIC test the entered Share against itself.'
+                },
+                {
+                    kind: 'audit-manifest',
+                    title: 'Manifest Audit Hash',
+                    summary: summaries.manifestAudit,
+                    copy: 'Checks the Share payload against a raw Audit Hash or SA commitment.'
+                },
+                {
+                    kind: 'audit-manifest-header',
+                    title: 'Manifest Session Header (SB)',
+                    summary: summaries.manifestHeader,
+                    copy: 'Checks optional session and profile metadata against the Share payload.'
+                },
+                {
+                    kind: 'audit-mat',
+                    title: 'Manual Authentication (MAT)',
+                    summary: summaries.mat,
+                    copy: 'Checks supplied MAT tags against Whole-Key or reconstructed Split-Key values.'
+                }
+            ];
+            const model = deriveBackupKitHealth(families);
+            if (model.state === 'consistent') {
+                model.label = 'NO DISCREPANCIES DETECTED';
+                model.copy = model.copy.replace(
+                    'No supplied artifact check disagreed.',
+                    'No supplied evidence disagreed.'
+                );
+            }
+            const items = families.map(family =>
+                createRecoveryEvidenceItem(
+                    family.kind,
+                    family.title,
+                    family.summary,
+                    family.copy
+                )
+            );
+            auditValidationSummary.appendChild(createRecoveryMeter(
+                'audit',
+                'Share Audit',
+                model,
+                items
+            ));
+        }
+
+        function refreshAuditAssessment() {
+            if (activeShareEntryMode !== 'audit') return;
+            const validation = validateShareInline(1);
+            if (!validation) {
+                renderAuditAssessment();
+            }
+        }
+
         function getManifestHeaderCopy(manifestHeader) {
             if (manifestHeader?.reason === 'matched') {
                 return 'The Manifest Header agrees with the available Share payload session. SB is a kit cross-check, not a separate Recovery Confidence metric.';
@@ -6237,6 +6829,26 @@ TERMS OF USE
             }
         }
 
+        function clearAuditState() {
+            const entry = auditFlowCache[0];
+            if (entry?.payloadSnapshot) {
+                setAuditPayloadSnapshot(entry);
+            }
+            auditFlowCache = [createEmptyRecoveryCacheEntry()];
+            auditPayloadPromises = [Promise.resolve()];
+            auditEvidencePromises = [Promise.resolve()];
+            auditManifestHeaderText = '';
+            auditManifestHeaderMetadata = null;
+            auditManifestHeaderPromise = Promise.resolve();
+            auditWordCount = 24;
+            auditThreshold = 2;
+            if (activeShareEntryMode === 'audit') {
+                setRecoveryConfigurationFromPayload(24, 2);
+                renderRecoverShareInputsFromCache();
+                window.scrollTo(0, 0);
+            }
+        }
+
         /**
          * Best-effort clear of sensitive DOM fields and in-page caches.
          * Does not guarantee RAM erasure in the browser. Prefer Clear All & Start Over
@@ -6269,6 +6881,16 @@ TERMS OF USE
             recoverManifestHeaderText = '';
             recoverManifestHeaderMetadata = null;
             recoverManifestHeaderPromise = Promise.resolve();
+            const auditEntry = auditFlowCache[0];
+            if (auditEntry?.payloadSnapshot) {
+                setAuditPayloadSnapshot(auditEntry);
+            }
+            auditFlowCache = [createEmptyRecoveryCacheEntry()];
+            auditPayloadPromises = [Promise.resolve()];
+            auditEvidencePromises = [Promise.resolve()];
+            auditManifestHeaderText = '';
+            auditManifestHeaderMetadata = null;
+            auditManifestHeaderPromise = Promise.resolve();
 
             if (typeof manualRecoveryShareCache !== 'undefined') {
                 Object.keys(manualRecoveryShareCache).forEach(key => {
@@ -6305,6 +6927,25 @@ TERMS OF USE
             wordCountCallback: (count) => { recoverWordCount = count; },
             updateFn: updateRecoverSharesInputs,
             initialCount: recoverWordCount
+        });
+
+        setupWordCountSelector({
+            buttonsByCount: {
+                12: auditBtn12Words,
+                15: auditBtn15Words,
+                18: auditBtn18Words,
+                21: auditBtn21Words,
+                24: auditBtn24Words
+            },
+            toggleButton: btnWordcountToggleAudit,
+            extraContainer: extraWordcountAudit,
+            wordCountCallback: (count) => { auditWordCount = count; },
+            updateFn: () => {
+                if (activeShareEntryMode === 'audit') {
+                    updateRecoverSharesInputs();
+                }
+            },
+            initialCount: auditWordCount
         });
         
         setupStartOverButton(
