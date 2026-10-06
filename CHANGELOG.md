@@ -7,12 +7,12 @@ Protocol/spec changes belong in the canonical repo:
 
 ## [Unreleased]
 
-## 0.6.0 - 2026-09-10
+## 0.6.0 - 2026-10-06
 
-HTML **v0.6.0** implements the arithmetic, Manual Authentication (MAT), and
-hexadecimal Full/Compact digital-envelope subset validated against the frozen
-DuraShare protocol **v0.7.0** vectors. It also preserves recovery-only
-compatibility with frozen HTML v0.5.0 share-table vectors.
+HTML **v0.6.0** implements the arithmetic, Manual Authentication (MAT),
+one-share Audit, and hexadecimal Full/Compact digital-envelope subset validated
+against the frozen DuraShare protocol **v0.7.0** vectors. It also preserves
+recovery-only compatibility with frozen HTML v0.5.0 share-table vectors.
 
 This release does **not** claim complete protocol v0.7.0 parity. Bech32m/QR
 rendering and scanning are not implemented, and RVA is recorded as
@@ -38,12 +38,13 @@ human-readable recovery context rather than verified through wallet derivation.
 - Single- or dual-column Manual Authentication (MAT), with Whole-Key and Split-Key Manifests and optional recovery-time auditing of complete tag/key rows.
 - Full and Compact hexadecimal Share payloads, Manifest Session Headers (SB), Share Audit payloads (SA), Manifest Audit Hashes, Session Batch IDs, profile-length Recovery Binding Tags (RBT), and free-text RVA/verification notes.
 - Recovery-time hexadecimal payload import, atomic population, Transport Hash and arithmetic validation, cross-Share session checks, and independent artifact-health reporting.
+- One-share Audit: check a stored Share from its own fields, hexadecimal payload, SB/SA evidence, and MAT without recovering or displaying the seed. Audit state stays separate from Recovery.
 
 ### Fixed
 - Recovery Manifest Audit evidence no longer stays green after the Share payload fails Transport Hash (or other decode) checks; leaving the audit field does not re-mark it valid over an invalid payload.
 - Published-release verification now requires the current stable `CI Gate`, Secret Scanning, and CodeQL analysis contexts instead of obsolete version-specific Node.js checks.
 - CI test reliability: run each GIC-binding scheme as an independent case and read each rendered Share card in one validated browser pass, preserving the same UI assertions without exceeding the per-test timeout.
-- CI dependency audit: update transitive `brace-expansion` to 5.0.9 and `js-yaml` to 4.3.2 (development tooling only; no change to the standalone `durashare.html` runtime).
+- CI dependency audit: update transitive `brace-expansion` to 5.0.12 and `js-yaml` to 4.3.2 (development tooling only; no change to the standalone `durashare.html` runtime).
 
 ## 0.5.0 - 2026-07-27
 

@@ -44,6 +44,7 @@ For high-security environments, run from a [Tails OS](https://tails.boum.org/) s
 - Generate single- or dual-column MAT data with Whole-Key or Split-Key Manifests
 - Display and import Full/Compact hexadecimal Share, SB, and SA payloads
 - Check Transport Hashes, Manifest Audit evidence, Session Batch IDs, RBT, BIP39, and stored-artifact consistency
+- Audit one stored Share from its fields, payload, SB/SA evidence, and MAT without recovering the seed
 
 **Key properties:**
 - Single file (all CSS/JS inline)
@@ -159,7 +160,7 @@ Tests run automatically in CI on every push/PR.
 ## Compatibility
 
 - **Released HTML tool version**: v0.6.0 (`package.json` / UI footer)
-- **Supported protocol subset**: arithmetic Share tables; position-bound row and column checksums; printed GIC; single- or dual-column MAT with Whole-Key or Split-Key Manifests; Full/Compact hexadecimal Share payloads; hexadecimal SB/SA payloads; Manifest Audit Hash; Session Batch ID; profile-length RBT; and free-text RVA/verification notes
+- **Supported protocol subset**: arithmetic Share tables; position-bound row and column checksums; printed GIC; single- or dual-column MAT with Whole-Key or Split-Key Manifests; Full/Compact hexadecimal Share payloads; hexadecimal SB/SA payloads; Manifest Audit Hash; Session Batch ID; profile-length RBT; free-text RVA/verification notes; and one-share Audit without seed recovery
 - **Frozen interoperability oracle**: protocol v0.7.0 root vectors, pinned through `GRIFORTIS/durashare@v0.7.0`
 - **Recovery compatibility**: archived HTML v0.5.0 Share-table vectors remain covered for manual recovery; absent v0.6.0 artifact fields are reported as not checked
 - **Still out of scope**: Bech32m/QR rendering or scanning, automatic wallet derivation/RVA verification, pre-encrypted numeric input, nested ceremonies, and complete parity with the living protocol
