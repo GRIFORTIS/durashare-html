@@ -130,6 +130,12 @@ export async function navigateToRecoverFromHome(page) {
   await page.waitForSelector('#pageRecover1', { state: 'visible' });
 }
 
+export async function navigateToAuditFromHome(page) {
+  await page.click('#btn-go-to-audit');
+  await page.waitForSelector('#pageAudit', { state: 'visible' });
+  await page.waitForSelector('#share-container-1', { state: 'visible' });
+}
+
 export async function select12Words(page) {
   await selectCreateWordCount(page, 12);
 }
