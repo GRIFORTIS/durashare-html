@@ -12,6 +12,20 @@ on:
     paths:
       - '**'
       - '.github/workflows/ci.yml'
+  # A weekly canary detects the next `ubuntu-latest` migration before it
+  # reaches the explicit Ubuntu 26.04 release gate.
+  schedule:
+    - cron: '17 12 * * 3'
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner image for a manual CI health check'
+        required: false
+        default: 'ubuntu-26.04'
+        type: choice
+        options:
+          - ubuntu-26.04
+          - ubuntu-latest
 
 permissions:
   contents: read
@@ -25,7 +39,7 @@ env:
 jobs:
   secret-scan:
     name: Secret Scanning
-    runs-on: ubuntu-26.04
+    runs-on: ${{ github.event_name == 'schedule' && 'ubuntu-latest' || github.event.inputs.runner || 'ubuntu-26.04' }}
     permissions:
       contents: read
       pull-requests: read
@@ -43,7 +57,7 @@ jobs:
 
   test:
     name: Tests
-    runs-on: ubuntu-26.04
+    runs-on: ${{ github.event_name == 'schedule' && 'ubuntu-latest' || github.event.inputs.runner || 'ubuntu-26.04' }}
     timeout-minutes: 10
 
     steps:
@@ -130,7 +144,7 @@ jobs:
     name: CI Gate
     if: always()
     needs: [secret-scan, test]
-    runs-on: ubuntu-26.04
+    runs-on: ${{ github.event_name == 'schedule' && 'ubuntu-latest' || github.event.inputs.runner || 'ubuntu-26.04' }}
     timeout-minutes: 2
     permissions: {}
     steps:
