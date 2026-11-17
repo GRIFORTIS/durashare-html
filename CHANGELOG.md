@@ -7,6 +7,9 @@ Protocol/spec changes belong in the canonical repo:
 
 ## [Unreleased]
 
+### Removed
+- `globalThis.SchiavinatoSharing`. The page publishes `globalThis.DuraShare`. The v0.5.0 release kept that alias; this entry records its removal.
+
 ## 0.6.0 - 2026-10-06
 
 HTML **v0.6.0** implements the arithmetic, Manual Authentication (MAT),

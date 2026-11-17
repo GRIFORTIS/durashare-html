@@ -7001,7 +7001,7 @@ TERMS OF USE
 
     <script>
         // ==========================================================================
-        // SCHIAVINATO SHARING LIBRARY (Embedded for offline use)
+        // DURASHARE LIBRARY (Embedded for offline use)
         // - This object contains all core cryptographic and validation logic.
         // - It is independent of the DOM/UI and uses browser-native WebCrypto primitives.
         // ==========================================================================
@@ -10006,8 +10006,6 @@ TERMS OF USE
         // Publish for Playwright / page.evaluate and external tooling.
         // Classic-script `const` is lexical-only and is not on globalThis by default.
         globalThis.DuraShare = DuraShare;
-        // Compatibility alias for older scripts that expect SchiavinatoSharing.
-        globalThis.SchiavinatoSharing = DuraShare;
 
         // BIP39 English wordlist (2048 words)
         const BIP39_WORDLIST = [
