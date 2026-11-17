@@ -16,7 +16,7 @@
     "lint:fix": "eslint tests/ --ext .js --fix"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
+    "@playwright/test": "^1.65.1",
     "eslint": "^8.56.0"
   },
   "overrides": {
